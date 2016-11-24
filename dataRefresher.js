@@ -250,8 +250,8 @@ function startup() {
         var currentTms2000 = timeUtil.dateToTms2000(new Date());
         if (currentTms2000 > lastTms2000Refresh) {
             lastTms2000Refresh = currentTms2000;
+            refreshLineCharts();
         }
-        refreshLineCharts();
     }, 1000 * 15); // Check every 15 seconds
 
 }
