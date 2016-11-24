@@ -91,8 +91,6 @@ app.use(function(req, res, next) {
 
 // Startup
 dataRefresher.startup();
-dataRefresher.refreshLineCharts();
-setInterval(dataRefresher.refreshLineCharts, 1000 * 60 * 30);
 
 // error handlers
 

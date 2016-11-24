@@ -243,6 +243,17 @@ function startup() {
         }
     );
 
+    // Start refreshing
+    refreshLineCharts();
+    var lastTms2000Refresh = timeUtil.dateToTms2000(new Date());
+    setInterval(function () {
+        var currentTms2000 = timeUtil.dateToTms2000(new Date());
+        if (currentTms2000 > lastTms2000Refresh) {
+            lastTms2000Refresh = currentTms2000;
+        }
+        refreshLineCharts();
+    }, 1000 * 15); // Check every 15 seconds
+
 }
 
 // Exports
