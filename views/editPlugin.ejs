@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="Edit your plugin">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Edit <%= plugin.name %></title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <style type="text/css">
+        .depending_box {
+            display: none;
+        }
+        .blacklistLabel {
+            display: none;
+        }
+        .filterOptions {
+             display: none;
+         }
+    </style>
+</head>
+
+<body>
+<% include templates/navigation.ejs %>
+<main>
+    <% if (isOwner) { %>
+    <br><br>
+    <div class="container row">
+        <!-- START Add chart -->
+        <h5 class="teal-text col s12 center-align">Add custom chart <a href="/help/custom-charts"><i class="material-icons blue-text" style="font-size: 20px">help</i></a></h5>
+        <br><br>
+        <div class="col s12 z-depth-1 grey lighten-4 row">
+            <br>
+            <div class="input-field col s12">
+                <select id="select_chart">
+                    <option value="" disabled selected><b>Choose a chart type</b></option>
+                    <optgroup label="Pies">
+                        <option value="simple_pie" title="A pie, perfect for settings">Simple Pie</option>
+                        <option value="advanced_pie" title="A pie, perfect if a plugin can send more than one value">Advanced Pie</option>
+                    </optgroup>
+                    <optgroup label="Line Charts">
+                        <option value="single_linechart" title="A line chart with a single line">Single line Chart</option>
+                        <option value="multi_linechart" title="A line chart with multiple lines">Multi line Chart</option>
+                    </optgroup>
+                    <optgroup label="Miscellaneous">
+                        <option value="mapchart" title="A map chart">Map Chart</option>
+                    </optgroup>
+                </select>
+                <label>Chart type</label>
+            </div>
+
+            <!-- Simple pie -->
+            <div class="depending_box simple_pie">
+                <form id="simple_pie_form" class="col s12" method="post">
+                    <!-- Chart title -->
+                    <br>
+                    <div class="input-field">
+                        <input placeholder="The title of the chart" id="chart_title_simple_pie" type="text" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" name="chartTitle">
+                        <label for="chart_title_simple_pie">Chart title</label>
+                    </div>
+                    <!-- Chart id -->
+                    <div class="input-field">
+                        <input placeholder="Give the chart an undique id (e.g. 'myChart1')" id="chart_id_simple_pie" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
+                        <label for="chart_id_simple_pie">Chart id</label>
+                    </div>
+                    <!-- Filter on/off -->
+                    <div class="divider"></div>
+                    <br>
+                    <div class="switch">
+                        <b>Filter data</b>
+                        <label>
+                            <input class="checkboxFilter" type="checkbox" name="filterEnabled">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                    <br>
+                    <div class="filterOptions">
+                        <!-- Regex on/off -->
+                        <div class="divider"></div>
+                        <br>
+                        <div class="switch">
+                            <!-- Webdesign like a pro! (&nbsp; rulez) -->
+                            <b>Regex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                            <label>
+                                <input type="checkbox" name="regexEnabled">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                        <br>
+                        <!-- Switch Whitelist/Blacklist -->
+                        <div class="divider"></div>
+                        <br>
+                        <div class="switch">
+                            <b>Blacklist&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                            <label>
+                                <input class="checkboxBlacklist" type="checkbox" name="blacklistEnabled">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                        <br>
+                        <!-- White-/Blacklist -->
+                        <div class="divider"></div>
+                        <br>
+                        <b class="whitelistLabel" name="filter">Whitelist: </b><b class="blacklistLabel">Blacklist: </b><div class="white_or_blacklist"></div>
+                    </div>
+                    <!-- Submit button -->
+                    <div class='row'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                            Submit Chart
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- Advanced pie -->
+            <div class="depending_box advanced_pie">
+                <form id="advanced_pie_form" class="col s12" method="post">
+                    <!-- Chart title -->
+                    <br>
+                    <div class="input-field">
+                        <input placeholder="The title of the chart" id="chart_title_advanced_pie" type="text" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" name="chartTitle">
+                        <label for="chart_title_advanced_pie">Chart title</label>
+                    </div>
+                    <!-- Chart id -->
+                    <div class="input-field">
+                        <input placeholder="Give the chart an undique id (e.g. 'myChart1')" id="chart_id_advanced_pie" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
+                        <label for="chart_id_advanced_pie">Chart id</label>
+                    </div>
+                    <!-- Filter on/off -->
+                    <div class="divider"></div>
+                    <br>
+                    <div class="switch">
+                        <b>Filter data</b>
+                        <label>
+                            <input class="checkboxFilter" type="checkbox" name="filterEnabled">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                    <br>
+                    <div class="filterOptions">
+                        <!-- Regex on/off -->
+                        <div class="divider"></div>
+                        <br>
+                        <div class="input-field">
+                            <input placeholder="Leave empty for no filtering" id="maxValue" type="text" class="validate"
+                                   pattern="^[0-9]*$" length="16" name="maxValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                            <label for="maxValue">Max value per pie slice</label>
+                        </div>
+                        <br>
+                        <div class="switch">
+                            <!-- Webdesign like a pro! (&nbsp; rulez) -->
+                            <b>Regex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                            <label>
+                                <input type="checkbox" name="regexEnabled">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                        <br>
+                        <!-- Switch Whitelist/Blacklist -->
+                        <div class="divider"></div>
+                        <br>
+                        <div class="switch">
+                            <b>Blacklist&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                            <label>
+                                <input class="checkboxBlacklist" type="checkbox" name="blacklistEnabled">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                        <br>
+                        <!-- White-/Blacklist -->
+                        <div class="divider"></div>
+                        <br>
+                        <b class="whitelistLabel" name="filter">Whitelist: </b><b class="blacklistLabel">Blacklist: </b><div class="white_or_blacklist"></div>
+                    </div>
+                    <!-- Submit button -->
+                    <div class='row'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                            Submit Chart
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- Single line chart-->
+            <div class="depending_box single_linechart">
+                <form id="single_linechart_form" class="col s12" method="post">
+                    <!-- Chart title -->
+                    <br>
+                    <div class="input-field">
+                        <input placeholder="The title of the chart" id="chart_title_single_linechart" type="text" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" name="chartTitle">
+                        <label for="chart_title_single_linechart">Chart title</label>
+                    </div>
+                    <!-- Chart id -->
+                    <div class="input-field">
+                        <input placeholder="Give the chart an undique id (e.g. 'myChart1')" id="chart_id_single_linechart" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
+                        <label for="chart_id_single_linechart">Chart id</label>
+                    </div>
+                    <!-- Line name -->
+                    <div class="input-field">
+                        <input placeholder="The name of the line (e.g. 'Players')" id="line_name_single_linechart" class="validate"
+                               pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="lineName">
+                        <label for="line_name_single_linechart">Line name</label>
+                    </div>
+                    <!-- Filter on/off -->
+                    <div class="divider"></div>
+                    <br>
+                    <div class="switch">
+                        <b>Filter data</b>
+                        <label>
+                            <input class="checkboxFilter" type="checkbox" name="filterEnabled">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                    <br>
+                    <div class="filterOptions">
+                        <!-- Regex on/off -->
+                        <div class="divider"></div>
+                        <br>
+                        <div class="input-field">
+                            <input placeholder="Leave empty for no filtering" id="maxValue" type="text" class="validate"
+                                   pattern="^[0-9]*$" length="16" name="maxValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                            <label for="maxValue">Max value</label>
+                        </div>
+                        <br>
+                        <div class="input-field">
+                            <input placeholder="Leave empty for no filtering" id="minValue" type="text" class="validate"
+                                   pattern="^[0-9]*$" length="16" name="minValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                            <label for="minValue">Min value</label>
+                        </div>
+                    </div>
+                    <!-- Submit button -->
+                    <div class='row'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                            Submit Chart
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- Multi line chart-->
+            <div class="depending_box multi_linechart">
+                <h2>Coming soon!</h2>
+            </div>
+            <!-- Map chart-->
+            <div class="depending_box mapchart">
+                <h2>Coming soon!</h2>
+            </div>
+        </div>
+        <!-- END Add chart -->
+        <!-- START Edit charts -->
+        <% if (charts !== undefined && charts.length !== 0) { %>
+        <h5 class="teal-text col s12 center-align">Edit charts</h5>
+        <br><br>
+        <ul id="chartsList" class="list-group collection col s12 z-depth-1 grey lighten-4">
+            <%
+            var chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
+            for (var i = 0; i < chartIdsSorted.length; i++) {
+                var chartId = chartIdsSorted[i];
+            %>
+            <li class="list-group-item collection-item grey lighten-4">
+                <div>
+                    <i class="material-icons left glyphicon-move">drag_handle</i><a href="/plugin/<%= plugin.software.url %>/<%= plugin.name %>/#<%= chartId %>"><b><%= charts[chartId].title %></b> (id: <%= chartId %>)</a>
+                    <a href="javascript:alert('Comming soon!')" class="secondary-content">
+                        <i class="material-icons" title="Edit chart">build</i>
+                    </a>
+                    <% if (charts[chartId].isDefault) { %>
+                    <a class="secondary-content">
+                        <i class="material-icons grey-text" title="Delete chart">delete</i>&nbsp;&nbsp; <!-- Webdesign like a pro -->
+                    </a>
+                    <% } else { %>
+                    <a href="javascript:deleteChart('<%= chartId %>')" class="secondary-content">
+                        <i class="material-icons red-text" title="Delete chart">delete</i>&nbsp;&nbsp; <!-- Webdesign like a pro -->
+                    </a>
+                    <% } %>
+                </div>
+            </li>
+            <% } %>
+        </ul>
+        <% } %>
+        <!-- END Edit charts -->
+        <!-- START Delete plugin -->
+        <h5 class="teal-text col s12 center-align">Delete plugin</h5>
+        <br><br>
+        <div class="col s12 z-depth-1 grey lighten-4 row">
+            <br>
+            <div class="input-field">
+                <input placeholder="Please type in the name of the plugin to confirm." id="confirm_plugin_name" class="validate"
+                       pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="<%= plugin.name.length %>" type="text" name="pluginName">
+                <label for="confirm_plugin_name">Plugin name</label>
+            </div>
+            <br>
+            <form id="delete_plugin_form" class="col s12" method="post">
+                <div class='row'>
+                    <button type='submit' id='delete_button' class='col s12 l6 offset-l3 disabled waves-effect waves-light btn-large red'>
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- END Delete plugin -->
+    </div>
+    <% } else { %>
+    <div class="container">
+
+        <div class="section no-pad-bot" id="index-banner">
+            <div class="container">
+                <br><br>
+                <h1 class="header center teal-text">Nice try!</h1>
+                <div class="row center">
+                    <h5 class="header col s12 light">You are not the owner of
+                        <div class="truncate"><%= plugin.name %></div>
+                    </h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <% } %>
+</main>
+<% include templates/footer.ejs %>
+
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+<!-- -->
+<script type="application/javascript">
+    $(document).ready(function() {
+        $('select').material_select();
+    });
+
+    $(document).on('input','#chart_title_simple_pie',function () {
+        document.getElementById('chart_id_simple_pie').value = $('#chart_title_simple_pie').val().toLowerCase().replace(/ /g, "_");
+    });
+
+    $(document).on('input','#chart_title_advanced_pie',function () {
+        document.getElementById('chart_id_advanced_pie').value = $('#chart_title_advanced_pie').val().toLowerCase().replace(/ /g, "_");
+    });
+
+    $(document).on('input','#chart_title_single_linechart',function () {
+        document.getElementById('chart_id_single_linechart').value = $('#chart_title_single_linechart').val().toLowerCase().replace(/ /g, "_");
+    });
+
+    $('.checkboxBlacklist').on("change", function() {
+        if($(this).is(":checked")) {
+            $(".whitelistLabel").hide();
+            $(".blacklistLabel").show();
+            return;
+        }
+        $(".whitelistLabel").show();
+        $(".blacklistLabel").hide();
+    });
+
+    $('.checkboxFilter').on("change", function() {
+        if($(this).is(":checked")) {
+            $(".filterOptions").show();
+            return;
+        }
+        $(".filterOptions").hide();
+    });
+
+    $("#select_chart").on("change", function() {
+        var selectedVal = this.value;
+        $(".depending_box").not("." + selectedVal).hide();
+        $("." + selectedVal).show();
+    });
+
+    $('.white_or_blacklist').material_chip({
+        placeholder: 'Add an other value',
+        secondaryPlaceholder: 'Add entry'
+    });
+
+    $('#simple_pie_form').submit(function(eventObj) {
+        var value = $('.white_or_blacklist').material_chip('data');
+        var values = [];
+        for (var i = 0; i < value.length; i++) {
+            values.push(value[i].tag);
+        }
+        $(this).append('<input type="hidden" name="filter" value="' + escapeHtml(JSON.stringify(values)) + '" /> ');
+        var e = document.getElementById("select_chart");
+        $(this).append('<input type="hidden" name="chart_type" value="' + e.options[e.selectedIndex].value + '" /> ');
+        $(this).append('<input type="hidden" name="action" value="addChart" /> ');
+        return true;
+    });
+
+    $('#advanced_pie_form').submit(function(eventObj) {
+        var value = $('.white_or_blacklist').material_chip('data');
+        var values = [];
+        for (var i = 0; i < value.length; i++) {
+            values.push(value[i].tag);
+        }
+        $(this).append('<input type="hidden" name="filter" value="' + escapeHtml(JSON.stringify(values)) + '" /> ');
+        var e = document.getElementById("select_chart");
+        $(this).append('<input type="hidden" name="chart_type" value="' + e.options[e.selectedIndex].value + '" /> ');
+        $(this).append('<input type="hidden" name="action" value="addChart" /> ');
+        return true;
+    });
+
+    $('#single_linechart_form').submit(function(eventObj) {
+        var e = document.getElementById("select_chart");
+        $(this).append('<input type="hidden" name="chart_type" value="' + e.options[e.selectedIndex].value + '" /> ');
+        $(this).append('<input type="hidden" name="action" value="addChart" /> ');
+        return true;
+    });
+
+    // START delete plugin
+    $(document).on('input','#confirm_plugin_name',function () {
+        var name = document.getElementById('confirm_plugin_name').value;
+        if (name !== "<%= plugin.name %>") {
+            $("#delete_button").addClass("disabled");
+        } else {
+            $("#delete_button").removeClass("disabled");
+        }
+    });
+
+    $('#delete_plugin_form').submit(function(eventObj) {
+        if (confirm("Are you sure you want to delete the plugin?")) {
+            $(this).append('<input type="hidden" name="action" value="deletePlugin" /> ');
+            return true;
+        } else {
+            return false;
+        }
+    });
+    // END delete plugin
+
+    // START edit charts list
+    Sortable.create(chartsList, {
+        animation: 150,
+        handle: '.glyphicon-move',
+        onEnd: function (event) {
+            $.post(window.location.pathname, {
+                action: 'reorderCharts',
+                oldIndex: event.oldIndex,
+                newIndex: event.newIndex
+            });
+        }
+    });
+    // END edit charts list
+
+    // START delete chart
+    function deleteChart(chartId){
+        if (confirm("Are you sure you want to delete the chart with id " + chartId)) {
+            $('<form action="' + window.location.href + '" method="POST">' +
+                '<input type="hidden" name="action" value="deleteChart">' +
+                '<input type="hidden" name="chartId" value="' + chartId + '">' +
+              '</form>'
+            ).submit();
+        }
+    }
+    // END delete chart
+
+    function escapeHtml(unsafe) {
+        return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>

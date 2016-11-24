@@ -1,0 +1,117 @@
+<!-- Side navigation -->
+<ul id="slide-out" class="side-nav">
+    <li>
+        <div class="userView">
+            <img class="background" src="/images/cover.jpg">
+            <img class="circle" src="/images/steve.jpg">
+            <% if (loggedIn) { %>
+            <span class="white-text name"><%= user.username %></span>
+            <span class="white-text email"> </span>
+            <% } else { %>
+            <span class="white-text name">Steve</span>
+            <span class="white-text email">steve@minecraft.net</span>
+            <% } %>
+        </div>
+    </li>
+    <!-- Mobile navigation (hide on desktop) -->
+    <% if (loggedIn) { %>
+    <div class="hide-on-med-and-down">
+        <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">near_me</i>Navigation</a></li>
+        <li><a href="/plugin/1337/random">Random plugin</a></li>
+        <li><a href="/plugin-list">Plugin list</a></li>
+        <li>
+            <div class="divider"></div>
+        </li>
+    </div>
+    <% } %>
+    <div class="hide-on-large-only">
+        <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">near_me</i>Navigation</a></li>
+        <li><a href="/plugin/1337/random">Random plugin</a></li>
+        <li><a href="/plugin-list">Plugin list</a></li>
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">language</i>Global stats</a></li>
+        <% for (var i = 0; i < software.length; i++) { %>
+        <li><a href="/global/<%= software[i].url %>"><%= software[i].name %></a></li>
+        <% } %>
+        <li>
+            <div class="divider"></div>
+        </li>
+    </div>
+    <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">person</i>Account</a></li>
+    <% if (loggedIn) { %>
+    <li><a class="waves-effect" href="/logout">Logout</a></li>
+    <li><a class="waves-effect" href="/add-plugin">Add plugin</a></li>
+    <% } else { %>
+    <li><a class="waves-effect" href="/login">Login</a></li>
+    <li><a class="waves-effect" href="/register">Create new account</a></li>
+    <% } %>
+    <% if (loggedIn && getPlugins(user.id).length > 0) { %>
+    <div class="hide-on-large-only">
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">content_paste</i>My Plugins</a>
+        </li>
+        <% var plugins = getPlugins(user.id); %>
+        <% for (var i = 0; i < plugins.length; i++) { %>
+        <li><a class="waves-effect truncate" href="/plugin/<%= plugins[i].software.url %>/<%= plugins[i].name %>"><%= plugins[i].name %></a></li>
+        <% } %>
+    </div>
+    <% } %>
+</ul>
+
+<!-- My plugins dropdown -->
+<ul id="dropdownMyPlugins" class="dropdown-content">
+    <% if (loggedIn) { %>
+    <% var plugins = getPlugins(user.id); %>
+    <% for (var i = 0; i < plugins.length; i++) { %>
+    <li><a href="/plugin/<%= plugins[i].software.url %>/<%= plugins[i].name %>" class="truncate"><%= plugins[i].name %></a></li>
+    <% } %>
+    <% } %>
+</ul>
+
+<!-- Global stats dropdown -->
+<ul id="dropdownGlobalStats" class="dropdown-content">
+    <% for (var i = 0; i < software.length; i++) { %>
+    <li><a href="/global/<%= software[i].url %>" class="truncate"><%= software[i].name %></a></li>
+    <% } %>
+</ul>
+
+<nav class="teal darken-4" role="navigation">
+    <div class="nav-wrapper container">
+        <a id="logo-container" href="/" class="brand-logo left hide-on-med-and-down tooltipped" data-position="right" data-delay="5000" data-tooltip="You found a secret tooltip!">bStats<sup> beta</sup></a>
+        <a id="logo-container" href="/" class="brand-logo hide-on-large-only">bStats<sup> beta</sup></a>
+        <!-- "Normal" Navigation (only show on desktop) -->
+        <ul class="right hide-on-med-and-down">
+            <li><a href="#" data-activates="slide-out" class="button-collapse show-on-large">
+                    <i class="material-icons left" style="font-size: 30px">menu</i>Menu
+                </a></li>
+            <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownGlobalStats">
+                    <i class="material-icons left" style="font-size: 30px">language</i>Global stats
+                </a></li>
+            <% if (loggedIn && getPlugins(user.id).length > 0) { %>
+            <li><a href="/add-plugin">
+                    <i class="material-icons left" style="font-size: 30px">add</i>Add plugin
+                </a></li>
+            <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownMyPlugins">
+                    <i class="material-icons left" style="margin-right: 0px; font-size: 30px">arrow_drop_down</i>My Plugins
+                </a></li>
+            <% } else if (loggedIn) { %>
+            <li><a href="/add-plugin">
+                    <i class="material-icons left" style="font-size: 30px">add</i>Add plugin
+                </a></li>
+            <% } else { %>
+            <li><a href="/plugin/1337/random">
+                    <i class="material-icons left" style="font-size: 30px">shuffle</i>Random plugin
+                </a></li>
+            <li><a href="/plugin-list">
+                    <i class="material-icons left" style="font-size: 30px">list</i>Plugin list
+                </a></li>
+            <% } %>
+        </ul>
+
+        <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+</nav>

@@ -1,0 +1,39 @@
+<footer class="page-footer teal darken-2">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h5 class="white-text">About bStats</h5>
+                <p class="grey-text text-lighten-4">Made with ❤</p>
+            </div>
+            <div class="col l3 s12">
+                <h5 class="white-text">Useful links</h5>
+                <ul>
+                    <li><a class="white-text" href="/getting-started">Getting started</a></li>
+                    <br class="hide-on-med-and-up">
+                    <% if (loggedIn) { %>
+                    <li><a class="white-text" href="/add-plugin">Add plugin</a></li>
+                    <% } else { %>
+                    <li><a class="white-text" href="/login">Login</a></li>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="/register">Create Account</a></li>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="/plugin-list">Plugin list</a></li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="col l3 s12">
+                <h5 class="white-text">Legal notices</h5>
+                <ul>
+                    <li><a class="white-text" href="/imprint">Imprint</a></li>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="/privacy-policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            Made with <a class="teal-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+        </div>
+    </div>
+</footer>

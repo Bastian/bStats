@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="The metrics class.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Custom Charts</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body>
+
+<% include ../templates/navigation.ejs %>
+<main>
+    <div class="container">
+        <br>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="center teal-text">Basics</h3>
+                    Adding charts to your plugin consists of two parts:<br>
+                    <ul class="browser-default" style="padding-left: 25px">
+                        <li>Adding charts to your code</li>
+                        <li>Adding charts on the website</li>
+                    </ul>
+                    To add a chart on the website, login and click on the Edit-button on your plugin page:
+                    <br>
+                    <img src="https://i.imgur.com/dhUF0zc.png" style="border:1px solid gray;width:100%;height:100%;max-width:373px;max-height:135px">
+                    <br>
+                    and add your chart:
+                    <br>
+                    <img src="https://i.imgur.com/DKbsXZ9.png" style="border:1px solid gray;width:100%;height:100%;max-width:1183px;max-height:497px">
+                    <br>
+                    Pretty easy, isn't it?
+                </div>
+            </div>
+        </div>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="center teal-text">Pies</h3>
+                    <div class="row">
+                        <div id="onlineMode" class="col s12">
+                            <div id="onlineModePie" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+                        </div>
+                    </div>
+                    A <b>Simple Pie</b> is the most basic chart type. It's a great option for config settings as it only accepts
+                    one value per server. Adding the chart to your code is fairly easy:
+                    <script src="https://gist.github.com/BtoBastian/6ed19dae0322881af4f3dab87075397f.js"></script>
+                    If you need a pie with more options there's the <b>Advanced Pie</b> which allows you to send more than one value.
+                    You can also give the values different 'weights'. There are very few cases in which you need this type of pie, so
+                    I'm sorry for this bad example:
+                    <script src="https://gist.github.com/BtoBastian/b47279b4ff792153480b50ad0945c963.js"></script>
+                </div>
+            </div>
+        </div>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="center teal-text">Line Charts</h3>
+                    <div class="row">
+                        <div id="players">
+                            <div id="playersLineChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                        </div>
+                    </div>
+                    A <b>Single Line Chart</b> is exactly what the name says: A line chart with only one line. An example for
+                    this type of chart is the servers or players chart every plugin has. Implementing a Single Line Chart is
+                    as simple as implementing a Simple Pie chart:
+                    <script src="https://gist.github.com/BtoBastian/ea8804db0479c539153f53f1561cc7d3.js"></script>
+                    Now it's your turn. What do you think is a <b>Multi Line Chart</b>? Right! A line chart with multiple lines:
+                    <script src="https://gist.github.com/BtoBastian/4445ea82bc921dfef82de90b535deb3e.js"></script>
+                    (Note: Multi Line Charts are still in development)
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<% include ../templates/footer.ejs %>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<!-- Materialize -->
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+<!-- Charts -->
+<script src="https://code.highcharts.com/stock/4.2.2/highstock.js"></script>
+<script src="https://code.highcharts.com/maps/4.2.2/modules/map.js"></script>
+<script src="https://code.highcharts.com/4.2.2/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/4.2.2/modules/no-data-to-display.js"></script>
+<script src="../../../../../../javascripts/charts/themes/chartTheme.js"></script> <!-- The chart theme -->
+<script src="../../../../../../javascripts/charts/charts.js"></script> <!-- The charts -->
+<script type="application/javascript">
+    function getPluginId() {
+        return '1';
+    }
+    Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
+        proceed.call(this);
+        this.container.style.background = '';
+    });
+</script>
+
+
+</body>
+</html>
