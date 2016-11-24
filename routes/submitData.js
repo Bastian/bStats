@@ -96,21 +96,21 @@ router.post('/:software?', function(request, response, next) {
                     };
                     if (osName.startsWith("Windows Server")) {
                         operatingSystemChart.data.values['Windows Server'] = {};
-                        operatingSystemChart.data.values['Windows Server']['Windows Server ' + osVersion] = 1;
+                        operatingSystemChart.data.values['Windows Server'][osName] = 1;
                     } else if (osName.startsWith("Windows NT")) {
                         operatingSystemChart.data.values['Windows NT'] = {};
-                        operatingSystemChart.data.values['Windows NT']['Windows NT ' + osVersion] = 1;
+                        operatingSystemChart.data.values['Windows NT'][osName] = 1;
                     } else if (osName.startsWith("Windows")) {
                         operatingSystemChart.data.values['Windows'] = {};
-                        operatingSystemChart.data.values['Windows']['Windows ' + osVersion] = 1;
+                        operatingSystemChart.data.values['Windows'][osName] = 1;
                     } else if (osName.startsWith("Linux")) {
                         operatingSystemChart.data.values['Linux'] = {};
-                        operatingSystemChart.data.values['Linux']['Linux ' + osVersion] = 1;
+                        operatingSystemChart.data.values['Linux'][osVersion] = 1;
                     } else if (osName.startsWith("Mac OS X")) {
                         operatingSystemChart.data.values['Mac OS X'] = {};
                         operatingSystemChart.data.values['Mac OS X']['Mac OS X ' + osVersion] = 1;
                     } else {
-                        javaVersionChart.data.values['Other'] = {};
+                        operatingSystemChart.data.values['Other'] = {};
                         operatingSystemChart.data.values['Other'][osName + ' (' + osVersion + ')'] = 1;
                     }
                     defaultGlobalCharts.push(operatingSystemChart);
