@@ -61,10 +61,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
 
 <script type="application/javascript">
+    function nthIndexOf(str, pattern, n) {
+        var i = -1;
+
+        while (n-- && i++ < str.length) {
+            i = str.indexOf(pattern, i);
+            if (i < 0) break;
+        }
+
+        return i;
+    }
+
     <% for (var i = 0; i < software.length; i++) { %>
         var clipboard = new Clipboard('#btn_copy_metrics_<%= software[i].url %>');
-        $.ajax({ url: '<%= software[i].metricsClass %>/raw/', success: function(data) {
-            $('#btn_copy_metrics_<%= software[i].url %>').attr('data-clipboard-text', data);
+        var gistId = '<%= software[i].metricsClass %>';
+        gistId = gistId.substring(gistId.lastIndexOf('/') + 1);
+        $.ajax({ url: 'https://api.github.com/gists/' + gistId, success: function(data) {
+            for (var fileName in data.files) {
+                $('#btn_copy_metrics_<%= software[i].url %>').attr('data-clipboard-text', data.files[fileName].content);
+            }
         }});
     <% } %>
 </script>
