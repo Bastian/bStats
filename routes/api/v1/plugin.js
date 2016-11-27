@@ -89,6 +89,10 @@ router.get('/:pluginId/charts/:chartId/data', function(request, response, next) 
     var pluginId = request.params.pluginId;
     var plugin = dataCache.getPluginById(pluginId);
     var chartId = request.params.chartId;
+    var maxElements = parseInt(request.query.maxElements);
+    if (isNaN(maxElements)) {
+        maxElements = 2*24*30; // Default: 1 month
+    }
     var jsonResponse;
     if (plugin === null) {
         jsonResponse = {
@@ -100,6 +104,11 @@ router.get('/:pluginId/charts/:chartId/data', function(request, response, next) 
         };
     } else {
         jsonResponse = dataCache.getFormattedData(plugin.id, chartId);
+        if (Array.isArray(jsonResponse)) {
+            if (jsonResponse.length > maxElements) {
+                jsonResponse = jsonResponse.slice(jsonResponse.length - maxElements, jsonResponse.length);
+            }
+        }
     }
 
     response.header('Access-Control-Allow-Origin', '*');

@@ -116,7 +116,8 @@ function handleDrilldownPieChart(chartId, chart) {
 }
 
 function handleLineChart(chartId, chart) {
-    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data', function (data) {
+    var isMobile = $(window).width() < 600;
+    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (isMobile ? (2*24*30) : (2*24*30*12*2)), function (data) {
         $('#' + chartId + 'LineChart').highcharts('StockChart', {
 
             chart:{

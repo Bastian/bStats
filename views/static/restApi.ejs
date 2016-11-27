@@ -115,6 +115,11 @@
                         </script></pre>
 
                     <blockquote>
+                        <pre><b>GET</b> /api/v1/plugins/%pluginId%/charts/%chartId%/data/?maxElements=%amount%</pre>
+                    </blockquote>
+                    maxElements is an optional parameter for LineCharts. It limits the amount of the returned elements. If left blank it's 1 month by default (2*24*30).
+
+                    <blockquote>
                         <pre><b>GET</b> /api/v1/software</pre>
                     </blockquote>
                     Returns an array with all supported server software:
