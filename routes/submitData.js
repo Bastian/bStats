@@ -29,7 +29,12 @@ router.post('/:software?', function(request, response, next) {
     var tms2000 = timeUtil.dateToTms2000(new Date());
 
     // Get the ip
-    var ip = request.connection.remoteAddress;
+    // We use CloudFlare so the cf-connecting-ip header can be trusted
+    var ip = (request.connection.remoteAddress ? request.connection.remoteAddress : request.remoteAddress);
+    if (typeof request.headers['cf-connecting-ip'] !== 'undefined')
+    {
+        ip = request.headers['cf-connecting-ip'];;
+    }
 
     // Check if connection should be throttled
     var throttle = requestRestrictor.checkThrottle(serverUUID, ip, software);
