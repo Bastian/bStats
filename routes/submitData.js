@@ -141,6 +141,23 @@ router.post('/:software?', function(request, response, next) {
                     defaultGlobalCharts.push(javaVersionChart);
                     continue;
                     break;
+                case 'bungeecordVersion':
+                    var bungeecordVersion = request.body.bungeecordVersion;
+                    var split = bungeecordVersion.split(":");
+                    var version = bungeecordVersion;
+                    if (split.length < 3) {
+                        version = split[2];
+                    }
+                    defaultGlobalCharts.push({
+                        chartId: chart.id,
+                        data: {
+                            value: version
+                        },
+                        requestRandom: requestRandom
+                    });
+                    break;
+                    continue;
+                    break;
                 default:
                     continue;
             }
