@@ -287,6 +287,15 @@ router.post('/:software?', function(request, response, next) {
                     });
                     break;
                 case 'single_linechart':
+                    if (chart.filter !== undefined && chart.filter.enabled) {
+                        var maxValue = chart.filter.maxValue;
+                        var minValue = chart.filter.maxValue;
+                        if (typeof maxValue === 'number' && value > maxValue) {
+                            value = maxValue;
+                        } else if (typeof minValue === 'number' && value <= minValue) {
+                            value = minValue;
+                        }
+                    }
                     plugin.customCharts.push({
                         chartId: chart.id,
                         data: {
@@ -357,7 +366,17 @@ router.post('/:software?', function(request, response, next) {
                 if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'number') {
                     continue;
                 }
-                updateLineChartData(chart.uid, chartData.data.value, 1, tms2000);
+                var value = chartData.data.value;
+                if (chart.filter !== undefined && chart.filter.enabled) {
+                    var maxValue = chart.filter.maxValue;
+                    var minValue = chart.filter.maxValue;
+                    if (typeof maxValue === 'number' && value > maxValue) {
+                        value = maxValue;
+                    } else if (typeof minValue === 'number' && value <= minValue) {
+                        value = minValue;
+                    }
+                }
+                updateLineChartData(chart.uid, value, 1, tms2000);
             }
 
             // Simple Map
