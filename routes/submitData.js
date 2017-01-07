@@ -199,7 +199,7 @@ router.post('/:software?', function(request, response, next) {
                 case 'single_linechart':
                     if (chart.filter !== undefined && chart.filter.enabled) {
                         var maxValue = chart.filter.maxValue;
-                        var minValue = chart.filter.maxValue;
+                        var minValue = chart.filter.minValue;
                         if (typeof maxValue === 'number' && value > maxValue) {
                             value = maxValue;
                         } else if (typeof minValue === 'number' && value <= minValue) {
@@ -298,7 +298,7 @@ router.post('/:software?', function(request, response, next) {
                 case 'single_linechart':
                     if (chart.filter !== undefined && chart.filter.enabled) {
                         var maxValue = chart.filter.maxValue;
-                        var minValue = chart.filter.maxValue;
+                        var minValue = chart.filter.minValue;
                         if (typeof maxValue === 'number' && value > maxValue) {
                             value = maxValue;
                         } else if (typeof minValue === 'number' && value <= minValue) {
@@ -378,7 +378,7 @@ router.post('/:software?', function(request, response, next) {
                 var value = chartData.data.value;
                 if (chart.filter !== undefined && chart.filter.enabled) {
                     var maxValue = chart.filter.maxValue;
-                    var minValue = chart.filter.maxValue;
+                    var minValue = chart.filter.minValue;
                     if (typeof maxValue === 'number' && value > maxValue) {
                         value = maxValue;
                     } else if (typeof minValue === 'number' && value <= minValue) {
