@@ -197,6 +197,15 @@ router.post('/:software?', function(request, response, next) {
                     });
                     break;
                 case 'single_linechart':
+                    if (chart.filter !== undefined && chart.filter.enabled) {
+                        var maxValue = chart.filter.maxValue;
+                        var minValue = chart.filter.maxValue;
+                        if (typeof maxValue === 'number' && value > maxValue) {
+                            value = maxValue;
+                        } else if (typeof minValue === 'number' && value <= minValue) {
+                            value = minValue;
+                        }
+                    }
                     defaultGlobalCharts.push({
                         chartId: chart.id,
                         data: {
