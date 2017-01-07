@@ -150,7 +150,7 @@ router.post('/:software?', function(request, response, next) {
                     var bungeecordVersion = request.body.bungeecordVersion;
                     var split = bungeecordVersion.split(":");
                     var version = bungeecordVersion;
-                    if (split.length < 3) {
+                    if (split.length > 2) {
                         version = split[2];
                     }
                     defaultGlobalCharts.push({
