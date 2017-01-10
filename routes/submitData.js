@@ -197,9 +197,9 @@ router.post('/:software?', function(request, response, next) {
                     });
                     break;
                 case 'single_linechart':
-                    if (chart.filter !== undefined && chart.filter.enabled) {
-                        var maxValue = chart.filter.maxValue;
-                        var minValue = chart.filter.minValue;
+                    if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                        var maxValue = chart.data.filter.maxValue;
+                        var minValue = chart.data.filter.minValue;
                         if (typeof maxValue === 'number' && value > maxValue) {
                             value = maxValue;
                         } else if (typeof minValue === 'number' && value <= minValue) {
@@ -296,9 +296,9 @@ router.post('/:software?', function(request, response, next) {
                     });
                     break;
                 case 'single_linechart':
-                    if (chart.filter !== undefined && chart.filter.enabled) {
-                        var maxValue = chart.filter.maxValue;
-                        var minValue = chart.filter.minValue;
+                    if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                        var maxValue = chart.data.filter.maxValue;
+                        var minValue = chart.data.filter.minValue;
                         if (typeof maxValue === 'number' && value > maxValue) {
                             value = maxValue;
                         } else if (typeof minValue === 'number' && value <= minValue) {
@@ -376,9 +376,9 @@ router.post('/:software?', function(request, response, next) {
                     continue;
                 }
                 var value = chartData.data.value;
-                if (chart.filter !== undefined && chart.filter.enabled) {
-                    var maxValue = chart.filter.maxValue;
-                    var minValue = chart.filter.minValue;
+                if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                    var maxValue = chart.data.filter.maxValue;
+                    var minValue = chart.data.filter.minValue;
                     if (typeof maxValue === 'number' && value > maxValue) {
                         value = maxValue;
                     } else if (typeof minValue === 'number' && value <= minValue) {
