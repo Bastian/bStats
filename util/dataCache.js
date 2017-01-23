@@ -189,6 +189,58 @@ module.exports = {
             return module.exports.lineChartsData[pluginId][chartId][1];
         }
 
+        // Bar charts
+        if (chart.type === 'simple_bar' || chart.type === 'advanced_bar') {
+            if (module.exports.chartData[tms2000] === undefined ||
+                module.exports.chartData[tms2000][pluginId] === undefined ||
+                module.exports.chartData[tms2000][pluginId][chartId] === undefined)  {
+                return {
+                    categories: [],
+                    series: []
+                }; // No data
+            }
+            var chartData = module.exports.chartData[tms2000][pluginId][chartId];
+            var categories = [];
+            for (var category in chartData) {
+                if (chartData.hasOwnProperty(category)) {
+                    categories.push(category);
+                }
+            }
+            /* chartData
+             {
+                "Money": [1,2],
+                "Fast Trade": [3,4]
+             }
+             */
+            /* <->
+             series: [{
+                name: 'enabled',
+                data: [1,3]
+             }, {
+                name: 'disabled',
+                data: [2,4]
+             }]
+             */
+            var series = [];
+            for (var i = 0; i < chart.data.barNames.length; i++) {
+                var barName = chart.data.barNames[i];
+                var data = [];
+                for (var category in chartData) {
+                    if (chartData.hasOwnProperty(category)) {
+                        data.push(chartData[category][i]);
+                    }
+                }
+                series.push({
+                    name: barName,
+                    data: data
+                });
+            }
+            return {
+                categories: categories,
+                series: series
+            };
+        }
+
         // Map charts
         if (chart.type === 'simple_map' || chart.type === 'advanced_map') {
             if (module.exports.chartData[tms2000] === undefined ||

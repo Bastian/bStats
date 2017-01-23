@@ -15,6 +15,10 @@ $(function () {
                 case 'single_linechart':
                     handleLineChart(chart, charts[chart]);
                     break;
+                case 'simple_bar':
+                case 'advanced_bar':
+                    handleBarChart(chart, charts[chart]);
+                    break;
                 case 'simple_map':
                 case 'advanced_map':
                     handleMapChart(chart, charts[chart]);
@@ -202,6 +206,65 @@ function handleLineChart(chartId, chart) {
                     valueDecimals: 0
                 }
             }]
+        });
+    });
+}
+
+function handleBarChart(chartId, chart) {
+    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data', function (data) {
+        $('#' + chartId + 'Bar').highcharts({
+            chart: {
+                type: 'bar',
+                renderTo: 'container',
+                marginTop: 40,
+                marginBottom: 80,
+                height: data.categories.length * data.series.length * (30 + data.series.length * 15) + 120 // 20px per data item plus top and bottom margins
+            },
+            title: {
+                text: '<a href="#' + chartId + '" style="text-decoration: none; color: inherit;">' + chart.title + '</a>'
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                },
+                series: {
+                    pointWidth: 25
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size: 18px"><u><b>{point.key}</b></u></span><br/>',
+                pointFormat: '<b>Total</b>: {point.y} ' + chart.data.valueName
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -40,
+                y: 80,
+                floating: true,
+                borderWidth: 1,
+                backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+                shadow: true
+            },
+            exporting: {
+                enabled: false
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: chart.data.valueName,
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            xAxis: {
+                categories: data.categories
+            },
+            series: data.series
         });
     });
 }

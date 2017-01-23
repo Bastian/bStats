@@ -90,6 +90,8 @@
                             case 'single_linechart':
                             case 'simple_map':
                             case 'advanced_map':
+                            case 'simple_bar':
+                            case 'advanced_bar':
                                 nextChartIsCompleteRow = true;
                                 break;
                             default:
@@ -125,6 +127,11 @@
                         jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col s12"><div id="' + chartId + 'Map" class="container" style="min-width: 310px; height: 600px; margin: 0 auto"></div><br><br></div>');
                         previousRowWasFull = true;
                         break;
+                    case 'simple_bar':
+                    case 'advanced_bar':
+                        jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col s12"><div id="' + chartId + 'Bar" class="container" style="min-width: 310px; margin: 0 auto"></div><br><br></div>');
+                        previousRowWasFull = true;
+                        break;
                     default:
                         break;
                 }
@@ -146,12 +153,12 @@
 <script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
 <script src="../../../../../../javascripts/materialize/init.js"></script>
 <!-- Charts -->
-<script src="https://code.highcharts.com/stock/4.2.2/highstock.js"></script>
-<script src="https://code.highcharts.com/maps/4.2.2/modules/map.js"></script>
-<script src="https://code.highcharts.com/4.2.2/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/4.2.2/modules/no-data-to-display.js"></script>
-<script src="https://code.highcharts.com/4.2.2/modules/drilldown.js"></script>
-<script src="https://code.highcharts.com/maps/4.2.2/modules/data.js"></script>
+<script src="https://code.highcharts.com/stock/5.0.7/highstock.js"></script>
+<script src="https://code.highcharts.com/maps/5.0.7/modules/map.js"></script>
+<script src="https://code.highcharts.com/5.0.7/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/5.0.7/modules/no-data-to-display.js"></script>
+<script src="https://code.highcharts.com/5.0.7/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/maps/5.0.7/modules/data.js"></script>
 <script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
 <script src="/javascripts/charts/themes/chartTheme.js"></script>
 <script src="/javascripts/charts/charts.js"></script>

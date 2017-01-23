@@ -427,6 +427,88 @@ function getChartData(chartType, chartId, request, response, plugin) {
             sendResponse(response, {error: 'Invalid chart type'}, 400);
             return null;
             break;
+        case 'simple_bar':
+            var valueName = request.body.valueName;
+            if (typeof valueName !== 'string') {
+                sendResponse(response, {error: 'Invalid or missing value name'}, 400);
+                return null;
+            }
+            var barName = request.body.barName;
+            if (typeof barName !== 'string') {
+                sendResponse(response, {error: 'Invalid or missing bar name'}, 400);
+                return null;
+            }
+            var regexEnabled = request.body.regexEnabled != undefined;
+            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var filter = request.body.filter;
+            var maxValue =  request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
+            if (isNaN(maxValue)) {
+                maxValue = 0;
+            }
+            if (typeof filter !== 'string') {
+                filter = [];
+            } else {
+                try {
+                    filter = JSON.parse(filter);
+                } catch (err) {
+                    filter = [];
+                }
+            }
+            data.valueName = valueName;
+            data.barNames = [barName];
+            data.filter = {
+                enabled: filterEnabled,
+                maxValue: maxValue,
+                useRegex: regexEnabled,
+                blacklist: blacklistEnabled,
+                filter: filter
+            };
+            break;
+        case 'advanced_bar':
+            var valueName = request.body.valueName;
+            if (typeof valueName !== 'string') {
+                sendResponse(response, {error: 'Invalid or missing value name'}, 400);
+                return null;
+            }
+            var barNames = [];
+            if (typeof request.body.barNames == 'string') {
+                try {
+                    barNames = JSON.parse(request.body.barNames);
+                } catch (err) {
+                    barNames = [];
+                }
+            }
+            console.log(barNames);
+            if (barNames.length < 1) {
+                sendResponse(response, {error: 'Invalid bar names'}, 400);
+                return null;
+            }
+            var regexEnabled = request.body.regexEnabled != undefined;
+            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var filter = request.body.filter;
+            var maxValue =  request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
+            if (isNaN(maxValue)) {
+                maxValue = 0;
+            }
+            if (typeof filter !== 'string') {
+                filter = [];
+            } else {
+                try {
+                    filter = JSON.parse(filter);
+                } catch (err) {
+                    filter = [];
+                }
+            }
+            data.valueName = valueName;
+            data.barNames = barNames;
+            data.filter = {
+                enabled: filterEnabled,
+                maxValue: maxValue,
+                useRegex: regexEnabled,
+                blacklist: blacklistEnabled,
+                filter: filter
+            };
+            break;
         case 'simple_map':
             // TODO not implemented atm
             sendResponse(response, {error: 'Invalid chart type'}, 400);

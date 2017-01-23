@@ -388,6 +388,19 @@ router.post('/:software?', function(request, response, next) {
                 updateLineChartData(chart.uid, value, 1, tms2000);
             }
 
+            // Bar charts
+            if (chart.type === 'simple_bar' || chart.type === 'advanced_bar') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
+                    continue;
+                }
+                for (var category in chartData.data.values) {
+                    if (chartData.data.values.hasOwnProperty(category)) {
+                        var categoryValues = chartData.data.values[category];
+                        updateBarData(pluginObj.id, chartData.chartId, tms2000, category, categoryValues);
+                    }
+                }
+            }
+
             // Simple Map
             if (chart.type === 'simple_map') {
                 if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'string') {
@@ -416,7 +429,6 @@ router.post('/:software?', function(request, response, next) {
                         continue;
                     }
                     value = value === 'AUTO' ? geo.country : value;
-                    updatePieData(pluginObj.id, chartData.chartId, tms2000, value, weight);
                 }
             }
         }
@@ -509,6 +521,35 @@ function updateLineChartData(chartUid, value, line, tms2000) {
             }
         }
     );
+}
+
+function updateBarData(pluginId, chartId, tms2000, category, values) {
+    console.log(category + "->" + JSON.stringify(values));
+    if (dataCache.chartData[tms2000] === undefined) {
+        dataCache.chartData[tms2000] = {};
+    }
+    if (dataCache.chartData[tms2000][pluginId] === undefined) {
+        dataCache.chartData[tms2000][pluginId] = {};
+    }
+    if (dataCache.chartData[tms2000][pluginId][chartId] === undefined) {
+        dataCache.chartData[tms2000][pluginId][chartId] = {};
+    }
+    if (dataCache.chartData[tms2000][pluginId][chartId][category] === undefined) {
+        dataCache.chartData[tms2000][pluginId][chartId][category] = values;
+    } else {
+        var largestIndex = dataCache.chartData[tms2000][pluginId][chartId][category].length;
+        largestIndex = values.length > largestIndex ? values.length : largestIndex;
+        for (var i = 0; i < largestIndex; i++) {
+            if (i > values.length) {
+                break;
+            }
+            if (largestIndex > dataCache.chartData[tms2000][pluginId][chartId][category].length) {
+                dataCache.chartData[tms2000][pluginId][chartId][category].push(values[i]);
+            }
+            dataCache.chartData[tms2000][pluginId][chartId][category][i] += values[i];
+        }
+    }
+    console.log(category + "->" + JSON.stringify(dataCache.chartData[tms2000][pluginId][chartId][category]));
 }
 
 module.exports = router;
