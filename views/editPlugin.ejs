@@ -590,7 +590,7 @@
     });
 
     $('#simple_bar_form').submit(function(eventObj) {
-        var value = $('.white_or_blacklist').material_chip('data');
+        var value = $('#simple_bar_filter').material_chip('data');
         var values = [];
         for (var i = 0; i < value.length; i++) {
             values.push(value[i].tag);
