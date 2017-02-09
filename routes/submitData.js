@@ -8,6 +8,15 @@ const countryUtil = require('../util/countryUtil');
 const requestRestrictor = require('../util/requestRestrictor');
 const geoip = require('geoip-lite');
 
+/* GET submit data. */
+router.get('/:software?', function(request, response, next) {
+    response.render('static/submitData', {
+        user: request.user === undefined ? null : request.user,
+        loggedIn: request.user != undefined
+    });
+});
+
+
 /* POST submit data. */
 router.post('/:software?', function(request, response, next) {
     try {
