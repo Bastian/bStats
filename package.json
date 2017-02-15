@@ -15,6 +15,7 @@
     "express": "~4.13.4",
     "express-session": "^1.14.2",
     "geoip-lite": "^1.1.8",
+    "ioredis": "^2.5.0",
     "morgan": "~1.7.0",
     "mysql": "^2.11.1",
     "node-gyp": "^3.4.0",
