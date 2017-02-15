@@ -114,7 +114,7 @@ router.post('/', function(request, response, next) {
                         }
                     }
                 );
-                response.redirect('/getting-started/metrics-class?addedPlugin=true?software=' + software.url);
+                response.redirect('/getting-started/include-metrics?addedPlugin=true?software=' + software.url);
             }
         );
     });
