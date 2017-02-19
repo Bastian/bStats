@@ -46,14 +46,15 @@
                                     <b>1. Include the repository</b><br>
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;repository&gt;
   &lt;id&gt;bstats-repo&lt;/id&gt;
-  &lt;url&gt;https://repo.bstats.org/content/groups/public/&lt;/url&gt;
+  &lt;url&gt;http://repo.bstats.org/content/repositories/releases/&lt;/url&gt;
 &lt;/repository&gt;</code></pre>
                                     <b>2. Include the dependency.</b><br>
-                                    There are 3 possible artifact ids: <i>bstats-bukkit</i>, <i>bstats-bungeecord</i> and <i>bstats-sponge</i>
+                                    There are 3 possible artifact ids: <i><b>bstats-bukkit</b></i>, <i><b>bstats-bungeecord</b></i> and <i><b>bstats-sponge</b></i> and their
+                                    lite counterparts: <i><b>bstats-bukkit-lite</b></i>, <i><b>bstats-bungeecord-lite</b></i> and <i><b>bstats-sponge-lite</b></i>
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;dependency&gt;
   &lt;groupId&gt;org.bstats&lt;/groupId&gt;
   &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
-  &lt;version&gt;LATEST&lt;/version&gt;
+  &lt;version&gt;1.1&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
                                     <b>3. Shade bStats into your plugin.</b><br>
                                     This step is very important. Shading means, that the necessary classes are copied into
@@ -66,7 +67,6 @@
       &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
       &lt;version&gt;2.3&lt;/version&gt;
       &lt;configuration&gt;
-        &lt;minimizeJar&gt;true&lt;/minimizeJar&gt;
         &lt;artifactSet&gt;
           &lt;includes&gt;
             &lt;include&gt;org.bstats:*&lt;/include&gt;
@@ -110,12 +110,12 @@
     &lt;/repository&gt;
     &lt;repository&gt;
       &lt;id&gt;bstats-repo&lt;/id&gt;
-      &lt;url&gt;https://repo.bstats.org/content/groups/public/&lt;/url&gt;
+      &lt;url&gt;http://repo.bstats.org/content/repositories/releases/&lt;/url&gt;
     &lt;/repository&gt;
   &lt;/repositories&gt;
 
   &lt;dependencies&gt;
-    &lt;!-- Spigot--&gt;
+    &lt;!-- Spigot as an example --&gt;
     &lt;dependency&gt;
       &lt;groupId&gt;org.spigotmc&lt;/groupId&gt;
       &lt;artifactId&gt;spigot-api&lt;/artifactId&gt;
@@ -125,7 +125,7 @@
     &lt;dependency&gt;
       &lt;groupId&gt;org.bstats&lt;/groupId&gt;
       &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
-      &lt;version&gt;LATEST&lt;/version&gt;
+      &lt;version&gt;1.1&lt;/version&gt;
     &lt;/dependency&gt;
   &lt;/dependencies&gt;
 
@@ -189,7 +189,7 @@
                                                 <tr>
                                                     <td><b><%= software[i].name %></b></td>
                                                     <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a></td>
-                                                    <td><a href="<%= software[i].metricsClass.replace("Metrics.java", "MetricsLite.java") %>" target="_blank">MetricsLite.java</a></td>
+                                                    <td><a href="<%= software[i].metricsClass.replace("/src/main/java/org/bstats/Metrics.java", "-lite/src/main/java/org/bstats/MetricsLite.java") %>" target="_blank">MetricsLite.java</a></td>
                                                 </tr>
                                                 <% } %>
                                                 </tbody>
