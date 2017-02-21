@@ -485,38 +485,26 @@ function updateDrilldownPieData(pluginId, chartId, tms2000, valueName, values) {
                 databaseManager.getRedisCluster().expire('DDP:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName + ':' + value, 60*31);
             }
         });
-        databaseManager.getRedisCluster().sadd('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId, valueName);
-        databaseManager.getRedisCluster().sadd('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, value);
-        databaseManager.getRedisCluster().expire('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId, 60*31);
-        databaseManager.getRedisCluster().expire('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, 60*31);
+        databaseManager.getRedisCluster().sadd('DDPL1:' + tms2000 + ':'  + pluginId + ':' + chartId, valueName);
+        databaseManager.getRedisCluster().sadd('DDPL2:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, value);
+        databaseManager.getRedisCluster().expire('DDPL1:' + tms2000 + ':'  + pluginId + ':' + chartId, 60*31);
+        databaseManager.getRedisCluster().expire('DDPL2:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, 60*31);
     }
 }
 
 function updateLineChartData(chartUid, value, line, tms2000) {
-    var sql =
-        'INSERT INTO ' +
-            '`line_charts` ' +
-        '(' +
-            '`chart_uid`, `value`, `line`, `tms_2000`' +
-        ') VALUES (' +
-            '?, ?, ?, ?' +
-        ') ON DUPLICATE KEY UPDATE ' +
-            '`value` = `value` + ?;';
-    databaseManager.getConnectionPool("linecharts-submit").query(sql, [chartUid, value, line, tms2000, value],
-        function (err, results) {
-            if (err) {
-                if (!(err.code == undefined)) {
-                    if (err.code === 'ER_DUP_ENTRY') {
-                        return; // not my fault that the client is sending shit
-                    }
-                }
-                console.log(err);
-            }
+    databaseManager.getRedisCluster().incrby('LC:' + tms2000 + ':'  + chartUid + ':' + chartUid + ':' + line, value, function (err, result) {
+        if (result == value) {
+            databaseManager.getRedisCluster().expire('LC:' + tms2000 + ':'  + chartUid + ':' + chartUid + ':' + line, 60*60*48+1);
         }
-    );
+    });
+    databaseManager.getRedisCluster().sadd('LC:' + tms2000 + ':'  + chartUid + ':' + chartUid, line);
+    databaseManager.getRedisCluster().expire('LC:' + tms2000 + ':'  + chartUid + ':' + chartUid, 60*60*48+1);
 }
 
 function updateBarData(pluginId, chartId, tms2000, category, values) {
+    // TODO Redis
+    /*
     console.log(category + "->" + JSON.stringify(values));
     if (dataCache.chartData[tms2000] === undefined) {
         dataCache.chartData[tms2000] = {};
@@ -543,6 +531,7 @@ function updateBarData(pluginId, chartId, tms2000, category, values) {
         }
     }
     console.log(category + "->" + JSON.stringify(dataCache.chartData[tms2000][pluginId][chartId][category]));
+    */
 }
 
 module.exports = router;
