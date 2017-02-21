@@ -476,27 +476,19 @@ function updatePieData(pluginId, chartId, tms2000, valueName, value) {
 }
 
 function updateDrilldownPieData(pluginId, chartId, tms2000, valueName, values) {
-    if (dataCache.chartData[tms2000] === undefined) {
-        dataCache.chartData[tms2000] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId] === undefined) {
-        dataCache.chartData[tms2000][pluginId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId][valueName] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId][valueName] = {};
-    }
     for (var value in values) {
         if (!values.hasOwnProperty(value) || typeof values[value] !== 'number') {
             continue;
         }
-        if (dataCache.chartData[tms2000][pluginId][chartId][valueName][value] === undefined) {
-            dataCache.chartData[tms2000][pluginId][chartId][valueName][value] = values[value];
-        } else {
-            dataCache.chartData[tms2000][pluginId][chartId][valueName][value] += values[value];
-        }
+        databaseManager.getRedisCluster().incrby('DDP:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName + ':' + value, values[value], function (err, result) {
+            if (result == values[value]) {
+                databaseManager.getRedisCluster().expire('DDP:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName + ':' + value, 60*31);
+            }
+        });
+        databaseManager.getRedisCluster().sadd('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId, valueName);
+        databaseManager.getRedisCluster().sadd('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, value);
+        databaseManager.getRedisCluster().expire('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId, 60*31);
+        databaseManager.getRedisCluster().expire('DDPL:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, 60*31);
     }
 }
 
