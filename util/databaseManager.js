@@ -35,3 +35,4 @@ function getRedisCluster() {
 
 // Exports
 module.exports.getConnectionPool = getConnectionPool;
+module.exports.getRedisCluster = getRedisCluster;
