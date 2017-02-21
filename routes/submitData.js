@@ -466,20 +466,13 @@ function sendResponse(response, json, statusCode) {
 }
 
 function updatePieData(pluginId, chartId, tms2000, valueName, value) {
-    if (dataCache.chartData[tms2000] === undefined) {
-        dataCache.chartData[tms2000] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId] === undefined) {
-        dataCache.chartData[tms2000][pluginId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId][valueName] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId][valueName] = value;
-    } else {
-        dataCache.chartData[tms2000][pluginId][chartId][valueName] += value;
-    }
+    databaseManager.getRedisCluster().incrby('DP:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, value, function (err, result) {
+        if (result == value) {
+            databaseManager.getRedisCluster().expire('DP:' + tms2000 + ':'  + pluginId + ':' + chartId + ':' + valueName, 60*31);
+        }
+    });
+    databaseManager.getRedisCluster().sadd('DPL:' + tms2000 + ':'  + pluginId + ':' + chartId, valueName);
+    databaseManager.getRedisCluster().expire('DPL:' + tms2000 + ':'  + pluginId + ':' + chartId, 60*31);
 }
 
 function updateDrilldownPieData(pluginId, chartId, tms2000, valueName, values) {
