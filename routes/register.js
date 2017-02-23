@@ -50,7 +50,7 @@ router.post('/', function (request, response, next) {
         passport.authenticate('register', {
             successRedirect: '/',
             failureRedirect: '/register?failed=true',
-            failureFlash : true
+            failureFlash : false
         })(request, response, next);
     });
 });

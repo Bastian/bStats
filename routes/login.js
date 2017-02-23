@@ -17,7 +17,7 @@ router.get('/', function(request, response, next) {
 router.post('/', passport.authenticate('login', {
     successRedirect: '/',
     failureRedirect: '/login/?failed=true',
-    failureFlash : true
+    failureFlash : false
 }));
 
 module.exports = router;
