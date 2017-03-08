@@ -242,8 +242,8 @@ function addChart(request, response, plugin) {
         sendResponse(response, {error: 'Missing or invalid chart title!'}, 400);
         return true;
     }
-    chartTitle = chartTitle.substring(0, 32);
-    chartId = chartId.substring(0, 32);
+    chartTitle = chartTitle.substring(0, 50);
+    chartId = chartId.substring(0, 50);
     if (!/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(chartTitle) || !/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(chartId)) {
         sendResponse(response, {error: 'Invalid chart id or title!'}, 400);
         return true;
@@ -404,6 +404,11 @@ function getChartData(chartType, chartId, request, response, plugin) {
         case 'single_linechart':
             var lineName = request.body.lineName;
             if (typeof lineName !== 'string') {
+                sendResponse(response, {error: 'Invalid or missing line name'}, 400);
+                return null;
+            }
+            lineName = lineName.substring(0, 50);
+            if (!/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(lineName)) {
                 sendResponse(response, {error: 'Invalid or missing line name'}, 400);
                 return null;
             }
