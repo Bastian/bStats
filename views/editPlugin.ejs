@@ -434,7 +434,7 @@
             for (var i = 0; i < chartIdsSorted.length; i++) {
                 var chartId = chartIdsSorted[i];
             %>
-            <li class="list-group-item collection-item grey lighten-4">
+            <li class="list-group-item collection-item grey lighten-4" id="listElement_<%= chartId %>">
                 <div>
                     <i class="material-icons left glyphicon-move">drag_handle</i><a href="/plugin/<%= plugin.software.url %>/<%= plugin.name %>/#<%= chartId %>"><b><%= charts[chartId].title %></b> (id: <%= chartId %>)</a>
                     <a href="javascript:alert('Comming soon!')" class="secondary-content">
@@ -660,14 +660,14 @@
     // START delete chart
     function deleteChart(chartId){
         if (confirm("Are you sure you want to delete the chart with id " + chartId)) {
-            $('<form action="' + window.location.href + '" method="POST">' +
-                '<input type="hidden" name="action" value="deleteChart">' +
-                '<input type="hidden" name="chartId" value="' + chartId + '">' +
-              '</form>'
-            ).submit();
+            $.post(window.location.pathname, {
+                action: 'deleteChart',
+                chartId: chartId
+            });
+            $('#listElement_' + chartId).remove();
         }
     }
-    // END delete chart
+    // END delete char
 
     function escapeHtml(unsafe) {
         return unsafe
