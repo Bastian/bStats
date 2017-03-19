@@ -32,6 +32,24 @@ $(function () {
 
 function handlePieChart(chartId, chart) {
     $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data', function (data) {
+
+        if (data.length > 20) { // Make the chart smaller by hiding elements with less than 1%
+            var total = 0;
+            for (var i = 0; i < data.length; i++) {
+                total += data[i].y;
+            }
+            var otherCount = 0;
+            for (var i = data.length - 1; i >= 0; i--) { // We loop backwards because we may remove some elements
+                if (data[i].y < total / 200) {
+                    otherCount += data[i].y;
+                    data.splice(i, 1);
+                }
+            }
+            if (otherCount > 0) {
+                data.push({name: "Other", y: otherCount});
+            }
+        }
+
         $('#' + chartId + 'Pie').highcharts({
             chart: {
                 plotBackgroundColor: null,
@@ -75,6 +93,26 @@ function handlePieChart(chartId, chart) {
 
 function handleDrilldownPieChart(chartId, chart) {
     $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data', function (data) {
+
+        for (var j = 0; j < data.drilldownData.length; j++) {
+            if (data.drilldownData[j].data.length > 20) { // Make the chart smaller by hiding elements with less than 1%
+                var total = 0;
+                for (var i = 0; i < data.drilldownData[j].data.length; i++) {
+                    total += data.drilldownData[j].data[i][1];
+                }
+                var otherCount = 0;
+                for (var i = data.drilldownData[j].data.length - 1; i >= 0; i--) { // We loop backwards because we may remove some elements
+                    if (data.drilldownData[j].data[i][1] < total / 200) {
+                        otherCount += data.drilldownData[j].data[i][1];
+                        data.drilldownData[j].data.splice(i, 1);
+                    }
+                }
+                if (otherCount > 0) {
+                    data.drilldownData[j].data.push(["Other", otherCount]);
+                }
+            }
+        }
+
         $('#' + chartId + 'Pie').highcharts({
             chart: {
                 type: 'pie'
