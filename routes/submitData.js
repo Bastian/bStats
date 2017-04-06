@@ -532,7 +532,6 @@ function updateLineChartData(chartUid, value, line, tms2000) {
 }
 
 function updateBarData(pluginId, chartId, tms2000, category, values) {
-    console.log(category + "->" + JSON.stringify(values));
     if (dataCache.chartData[tms2000] === undefined) {
         dataCache.chartData[tms2000] = {};
     }
@@ -557,7 +556,6 @@ function updateBarData(pluginId, chartId, tms2000, category, values) {
             dataCache.chartData[tms2000][pluginId][chartId][category][i] += values[i];
         }
     }
-    console.log(category + "->" + JSON.stringify(dataCache.chartData[tms2000][pluginId][chartId][category]));
 }
 
 module.exports = router;
