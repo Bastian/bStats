@@ -50,6 +50,15 @@ function handlePieChart(chartId, chart) {
             }
         }
 
+        data.sort(function compare(a, b) {
+            if (a.y > b.y) {
+                return -1;
+            } else if (a.y < b.y) {
+                return 1;
+            }
+            return 0;
+        });
+
         $('#' + chartId + 'Pie').highcharts({
             chart: {
                 plotBackgroundColor: null,
