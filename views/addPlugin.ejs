@@ -54,7 +54,9 @@
                             <select id="software" name="software">
                                 <option value="" disabled selected>Select software</option>
                                 <% for (var i = 0; i < serverSoftware.length; i++) { %>
+                                <% if (serverSoftware[i].globalPlugin !== undefined) { %>
                                 <option value="<%= serverSoftware[i].id %>"><%= serverSoftware[i].name %></option>
+                                <% } %>
                                 <% } %>
                             </select>
                             <label>Select server software</label>

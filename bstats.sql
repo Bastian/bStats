@@ -94,11 +94,11 @@ CREATE TABLE `server_software` (
   `software_id` tinyint(3) UNSIGNED NOT NULL,
   `software_name` varchar(32) NOT NULL,
   `software_url` varchar(16) NOT NULL,
-  `plugin_id` smallint(5) UNSIGNED NOT NULL COMMENT 'The fake plugin which represents the global stats',
+  `plugin_id` smallint(5) UNSIGNED COMMENT 'The fake plugin which represents the global stats',
   `default_charts` text NOT NULL COMMENT 'The default charts for the given server software in JSON format',
   `max_requests_per_ip` tinyint(3) UNSIGNED NOT NULL,
-  `metrics_class` tinytext NOT NULL,
-  `class_creation` tinytext NOT NULL
+  `metrics_class` tinytext,
+  `class_creation` tinytext
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `server_software` (`software_id`, `software_name`, `software_url`, `plugin_id`, `default_charts`, `max_requests_per_ip`, `metrics_class`, `class_creation`) VALUES

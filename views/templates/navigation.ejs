@@ -81,7 +81,9 @@
 <!-- Global stats dropdown -->
 <ul id="dropdownGlobalStats" class="dropdown-content">
     <% for (var i = 0; i < software.length; i++) { %>
+    <% if (software[i].globalPlugin !== undefined) { %>
     <li><a href="/global/<%= software[i].url %>" class="truncate"><%= software[i].name %></a></li>
+    <% } %>
     <% } %>
 </ul>
 

@@ -206,7 +206,7 @@ function startup() {
         }
     );
 
-    var sqlGetServerSoftware =
+    var sqlGetServerSoftwareWithGlobalPlugin =
         'SELECT ' +
             '`software_id`, `software_name`, `software_url`, `default_charts`, `server_software`.`max_requests_per_ip`, ' +
             '`plugins`.`plugin_id`, `plugins`.`plugin_name`, `metrics_class`, `class_creation` ' +
@@ -216,7 +216,7 @@ function startup() {
             '`plugins` ' +
         'ON ' +
             '`plugins`.`plugin_id` = `server_software`.`plugin_id`';
-    databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetServerSoftware, [],
+    databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetServerSoftwareWithGlobalPlugin, [],
         function (err, rows, fields) {
             if (err) {
                 console.log(err);
@@ -233,6 +233,37 @@ function startup() {
                             id: row.plugin_id,
                             name: row.plugin_name
                         },
+                        defaultCharts: JSON.parse(row.default_charts),
+                        maxRequestsPerIp: row.max_requests_per_ip,
+                        metricsClass: row.metrics_class,
+                        classCreation: row.class_creation
+                    }
+                );
+            }
+        }
+    );
+
+    var sqlGetServerSoftwareWithoutGlobalPlugin =
+        'SELECT ' +
+            '`software_id`, `software_name`, `software_url`, `default_charts`, `max_requests_per_ip`, ' +
+            '`metrics_class`, `class_creation` ' +
+        'FROM ' +
+            '`server_software` ' +
+        'WHERE ' +
+            '`plugin_id` IS NULL';
+    databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetServerSoftwareWithoutGlobalPlugin, [],
+        function (err, rows, fields) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            for (var i = 0; rows.length > i; i++) {
+                var row = rows[i];
+                dataCache.serverSoftware.push(
+                    {
+                        id: row.software_id,
+                        name: row.software_name,
+                        url: row.software_url,
                         defaultCharts: JSON.parse(row.default_charts),
                         maxRequestsPerIp: row.max_requests_per_ip,
                         metricsClass: row.metrics_class,
