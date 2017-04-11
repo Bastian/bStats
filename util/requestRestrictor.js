@@ -3,7 +3,7 @@ const timeUtil = require('../util/timeUtil');
 /*
   Format:
   {
-    uuid: lastTms2000
+    uuid-softwareId: lastTms2000
   }
  */
 var uuidConnectionThrottle = {};
@@ -11,7 +11,7 @@ var uuidConnectionThrottle = {};
   Format:
   {
     tms2000: {
-      ip: requestCounter
+      ip-softwareId: requestCounter
     }
   }
  */
@@ -22,8 +22,8 @@ function checkThrottle(serverUUID, ip, software) {
     var tms2000 = timeUtil.dateToTms2000(new Date());
 
     // Check uuid connection throttle
-    if (uuidConnectionThrottle[serverUUID]) {
-        var lastRequest = uuidConnectionThrottle[serverUUID];
+    if (uuidConnectionThrottle[serverUUID + '-' + software.id]) {
+        var lastRequest = uuidConnectionThrottle[serverUUID + '-' + software.id];
         if (lastRequest > tms2000 - 1) { // only allow 1 request per tms2000
             return {
                 throttled: true,
@@ -31,20 +31,20 @@ function checkThrottle(serverUUID, ip, software) {
             };
         }
     }
-    uuidConnectionThrottle[serverUUID] = tms2000;
+    uuidConnectionThrottle[serverUUID + '-' + software.id] = tms2000;
 
     // Check ip throttle
     if (ipConnectionThrottle[tms2000] === undefined) {
         ipConnectionThrottle[tms2000] = {};
     }
 
-    if (ipConnectionThrottle[tms2000][ip] === undefined) {
-        ipConnectionThrottle[tms2000][ip] = 1;
+    if (ipConnectionThrottle[tms2000][ip + '-' + software.id] === undefined) {
+        ipConnectionThrottle[tms2000][ip + '-' + software.id] = 1;
     } else {
-        ipConnectionThrottle[tms2000][ip] += 1;
+        ipConnectionThrottle[tms2000][ip + '-' + software.id] += 1;
     }
 
-    if (ipConnectionThrottle[tms2000][ip] > software.maxRequestsPerIp) {
+    if (ipConnectionThrottle[tms2000][ip + '-' + software.id] > software.maxRequestsPerIp) {
         return {
             throttled: true,
             reason: 'ip'
