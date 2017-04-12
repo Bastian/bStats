@@ -93,7 +93,7 @@ INSERT INTO `plugins` (`plugin_id`, `plugin_name`, `owner_id`, `server_software`
 CREATE TABLE `server_software` (
   `software_id` tinyint(3) UNSIGNED NOT NULL,
   `software_name` varchar(32) NOT NULL,
-  `software_url` varchar(16) NOT NULL,
+  `software_url` varchar(32) NOT NULL,
   `plugin_id` smallint(5) UNSIGNED COMMENT 'The fake plugin which represents the global stats',
   `default_charts` text NOT NULL COMMENT 'The default charts for the given server software in JSON format',
   `max_requests_per_ip` tinyint(3) UNSIGNED NOT NULL,
