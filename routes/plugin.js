@@ -43,11 +43,13 @@ router.get('/:software/:plugin', function(request, response, next) {
                     playersRecord = dataCache.lineChartsData[plugin.id]['players'][1][j][1];
                 }
             }
-            var isOwner = false;
-            if (request.user != undefined) {
-                isOwner = request.user.id == plugin.owner.id;
-            }
         }
+
+        var isOwner = false;
+        if (request.user != undefined) {
+            isOwner = request.user.id == plugin.owner.id;
+        }
+
         response.render('plugin', {
             plugin: plugin,
             user: request.user === undefined ? null : request.user,
