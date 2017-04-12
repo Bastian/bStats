@@ -91,7 +91,7 @@ module.exports = {
 
     getPluginByNameAndSoftwareUrl: function (pluginName, softwareUrl) {
         for (var i = 0; i < module.exports.plugins.length; i++) {
-            if (module.exports.plugins[i].name === pluginName && module.exports.plugins[i].software.url === softwareUrl) {
+            if (module.exports.plugins[i].name.toLowerCase() === pluginName.toLowerCase() && module.exports.plugins[i].software.url === softwareUrl) {
                 return module.exports.plugins[i];
             }
         }
