@@ -23,23 +23,30 @@ router.get('/:software/:plugin', function(request, response, next) {
             loggedIn: request.user != undefined
         });
     } else {
-        var serversCurrent = dataCache.lineChartsData[plugin.id]['servers'][1][dataCache.lineChartsData[plugin.id]['servers'][1].length-1][1];
+        var serversCurrent = -1;
         var serversRecord = 0;
-        for (var i = 0; i < dataCache.lineChartsData[plugin.id]['servers'][1].length; i++) {
-            if (dataCache.lineChartsData[plugin.id]['servers'][1][i][1] > serversRecord) {
-                serversRecord = dataCache.lineChartsData[plugin.id]['servers'][1][i][1];
+        if (dataCache.lineChartsData[plugin.id]['servers'] !== undefined) {
+            serversCurrent = dataCache.lineChartsData[plugin.id]['servers'][1][dataCache.lineChartsData[plugin.id]['servers'][1].length-1][1];
+            for (var i = 0; i < dataCache.lineChartsData[plugin.id]['servers'][1].length; i++) {
+                if (dataCache.lineChartsData[plugin.id]['servers'][1][i][1] > serversRecord) {
+                    serversRecord = dataCache.lineChartsData[plugin.id]['servers'][1][i][1];
+                }
             }
         }
-        var playersCurrent = dataCache.lineChartsData[plugin.id]['players'][1][dataCache.lineChartsData[plugin.id]['players'][1].length-1][1];
+
+        var playersCurrent = -1;
         var playersRecord = 0;
-        for (var j = 0; j < dataCache.lineChartsData[plugin.id]['players'][1].length; j++) {
-            if (dataCache.lineChartsData[plugin.id]['players'][1][j][1] > playersRecord) {
-                playersRecord = dataCache.lineChartsData[plugin.id]['players'][1][j][1];
+        if (dataCache.lineChartsData[plugin.id]['players'] !== undefined) {
+            playersCurrent = dataCache.lineChartsData[plugin.id]['players'][1][dataCache.lineChartsData[plugin.id]['players'][1].length-1][1];
+            for (var j = 0; j < dataCache.lineChartsData[plugin.id]['players'][1].length; j++) {
+                if (dataCache.lineChartsData[plugin.id]['players'][1][j][1] > playersRecord) {
+                    playersRecord = dataCache.lineChartsData[plugin.id]['players'][1][j][1];
+                }
             }
-        }
-        var isOwner = false;
-        if (request.user != undefined) {
-            isOwner = request.user.id == plugin.owner.id;
+            var isOwner = false;
+            if (request.user != undefined) {
+                isOwner = request.user.id == plugin.owner.id;
+            }
         }
         response.render('plugin', {
             plugin: plugin,
