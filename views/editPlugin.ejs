@@ -28,7 +28,7 @@
 <body>
 <% include templates/navigation.ejs %>
 <main>
-    <% if (isOwner) { %>
+    <% if (isOwner || (user != null && user.admin === 1)) { %>
     <br><br>
     <div class="container row">
         <!-- START Add chart -->

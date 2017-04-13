@@ -37,7 +37,7 @@ router.post('/:software/:plugin', function (request, response, next) {
         return;
     }
 
-    if (request.user == undefined || plugin.owner.id != request.user.id) {
+    if (request.user == undefined || (plugin.owner.id != request.user.id && request.user.admin != 1)) {
         sendResponse(response, {error: 'You are not the owner of ' + pluginName}, 403);
         return;
     }
