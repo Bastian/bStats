@@ -119,8 +119,19 @@ function handleDrilldownPieChart(chartId, chart) {
                 if (otherCount > 0) {
                     data.drilldownData[j].data.push(["Other", otherCount]);
                 }
+
+                data.drilldownData[j].data.sort(function compare(a, b) {
+                    if (a[1] > b[1]) {
+                        return -1;
+                    } else if (a[1] < b[1]) {
+                        return 1;
+                    }
+                    return 0;
+                });
             }
         }
+
+
 
         $('#' + chartId + 'Pie').highcharts({
             chart: {
