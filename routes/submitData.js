@@ -233,12 +233,14 @@ router.post('/:software?', function(request, response, next) {
 
         var globalPlugin = dataCache.getGlobalPluginBySoftwareUrl(software.url);
 
-        plugins.push({
-            customCharts: [],
-            pluginVersion: "13.3.7",
-            pluginName: globalPlugin.name,
-            requestRandom: requestRandom
-        });
+        if (globalPlugin != null) {
+            plugins.push({
+                customCharts: [],
+                pluginVersion: "13.3.7",
+                pluginName: globalPlugin.name,
+                requestRandom: requestRandom
+            });
+        }
 
         var handledPlugins = [];
 
