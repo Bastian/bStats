@@ -108,11 +108,12 @@ INSERT INTO `server_software` (`software_id`, `software_name`, `software_url`, `
 CREATE TABLE `users` (
   `id` smallint(5) UNSIGNED NOT NULL,
   `username` varchar(16) NOT NULL,
-  `password` text NOT NULL
+  `password` text NOT NULL,
+  `admin` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO `users` (`id`, `username`, `password`) VALUES
-  (1, 'Admin', 'none');
+INSERT INTO `users` (`id`, `username`, `password`, `admin`) VALUES
+  (1, 'Admin', 'none', 1);
 
 
 ALTER TABLE `charts`
