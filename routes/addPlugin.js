@@ -61,7 +61,7 @@ router.post('/', function(request, response, next) {
         }
     }
 
-    if (software === null || software.globalPlugin === undefined) {
+    if (software === null || (software.globalPlugin === undefined && request.user.admin !== 1)) {
         response.redirect('/add-plugin');
         return;
     }
