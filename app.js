@@ -29,6 +29,7 @@ const editPlugin = require('./routes/editPlugin');
 const customCharts = require('./routes/customCharts');
 const pluginList = require('./routes/pluginList');
 const restApi = require('./routes/restApi');
+const admin = require('./routes/admin');
 
 // REST API v1
 const apiPluginV1 = require('./routes/api/v1/plugin');
@@ -76,6 +77,7 @@ app.use('/editPlugin', editPlugin);
 app.use('/help/custom-charts', customCharts);
 app.use('/plugin-list', pluginList);
 app.use('/help/rest-api', restApi);
+app.use('/admin', admin);
 
 // REST API v1
 app.use('/api/v1/plugins', apiPluginV1);

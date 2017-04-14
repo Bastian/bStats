@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="Psst!">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Admin Panel</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body>
+
+<% include ../templates/navigation.ejs %>
+<main>
+    <div class="container">
+        <% if (!loggedIn || user.admin != 1) { %>
+        <div class="section no-pad-bot" id="index-banner">
+            <div class="container">
+                <br><br>
+                <h1 class="header center teal-text">Nice try!</h1>
+                <div class="row center">
+                    <h5 class="header col s12 light">But try harder next time :P</h5>
+                </div>
+            </div>
+        </div>
+        <% } else { %>
+        <br><br>
+        <!-- START Transfer ownership -->
+        <h5 class="teal-text col s12 center-align">Placeholder Headline</h5>
+        <div class="z-depth-1 grey lighten-4 row">
+            <form class="col s12 container" method="post" style="margin-bottom: 15px">
+                <div class="input-field col s12 center">
+                    Awesome stuff here
+                </div>
+                <!-- Submit button -->
+                <button type='submit' name='btn_transfer' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                    Fancy Button
+                </button>
+            </form>
+        </div>
+        <% } %>
+    </div>
+</main>
+<% include ../templates/footer.ejs %>
+
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+
+</body>
+</html>
