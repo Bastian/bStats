@@ -31,24 +31,28 @@ function refreshLineCharts() {
                 return;
             }
             for (var i = 0; rows.length > i; i++) { // Iterate through charts
-                // Get chart data
-                var row = rows[i];
-                var chartId = row.chart_id;
-                var chartUid = row.chart_uid;
-                var line = row.line;
-                var data = JSON.parse(row.data); // The data of the line (Saved as JSON string)
-                var lastProcessedTimestamp = row.last_processed_tms_2000;
-                var pluginId = row.plugin_id;
+                try {
+                    // Get chart data
+                    var row = rows[i];
+                    var chartId = row.chart_id;
+                    var chartUid = row.chart_uid;
+                    var line = row.line;
+                    var data = JSON.parse(row.data); // The data of the line (Saved as JSON string)
+                    var lastProcessedTimestamp = row.last_processed_tms_2000;
+                    var pluginId = row.plugin_id;
 
-                // Calculate the 'amount' of timestamps we have to fetch data
-                var tms2000Now = timeUtil.dateToTms2000(new Date());
-                var startTms2000 = tms2000Now - 96; // Calculate the last 96 (= 2 days) values if there's no data
-                if (lastProcessedTimestamp >= startTms2000) {
-                    startTms2000 = lastProcessedTimestamp + 1;
+                    // Calculate the 'amount' of timestamps we have to fetch data
+                    var tms2000Now = timeUtil.dateToTms2000(new Date());
+                    var startTms2000 = tms2000Now - 96; // Calculate the last 96 (= 2 days) values if there's no data
+                    if (lastProcessedTimestamp >= startTms2000) {
+                        startTms2000 = lastProcessedTimestamp + 1;
+                    }
+
+                    // Update the line chart
+                    updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId);
+                } catch (err2) {
+                    console.log(err2);
                 }
-
-                // Update the line chart
-                updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId);
             }
         }
     );
@@ -102,27 +106,31 @@ function updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId) 
                         console.log(err);
                         return;
                     }
-                    var value = rows.length == 0 ? 0 : rows[0].value;
-                    data.push([timeUtil.tms2000ToDate(tms2000).getTime(), value]);
-                    if (--counter <= 0) {
-                        console.log('Finished refreshing data for chart with uid ' + chartUid + ' and line ' + line);
-                        dataCache.lineChartsData[pluginId][chartId][line] = data.sort();
-                        var sql =
-                            'UPDATE ' +
+                    try {
+                        var value = rows.length == 0 ? 0 : rows[0].value;
+                        data.push([timeUtil.tms2000ToDate(tms2000).getTime(), value]);
+                        if (--counter <= 0) {
+                            console.log('Finished refreshing data for chart with uid ' + chartUid + ' and line ' + line);
+                            dataCache.lineChartsData[pluginId][chartId][line] = data.sort();
+                            var sql =
+                                'UPDATE ' +
                                 '`line_charts_processed` ' +
-                            'SET ' +
+                                'SET ' +
                                 '`data` = ?, ' +
                                 '`last_processed_tms_2000` = ? ' +
-                            'WHERE ' +
+                                'WHERE ' +
                                 '`chart_uid` = ? AND ' +
                                 '`line` = ?;';
-                        databaseManager.getConnectionPool('linecharts-refresh').query(sql, [JSON.stringify(data), tms2000Now - 1, parseInt(chartUid), line],
-                            function (err, rows, fields) {
-                                if (err) {
-                                    console.log(err);
+                            databaseManager.getConnectionPool('linecharts-refresh').query(sql, [JSON.stringify(data), tms2000Now - 1, parseInt(chartUid), line],
+                                function (err, rows, fields) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
                                 }
-                            }
-                        );
+                            );
+                        }
+                    } catch (err2) {
+                        console.log(err);
                     }
                 }
             );
