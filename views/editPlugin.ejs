@@ -541,7 +541,32 @@
             </form>
         </div>
         <!-- END Delete plugin -->
+
+        <% if (loggedIn && user.admin == 1) { %>
+        <!-- START Transfer ownership -->
+        <h5 class="teal-text col s12 center-align">Transfer ownership</h5>
+        <br><br>
+        <div class="col s12 z-depth-1 grey lighten-4 row">
+            <br>
+            <form id="transfer_plugin_form" class="col s12" method="post">
+                <div class="input-field">
+                    <input placeholder="Please type in the name of new owner." id="new_owner" class="validate"
+                           type="text" name="newOwner">
+                    <label for="new_owner">New owner</label>
+                </div>
+                <br>
+                <div class='row'>
+                    <button type='submit' id='transfer_button' class='col s12 l6 offset-l3 disabled waves-effect waves-light btn-large red'>
+                        Transfer
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- END Transfer ownership -->
+        <% } %>
     </div>
+
+
     <% } else { %>
     <div class="container">
 
@@ -725,6 +750,28 @@
         }
     });
     // END delete plugin
+
+    <% if (loggedIn && user.admin == 1) { %>
+    // START transfer plugin
+    $(document).on('input','#new_owner',function () {
+        var name = document.getElementById('new_owner').value;
+        if (name.length < 1) {
+            $("#transfer_button").addClass("disabled");
+        } else {
+            $("#transfer_button").removeClass("disabled");
+        }
+    });
+
+    $('#transfer_plugin_form').submit(function(eventObj) {
+        if (confirm("Are you sure you want to transfer the plugin?")) {
+            $(this).append('<input type="hidden" name="action" value="transferPlugin" /> ');
+            return true;
+        } else {
+            return false;
+        }
+    });
+    // END transfer plugin
+    <% } %>
 
     // START edit charts list
     Sortable.create(chartsList, {

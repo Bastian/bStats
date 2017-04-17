@@ -62,6 +62,9 @@ router.post('/:software/:plugin', function (request, response, next) {
         case 'reorderCharts':
             success = reorderCharts(request, response, plugin);
             break;
+        case 'transferPlugin':
+            success = transferPlugin(request, response, plugin);
+            break;
         default:
             break;
     }
@@ -222,6 +225,48 @@ function deletePlugin(request, response, plugin) {
     dataCache.plugins.splice(index, 1);
 
     response.redirect('/?pluginDeleted=true');
+    return true;
+}
+
+function transferPlugin(request, response, plugin) {
+    if (request.user.admin != 1) {
+        sendResponse(response, {error: 'This action is only allowed for admins!'}, 403);
+        return;
+    }
+
+    var sqlTransferPlugin =
+        'UPDATE' +
+            '`plugins`, `users`' +
+        'SET' +
+            '`plugins`.`owner_id` = `users`.`id`' +
+        'WHERE' +
+            '`users`.`username` = ?' +
+        'AND' +
+        '   `plugins`.`plugin_id` = ?;';
+    databaseManager.getConnectionPool('plugin-update').query(sqlTransferPlugin, [request.body.newOwner, plugin.id],
+        function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+        }
+    );
+
+    var sqlGetUserId = 'SELECT `id`, `username` FROM `users` WHERE `username` = ?;';
+    databaseManager.getConnectionPool('plugin-update').query(sqlGetUserId, [request.body.newOwner],
+        function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+            if (result.length !== 1) {
+                response.redirect('/editPlugin/' + plugin.software.url + '/' + plugin.name + '?unknownOwner=true');
+            } else {
+                plugin.owner.id = result[0].id;
+                plugin.owner.name = result[0].username;
+                response.redirect('/editPlugin/' + plugin.software.url + '/' + plugin.name + '?updatedOwner=true');
+            }
+        }
+    );
+
     return true;
 }
 
