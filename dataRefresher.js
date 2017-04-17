@@ -114,13 +114,13 @@ function updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId) 
                             dataCache.lineChartsData[pluginId][chartId][line] = data.sort();
                             var sql =
                                 'UPDATE ' +
-                                '`line_charts_processed` ' +
+                                    '`line_charts_processed` ' +
                                 'SET ' +
-                                '`data` = ?, ' +
-                                '`last_processed_tms_2000` = ? ' +
+                                    '`data` = ?, ' +
+                                    '`last_processed_tms_2000` = ? ' +
                                 'WHERE ' +
-                                '`chart_uid` = ? AND ' +
-                                '`line` = ?;';
+                                    '`chart_uid` = ? AND ' +
+                                    '`line` = ?;';
                             databaseManager.getConnectionPool('linecharts-refresh').query(sql, [JSON.stringify(data), tms2000Now - 1, parseInt(chartUid), line],
                                 function (err, rows, fields) {
                                     if (err) {
