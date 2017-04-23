@@ -32,7 +32,7 @@
     <br><br>
     <div class="container row">
         <!-- START Add chart -->
-        <h5 class="teal-text col s12 center-align">Add custom chart <a href="/help/custom-charts"><i class="material-icons blue-text" style="font-size: 20px">help</i></a></h5>
+        <h5 class="<%= customColor1 %>-text col s12 center-align">Add custom chart <a href="/help/custom-charts"><i class="material-icons blue-text" style="font-size: 20px">help</i></a></h5>
         <br><br>
         <div class="col s12 z-depth-1 grey lighten-4 row">
             <br>
@@ -117,7 +117,7 @@
                     </div>
                     <!-- Submit button -->
                     <div class='row'>
-                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>'>
                             Submit Chart
                         </button>
                     </div>
@@ -187,7 +187,7 @@
                     </div>
                     <!-- Submit button -->
                     <div class='row'>
-                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>'>
                             Submit Chart
                         </button>
                     </div>
@@ -257,7 +257,7 @@
                     </div>
                     <!-- Submit button -->
                     <div class='row'>
-                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>'>
                             Submit Chart
                         </button>
                     </div>
@@ -314,7 +314,7 @@
                     </div>
                     <!-- Submit button -->
                     <div class='row'>
-                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>'>
                             Submit Chart
                         </button>
                     </div>
@@ -400,7 +400,7 @@
                     </div>
                     <!-- Submit button -->
                     <div class='row'>
-                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>'>
                             Submit Chart
                         </button>
                     </div>
@@ -478,7 +478,7 @@
                     </div>
                     <!-- Submit button -->
                     <div class='row'>
-                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>'>
                             Submit Chart
                         </button>
                     </div>
@@ -492,7 +492,7 @@
         <!-- END Add chart -->
         <!-- START Edit charts -->
         <% if (charts !== undefined && charts.length !== 0) { %>
-        <h5 class="teal-text col s12 center-align">Edit charts</h5>
+        <h5 class="<%= customColor1 %>-text col s12 center-align">Edit charts</h5>
         <br><br>
         <ul id="chartsList" class="list-group collection col s12 z-depth-1 grey lighten-4">
             <%
@@ -522,7 +522,7 @@
         <% } %>
         <!-- END Edit charts -->
         <!-- START Delete plugin -->
-        <h5 class="teal-text col s12 center-align">Delete plugin</h5>
+        <h5 class="<%= customColor1 %>-text col s12 center-align">Delete plugin</h5>
         <br><br>
         <div class="col s12 z-depth-1 grey lighten-4 row">
             <br>
@@ -544,7 +544,7 @@
 
         <% if (loggedIn && user.admin == 1) { %>
         <!-- START Transfer ownership -->
-        <h5 class="teal-text col s12 center-align">Transfer ownership</h5>
+        <h5 class="<%= customColor1 %>-text col s12 center-align">Transfer ownership</h5>
         <br><br>
         <div class="col s12 z-depth-1 grey lighten-4 row">
             <br>
@@ -573,7 +573,7 @@
         <div class="section no-pad-bot" id="index-banner">
             <div class="container">
                 <br><br>
-                <h1 class="header center teal-text">Nice try!</h1>
+                <h1 class="header center <%= customColor1 %>-text">Nice try!</h1>
                 <div class="row center">
                     <h5 class="header col s12 light">You are not the owner of
                         <div class="truncate"><%= plugin.name %></div>

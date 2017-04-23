@@ -5,6 +5,9 @@ const dataCache = require('../util/dataCache');
 /* GET plugin page. */
 router.get('/:software/:plugin', function(request, response, next) {
 
+    var customColor1 = request.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
     var pluginName = request.params.plugin;
     var softwareUrl = request.params.software;
 
@@ -20,7 +23,8 @@ router.get('/:software/:plugin', function(request, response, next) {
         response.render('static/unknownPlugin', {
             pluginName: pluginName,
             user: request.user === undefined ? null : request.user,
-            loggedIn: request.user != undefined
+            loggedIn: request.user != undefined,
+            customColor1: customColor1
         });
     } else {
         var serversCurrent = -1;
@@ -58,7 +62,8 @@ router.get('/:software/:plugin', function(request, response, next) {
             serversRecord: serversRecord,
             serversCurrent: serversCurrent,
             playersRecord: playersRecord,
-            playersCurrent: playersCurrent
+            playersCurrent: playersCurrent,
+            customColor1: customColor1
         });
     }
 

@@ -14,6 +14,10 @@ router.get('/', function(request, response, next) {
         response.redirect('/login');
         return;
     }
+
+    var customColor1 = request.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
     response.render('addPlugin', {
         user: request.user === undefined ? null : request.user,
         loggedIn: request.user != undefined,
@@ -22,7 +26,8 @@ router.get('/', function(request, response, next) {
         failed: request.query.failed === undefined ? false : request.query.failed,
         alreadyAdded: request.query.alreadyAdded === undefined ? false : request.query.alreadyAdded,
         wrongCaptcha: request.query.wrongCaptcha === undefined ? false : request.query.wrongCaptcha,
-        invalidName: request.query.invalidName === undefined ? false : request.query.invalidName
+        invalidName: request.query.invalidName === undefined ? false : request.query.invalidName,
+        customColor1: customColor1
     });
 
 });

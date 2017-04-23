@@ -23,9 +23,9 @@
             <% if (failed) { %>
             <h5 class="red-text col s12 center-align">Login failed! Please try again!</h5>
             <% } else if (registered) { %>
-            <h5 class="teal-text col s12 center-align">Account created! Please log in now.</h5>
+            <h5 class="<%= customColor1 %>-text col s12 center-align">Account created! Please log in now.</h5>
             <% } else { %>
-            <h5 class="teal-text col s12 center-align">Please, login into your account</h5>
+            <h5 class="<%= customColor1 %>-text col s12 center-align">Please, login into your account</h5>
             <% } %>
             <br><br>
             <div class="col s12 m8 l6 offset-m2 offset-l3 z-depth-1 grey lighten-4 row">
@@ -48,7 +48,7 @@
                     <br/>
                     <!-- Login button -->
                     <div class='row'>
-                        <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal'>
+                        <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect <%= customColor1 %>'>
                             Login
                         </button>
                     </div>

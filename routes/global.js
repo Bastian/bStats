@@ -30,6 +30,10 @@ router.get('/:software', function(request, response, next) {
             playersRecord = dataCache.lineChartsData[plugin.id]['players'][1][j][1];
         }
     }
+
+    var customColor1 = request.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
     response.render('global', {
         plugin: plugin,
         user: request.user === undefined ? null : request.user,
@@ -37,7 +41,8 @@ router.get('/:software', function(request, response, next) {
         serversRecord: serversRecord,
         serversCurrent: serversCurrent,
         playersRecord: playersRecord,
-        playersCurrent: playersCurrent
+        playersCurrent: playersCurrent,
+        customColor1: customColor1
     });
 
 });

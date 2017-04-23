@@ -10,9 +10,14 @@ const geoip = require('geoip-lite');
 
 /* GET submit data. */
 router.get('/:software?', function(request, response, next) {
+
+    var customColor1 = request.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
     response.render('static/submitData', {
         user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined
+        loggedIn: request.user != undefined,
+        customColor1: customColor1
     });
 });
 

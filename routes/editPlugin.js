@@ -12,6 +12,9 @@ router.get('/:software/:plugin', function(request, response, next) {
         return;
     }
 
+    var customColor1 = request.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
     var pluginName = request.params.plugin;
     var softwareUrl = request.params.software;
     var plugin = dataCache.getPluginByNameAndSoftwareUrl(pluginName, softwareUrl);
@@ -21,7 +24,8 @@ router.get('/:software/:plugin', function(request, response, next) {
         user: request.user == undefined ? null : request.user,
         loggedIn: request.user != undefined,
         isOwner: request.user != undefined && plugin.owner.id == request.user.id,
-        charts: dataCache.charts[plugin.id]
+        charts: dataCache.charts[plugin.id],
+        customColor1: customColor1
     });
 
 });

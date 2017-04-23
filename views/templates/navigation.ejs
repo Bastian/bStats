@@ -84,12 +84,12 @@
 <ul id="dropdownGlobalStats" class="dropdown-content">
     <% for (var i = 0; i < software.length; i++) { %>
     <% if (software[i].globalPlugin !== undefined) { %>
-    <li><a href="/global/<%= software[i].url %>" class="truncate"><%= software[i].name %></a></li>
+    <li><a href="/global/<%= software[i].url %>" class="truncate <%= customColor1 %>-text"><%= software[i].name %></a></li>
     <% } %>
     <% } %>
 </ul>
 
-<nav class="teal darken-4" role="navigation">
+<nav class="<%= customColor1 %> darken-3" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo left hide-on-med-and-down tooltipped" data-position="right" data-delay="5000" data-tooltip="You found a secret tooltip!">bStats<sup> beta</sup></a>
         <a id="logo-container" href="/" class="brand-logo hide-on-large-only">bStats<sup> beta</sup></a>
