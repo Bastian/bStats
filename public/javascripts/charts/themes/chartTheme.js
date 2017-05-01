@@ -103,6 +103,10 @@ Highcharts.theme = {
 
     lang: {
         signatureImageTitle: "Signature Image"
+    },
+
+    global: {
+        useUTC: false
     }
 
 };
