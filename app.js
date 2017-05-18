@@ -100,12 +100,17 @@ dataRefresher.startup();
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
+
+        var customColor1 = req.cookies["custom-color1"];
+        customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
             error: err,
             user: req.user === undefined ? null : req.user,
-            loggedIn: req.user != undefined
+            loggedIn: req.user != undefined,
+            customColor1: customColor1
         });
     });
 }
@@ -113,12 +118,17 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
+
+    var customColor1 = req.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
         error: {},
         user: req.user === undefined ? null : req.user,
-        loggedIn: req.user != undefined
+        loggedIn: req.user != undefined,
+        customColor1: customColor1
     });
 });
 
