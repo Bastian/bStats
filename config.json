@@ -2,12 +2,12 @@
   "database": {
     "host": "127.0.0.1",
     "user": "root",
-    "password": "yN4XgpQwu8Rbez89gkc6E6H4nQxnfDEddcFUt5qT8ZvHnyggSyrNk95j5gTgQmS6",
+    "password": "supersecretstuff.orwellit'ssupposedtobelolignorethatlastcommit.thepasswordchange:)",
     "database": "stats"
   },
   "recaptcha": {
-    "publicKey": "6LcFOyMUAAAAAJGSry-jAfvzEdBebGx-9NaDUpi6",
-    "secretKey": "6LcFOyMUAAAAAAuvL4h7_U1iekCiNHaljqVWC5YA"
+    "publicKey": "123abc",
+    "secretKey": "cba321"
   },
   "sessionSecret": "super secret session secret"
 }
