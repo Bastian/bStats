@@ -8,9 +8,9 @@
 
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
-    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
     <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
@@ -65,7 +65,9 @@
                     <!-- Register button -->
                     <div class='row'>
                         <a class='col s12 btn btn-large waves-effect <%= customColor1 %> disabled invalid_account'>Register</a>
-                        <button type='submit' name='btn_register' class='col s12 btn btn-large waves-effect <%= customColor1 %> valid_account' style="display: none;">
+                        <button type='submit' name='btn_register'
+                                class='col s12 btn btn-large waves-effect <%= customColor1 %> valid_account'
+                                style="display: none;">
                             Register
                         </button>
                     </div>
@@ -80,19 +82,19 @@
 
 <!-- Scripts-->
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
-<script src="../../../../../../javascripts/materialize/init.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
 
 <script type="application/javascript">
-    $(document).on('input','#password',function () {
+    $(document).on('input', '#password', function () {
         checkIfValidAccount();
         checkPasswords();
     });
-    $(document).on('input','#password_confirm',function () {
+    $(document).on('input', '#password_confirm', function () {
         checkIfValidAccount();
         checkPasswords();
     });
-    $(document).on('input','#username',function () {
+    $(document).on('input', '#username', function () {
         checkIfValidAccount();
     });
 
@@ -131,7 +133,7 @@
         $(".invalid_account").hide();
     }
 
-    var correctCaptcha = function(response) {
+    var correctCaptcha = function (response) {
         captchaSolved = true;
         checkIfValidAccount();
     };

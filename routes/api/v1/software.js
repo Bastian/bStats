@@ -3,7 +3,7 @@ const router = express.Router();
 const dataCache = require('../../../util/dataCache');
 
 /* GET general data. */
-router.get('/', function(request, response, next) {
+router.get('/', function (request, response, next) {
     var jsonResponse = [];
 
     for (var i = 0; i < dataCache.serverSoftware.length; i++) {

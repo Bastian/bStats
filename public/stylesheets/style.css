@@ -12,17 +12,29 @@ body {
     min-height: 100vh;
     flex-direction: column;
 }
+
 .icon-block {
-  padding: 0 15px;
+    padding: 0 15px;
 }
+
 .icon-block .material-icons {
-	font-size: inherit;
+    font-size: inherit;
 }
+
 main {
     flex: 1 0 auto;
 }
+
 .box {
     border: 10px solid #009688;
     padding: 15px;
     margin: 15px;
+}
+
+.heart {
+    color: #ff3d00;
+}
+
+.navigation-titles {
+    font-size: 30px;
 }

@@ -10,15 +10,15 @@ var pools = {};
  * @returns {object} A connection pool with the given name.
  */
 function getConnectionPool(poolName) {
-    if (pools[poolName] != undefined) {
+    if (pools[poolName] !== undefined) {
         return pools[poolName];
     }
     pools[poolName] = mysql.createPool({
-        connectionLimit : 10,
-        host     : config.database.host,
-        user     : config.database.user,
-        password : config.database.password,
-        database : config.database.database,
+        connectionLimit: 10,
+        host: config.database.host,
+        user: config.database.user,
+        password: config.database.password,
+        database: config.database.database,
         timeout: 300000 // 5 minutes
     });
     return pools[poolName];

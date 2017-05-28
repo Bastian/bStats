@@ -8,9 +8,9 @@ const config = require('../util/config');
 const req = require('request');
 
 /* GET add plugin page. */
-router.get('/', function(request, response, next) {
+router.get('/', function (request, response, next) {
 
-    if (request.user == undefined) {
+    if (request.user === undefined) {
         response.redirect('/login');
         return;
     }
@@ -20,7 +20,7 @@ router.get('/', function(request, response, next) {
 
     response.render('addPlugin', {
         user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
+        loggedIn: request.user !== undefined,
         publicKey: config.recaptcha.publicKey,
         serverSoftware: dataCache.serverSoftware,
         failed: request.query.failed === undefined ? false : request.query.failed,
@@ -33,8 +33,8 @@ router.get('/', function(request, response, next) {
 });
 
 /* POST add plugin */
-router.post('/', function(request, response, next) {
-    if (request.user == undefined) {
+router.post('/', function (request, response, next) {
+    if (request.user === undefined) {
         response.redirect('/login');
         return;
     }
@@ -60,7 +60,7 @@ router.post('/', function(request, response, next) {
 
     var software = null;
     for (var i = 0; i < dataCache.serverSoftware.length; i++) {
-        if (dataCache.serverSoftware[i].id == softwareId) {
+        if (dataCache.serverSoftware[i].id === softwareId) {
             software = dataCache.serverSoftware[i];
             break;
         }
@@ -78,7 +78,7 @@ router.post('/', function(request, response, next) {
     // The Google Captcha secret key
     var secretKey = config.recaptcha.secretKey;
     var verificationUrl = 'https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + request.body['g-recaptcha-response'] + '&remoteip=' + request.connection.remoteAddress;
-    req(verificationUrl, function(error, r, body) {
+    req(verificationUrl, function (error, r, body) {
         body = JSON.parse(body);
         if (body.success !== undefined && !body.success) {
             response.redirect('/add-plugin?wrongCaptcha=true');

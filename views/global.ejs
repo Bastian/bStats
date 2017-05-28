@@ -4,11 +4,11 @@
 <html lang="en">
 <head>
     <!-- Twitter stuff -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@btobastian" />
-    <meta name="twitter:title" content="bStats - Plugin Metrics made with <3" />
-    <meta name="twitter:description" content="bStats collects data for plugin authors. It's free and easy to use!" />
-    <meta name="twitter:image" content="https://bstats.org/images/Twitter.jpg" />
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:site" content="@btobastian"/>
+    <meta name="twitter:title" content="bStats - Plugin Metrics made with <3"/>
+    <meta name="twitter:description" content="bStats collects data for plugin authors. It's free and easy to use!"/>
+    <meta name="twitter:image" content="https://bstats.org/images/Twitter.jpg"/>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="description" content="bStats global stats.">
@@ -17,12 +17,13 @@
 
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
-    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
     <!-- Flags for the map -->
-    <link rel="stylesheet" type="text/css" href="https://cloud.github.com/downloads/lafeber/world-flags-sprite/flags32.css" />
+    <link rel="stylesheet" type="text/css"
+          href="https://cloud.github.com/downloads/lafeber/world-flags-sprite/flags32.css"/>
 
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
@@ -43,12 +44,16 @@
     <div class="row">
         <div class="col s12 m6 l4 offset-l2">
             <div class="card-panel <%= customColor1 %>">
-                <span class="white-text"><i class="material-icons left">storage</i><b>Servers (Current/Record): <%= serversCurrent %> / <%= serversRecord %></b></span>
+                <span class="white-text"><i
+                            class="material-icons left">storage</i><b>Servers (Current/Record): <%= serversCurrent %>
+                        / <%= serversRecord %></b></span>
             </div>
         </div>
         <div class="col s12 m6 l4">
             <div class="card-panel <%= customColor1 %>">
-                <span class="white-text"><i class="material-icons left">people</i><b>Players (Current/Record): <%= playersCurrent %> / <%= playersRecord %></b></span>
+                <span class="white-text"><i
+                            class="material-icons left">people</i><b>Players (Current/Record): <%= playersCurrent %>
+                        / <%= playersRecord %></b></span>
             </div>
         </div>
     </div>
@@ -60,7 +65,9 @@
 
     <script type="application/javascript">
         $.getJSON('/api/v1/plugins/<%= plugin.id %>/charts', function (charts) {
-            var chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
+            var chartIdsSorted = Object.keys(charts).sort(function (a, b) {
+                return charts[a].position - charts[b].position
+            });
             var previousRowWasFull = true;
             for (var i = 0; i < chartIdsSorted.length; i++) {
                 var chartId = chartIdsSorted[i];
@@ -137,8 +144,8 @@
 <!-- Scripts -->
 
 <!-- Materialize -->
-<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
-<script src="../../../../../../javascripts/materialize/init.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
 <!-- Charts -->
 <script src="https://code.highcharts.com/stock/5.0.10/highstock.js"></script>
 <script src="https://code.highcharts.com/maps/5.0.10/modules/map.js"></script>

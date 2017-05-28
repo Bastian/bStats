@@ -2,12 +2,12 @@
   "database": {
     "host": "127.0.0.1",
     "user": "root",
-    "password": "top secret",
+    "password": "yN4XgpQwu8Rbez89gkc6E6H4nQxnfDEddcFUt5qT8ZvHnyggSyrNk95j5gTgQmS6",
     "database": "stats"
   },
   "recaptcha": {
-    "publicKey": "abc123",
-    "secretKey": "123abc"
+    "publicKey": "6LcFOyMUAAAAAJGSry-jAfvzEdBebGx-9NaDUpi6",
+    "secretKey": "6LcFOyMUAAAAAAuvL4h7_U1iekCiNHaljqVWC5YA"
   },
   "sessionSecret": "super secret session secret"
 }
