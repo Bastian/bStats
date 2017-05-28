@@ -1,9 +1,9 @@
-(function(window, document, undefined) {
+(function (window, document, undefined) {
 
-    var factory = function($, DataTable) {
+    var factory = function ($, DataTable) {
         "use strict";
 
-        $('.search-toggle').click(function() {
+        $('.search-toggle').click(function () {
             if ($('.hiddensearch').css('display') == 'none')
                 $('.hiddensearch').slideDown();
             else
@@ -26,15 +26,15 @@
         });
 
         /* Bootstrap paging button renderer */
-        DataTable.ext.renderer.pageButton.material = function(settings, host, idx, buttons, page, pages) {
+        DataTable.ext.renderer.pageButton.material = function (settings, host, idx, buttons, page, pages) {
             var api = new DataTable.Api(settings);
             var classes = settings.oClasses;
             var lang = settings.oLanguage.oPaginate;
             var btnDisplay, btnClass, counter = 0;
 
-            var attach = function(container, buttons) {
+            var attach = function (container, buttons) {
                 var i, ien, node, button;
-                var clickHandler = function(e) {
+                var clickHandler = function (e) {
                     e.preventDefault();
                     if (!$(e.currentTarget).hasClass('disabled')) {
                         api.page(e.data.action).draw(false);
@@ -82,7 +82,7 @@
                             node = $('<li>', {
                                 'class': classes.sPageButton + ' ' + btnClass,
                                 'id': idx === 0 && typeof button === 'string' ?
-                                settings.sTableId + '_' + button : null
+                                    settings.sTableId + '_' + button : null
                             })
                                 .append($('<a>', {
                                         'href': '#',
@@ -116,7 +116,8 @@
                 // accessibility. So we want to restore focus once the draw has
                 // completed
                 activeEl = $(document.activeElement).data('dt-idx');
-            } catch (e) {}
+            } catch (e) {
+            }
 
             attach(
                 $(host).empty().html('<ul class="material-pagination"/>').children('ul'),
@@ -180,7 +181,7 @@
 
 })(window, document);
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('#datatable').dataTable({
         "oLanguage": {
             "sStripClasses": "",

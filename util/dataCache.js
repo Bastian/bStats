@@ -121,7 +121,7 @@ module.exports = {
         if (chart.type === 'simple_pie' || chart.type === 'advanced_pie') {
             if (module.exports.chartData[tms2000] === undefined ||
                 module.exports.chartData[tms2000][pluginId] === undefined ||
-                module.exports.chartData[tms2000][pluginId][chartId] === undefined)  {
+                module.exports.chartData[tms2000][pluginId][chartId] === undefined) {
                 return []; // No data
             }
             var data = [];
@@ -140,7 +140,7 @@ module.exports = {
         if (chart.type === 'drilldown_pie') {
             if (module.exports.chartData[tms2000] === undefined ||
                 module.exports.chartData[tms2000][pluginId] === undefined ||
-                module.exports.chartData[tms2000][pluginId][chartId] === undefined)  {
+                module.exports.chartData[tms2000][pluginId][chartId] === undefined) {
                 return {
                     seriesData: [],
                     drilldownData: []
@@ -193,7 +193,7 @@ module.exports = {
         if (chart.type === 'simple_bar' || chart.type === 'advanced_bar') {
             if (module.exports.chartData[tms2000] === undefined ||
                 module.exports.chartData[tms2000][pluginId] === undefined ||
-                module.exports.chartData[tms2000][pluginId][chartId] === undefined)  {
+                module.exports.chartData[tms2000][pluginId][chartId] === undefined) {
                 return {
                     categories: [],
                     series: []
@@ -208,17 +208,17 @@ module.exports = {
             }
             /* chartData
              {
-                "Money": [1,2],
-                "Fast Trade": [3,4]
+             "Money": [1,2],
+             "Fast Trade": [3,4]
              }
              */
             /* <->
              series: [{
-                name: 'enabled',
-                data: [1,3]
+             name: 'enabled',
+             data: [1,3]
              }, {
-                name: 'disabled',
-                data: [2,4]
+             name: 'disabled',
+             data: [2,4]
              }]
              */
             var series = [];
@@ -245,7 +245,7 @@ module.exports = {
         if (chart.type === 'simple_map' || chart.type === 'advanced_map') {
             if (module.exports.chartData[tms2000] === undefined ||
                 module.exports.chartData[tms2000][pluginId] === undefined ||
-                module.exports.chartData[tms2000][pluginId][chartId] === undefined)  {
+                module.exports.chartData[tms2000][pluginId][chartId] === undefined) {
                 return []; // No data
             }
             var data = [];
@@ -273,4 +273,4 @@ module.exports = {
 setInterval(function () {
     var tms2000 = timeUtil.dateToTms2000(new Date()) - 2;
     delete module.exports.chartData[tms2000];
-}, 1000*60*15);
+}, 1000 * 60 * 15);

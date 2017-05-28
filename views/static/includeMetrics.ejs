@@ -8,12 +8,16 @@
 
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
-    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
     <style>
-        .withBox { outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+        .withBox {
+            outline: 1px solid #ccc;
+            padding: 5px;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -39,25 +43,31 @@
                     <p>Including bStats is very easy. There are basically two ways to include bStats:</p>
                     <ul class="collapsible" data-collapsible="accordion">
                         <li>
-                            <div class="collapsible-header"><i class="material-icons">code</i>Using Maven to shade bStats</div>
+                            <div class="collapsible-header"><i class="material-icons">code</i>Using Maven to shade
+                                bStats
+                            </div>
                             <div class="collapsible-body">
                                 <div style="margin-left: 10px; margin-top: 4px; margin-right: 10px;">
-                                    <b class="red-text">Note: You are expected to have a basic understanding on how to use Maven!</b><br>
+                                    <b class="red-text">Note: You are expected to have a basic understanding on how to
+                                        use Maven!</b><br>
                                     <b>1. Include the repository</b><br>
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;repository&gt;
   &lt;id&gt;bstats-repo&lt;/id&gt;
   &lt;url&gt;http://repo.bstats.org/content/repositories/releases/&lt;/url&gt;
 &lt;/repository&gt;</code></pre>
                                     <b>2. Include the dependency.</b><br>
-                                    There are 3 possible artifact ids: <i><b>bstats-bukkit</b></i>, <i><b>bstats-bungeecord</b></i> and <i><b>bstats-sponge</b></i> and their
-                                    lite counterparts: <i><b>bstats-bukkit-lite</b></i>, <i><b>bstats-bungeecord-lite</b></i> and <i><b>bstats-sponge-lite</b></i>
+                                    There are 3 possible artifact ids: <i><b>bstats-bukkit</b></i>, <i><b>bstats-bungeecord</b></i>
+                                    and <i><b>bstats-sponge</b></i> and their
+                                    lite counterparts: <i><b>bstats-bukkit-lite</b></i>,
+                                    <i><b>bstats-bungeecord-lite</b></i> and <i><b>bstats-sponge-lite</b></i>
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;dependency&gt;
   &lt;groupId&gt;org.bstats&lt;/groupId&gt;
   &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
   &lt;version&gt;1.1&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
                                     <b>3. Shade bStats into your plugin.</b><br>
-                                    This step is very important. Shading means, that the necessary classes are copied into
+                                    This step is very important. Shading means, that the necessary classes are copied
+                                    into
                                     your plugin when you compile it. It also relocates the class to an other package.
                                     Make sure to change <i>your.package</i> to your own package!
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;build&gt;
@@ -166,11 +176,16 @@
                             </div>
                         </li>
                         <li>
-                            <div class="collapsible-header"><i class="material-icons">code</i>Manually copy the Metrics class</div>
+                            <div class="collapsible-header"><i class="material-icons">code</i>Manually copy the Metrics
+                                class
+                            </div>
                             <div class="collapsible-body">
                                 <div style="margin-left: 10px; margin-top: 4px; margin-right: 10px;">
-                                    If you don't want to use Maven that's no problem. You can just copy and paste the required class into your project.
-                                    All classes can be found in the <a href="https://github.com/BtoBastian/bStats-Metrics">GitHub repository</a>.<br>
+                                    If you don't want to use Maven that's no problem. You can just copy and paste the
+                                    required class into your project.
+                                    All classes can be found in the <a
+                                            href="https://github.com/BtoBastian/bStats-Metrics">GitHub
+                                        repository</a>.<br>
                                     Just copy the class fitting your server software.
                                     Make sure to change the package from <i>org.bstats</i> to your own package.<br>
                                     <div style="overflow-x:auto;">
@@ -189,8 +204,11 @@
                                                 <% if (software[i].metricsClass != null) { %>
                                                 <tr>
                                                     <td><b><%= software[i].name %></b></td>
-                                                    <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a></td>
-                                                    <td><a href="<%= software[i].metricsClass.replace("/src/main/java/org/bstats/Metrics.java", "-lite/src/main/java/org/bstats/MetricsLite.java") %>" target="_blank">MetricsLite.java</a></td>
+                                                    <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="<%= software[i].metricsClass.replace("/src/main/java/org/bstats/Metrics.java", "-lite/src/main/java/org/bstats/MetricsLite.java") %>"
+                                                           target="_blank">MetricsLite.java</a></td>
                                                 </tr>
                                                 <% } %>
                                                 <% } %>
@@ -225,8 +243,10 @@
                         </tbody>
                     </table>
                     You may notice all examples also include a very basic example on how to use custom charts. You can
-                    find a detailed tutorial on how to use them <a href="/help/custom-charts">here</a>. If you don't need
-                    custom charts you can (but not have to) use the lite version of the Metrics class, too, which is called
+                    find a detailed tutorial on how to use them <a href="/help/custom-charts">here</a>. If you don't
+                    need
+                    custom charts you can (but not have to) use the lite version of the Metrics class, too, which is
+                    called
                     <i>MetricsLite</i>.
                 </div>
             </div>
@@ -238,8 +258,8 @@
 
 <!-- Scripts-->
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
-<script src="../../../../../../javascripts/materialize/init.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
 <!-- Code prettify -->
 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 

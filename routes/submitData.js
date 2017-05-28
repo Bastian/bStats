@@ -9,21 +9,21 @@ const requestRestrictor = require('../util/requestRestrictor');
 const geoip = require('geoip-lite');
 
 /* GET submit data. */
-router.get('/:software?', function(request, response, next) {
+router.get('/:software?', function (request, response, next) {
 
     var customColor1 = request.cookies["custom-color1"];
     customColor1 = customColor1 === undefined ? 'teal' : customColor1;
 
     response.render('static/submitData', {
         user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
+        loggedIn: request.user !== undefined,
         customColor1: customColor1
     });
 });
 
 
 /* POST submit data. */
-router.post('/:software?', function(request, response, next) {
+router.post('/:software?', function (request, response, next) {
     try {
         var serverUUID = request.body.serverUUID;
         // Server uuid is required
@@ -45,9 +45,8 @@ router.post('/:software?', function(request, response, next) {
         // Get the ip
         // We use CloudFlare so the cf-connecting-ip header can be trusted
         var ip = (request.connection.remoteAddress ? request.connection.remoteAddress : request.remoteAddress);
-        if (typeof request.headers['cf-connecting-ip'] !== 'undefined')
-        {
-            ip = request.headers['cf-connecting-ip'];;
+        if (typeof request.headers['cf-connecting-ip'] !== 'undefined') {
+            ip = request.headers['cf-connecting-ip'];
         }
 
         // Check if connection should be throttled
@@ -67,7 +66,7 @@ router.post('/:software?', function(request, response, next) {
         }
 
         var plugins = request.body.plugins; // The plugins
-        if (plugins == undefined || !Array.isArray(plugins)) {
+        if (plugins === undefined || !Array.isArray(plugins)) {
             sendResponse(response, {error: 'Invalid request! Missing or invalid plugins array!'}, 400);
             return;
         }
@@ -228,8 +227,6 @@ router.post('/:software?', function(request, response, next) {
                             requestRandom: requestRandom
                         });
                         break;
-                    default:
-                        continue;
                 }
             } else if (position === 'plugin') {
                 defaultPluginCharts.push(chart);
@@ -238,7 +235,7 @@ router.post('/:software?', function(request, response, next) {
 
         var globalPlugin = dataCache.getGlobalPluginBySoftwareUrl(software.url);
 
-        if (globalPlugin != null) {
+        if (globalPlugin !== null) {
             plugins.push({
                 customCharts: [],
                 pluginVersion: "13.3.7",
@@ -274,7 +271,7 @@ router.post('/:software?', function(request, response, next) {
                 continue;
             }
 
-            if (plugin.customCharts == undefined || !Array.isArray(plugin.customCharts)) {
+            if (plugin.customCharts === undefined || !Array.isArray(plugin.customCharts)) {
                 plugin.customCharts = [];
             }
 
@@ -423,7 +420,7 @@ router.post('/:software?', function(request, response, next) {
                         continue;
                     }
                     var value = chartData.data.value;
-                    if (value === 'AUTO' && geo == null) {
+                    if (value === 'AUTO' && geo === null) {
                         continue;
                     }
                     value = value === 'AUTO' ? geo.country : value;
@@ -517,13 +514,13 @@ function updateDrilldownPieData(pluginId, chartId, tms2000, valueName, values) {
 function updateLineChartData(chartUid, value, line, tms2000) {
     var sql =
         'INSERT INTO ' +
-            '`line_charts` ' +
+        '`line_charts` ' +
         '(' +
-            '`chart_uid`, `value`, `line`, `tms_2000`' +
+        '`chart_uid`, `value`, `line`, `tms_2000`' +
         ') VALUES (' +
-            '?, ?, ?, ?' +
+        '?, ?, ?, ?' +
         ') ON DUPLICATE KEY UPDATE ' +
-            '`value` = `value` + ?;';
+        '`value` = `value` + ?;';
     databaseManager.getConnectionPool("linecharts-submit").query(sql, [chartUid, value, line, tms2000, value],
         function (err, results) {
             if (err) {

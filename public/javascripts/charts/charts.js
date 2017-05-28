@@ -132,7 +132,6 @@ function handleDrilldownPieChart(chartId, chart) {
         }
 
 
-
         $('#' + chartId + 'Pie').highcharts({
             chart: {
                 type: 'pie'
@@ -179,10 +178,10 @@ function handleDrilldownPieChart(chartId, chart) {
 
 function handleLineChart(chartId, chart) {
     var isMobile = $(window).width() < 600;
-    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (isMobile ? (2*24*30) : (2*24*30*12*2)), function (data) {
+    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (isMobile ? (2 * 24 * 30) : (2 * 24 * 30 * 12 * 2)), function (data) {
         $('#' + chartId + 'LineChart').highcharts('StockChart', {
 
-            chart:{
+            chart: {
                 zoomType: 'x'
             },
 
@@ -225,7 +224,7 @@ function handleLineChart(chartId, chart) {
                         symbol: 'diamond',
                         symbolFill: '#B5C9DF',
                         hoverSymbolFill: '#779ABF',
-                        onclick: function() {
+                        onclick: function () {
                             alert('Coming soon™!')
                         },
                         _titleKey: "signatureImageTitle"
@@ -246,19 +245,19 @@ function handleLineChart(chartId, chart) {
                 }
             },
 
-            title : {
-                text : '<a href="#' + chartId + '" style="text-decoration: none; color: inherit;">' + chart.title + '</a>'
+            title: {
+                text: '<a href="#' + chartId + '" style="text-decoration: none; color: inherit;">' + chart.title + '</a>'
             },
 
-            plotOptions:{
-                series:{
+            plotOptions: {
+                series: {
                     turboThreshold: 0 // disable the 1000 limit
                 }
             },
 
-            series : [{
-                name : chart.data.lineName,
-                data : data,
+            series: [{
+                name: chart.data.lineName,
+                data: data,
                 type: 'spline',
                 tooltip: {
                     valueDecimals: 0
@@ -371,7 +370,7 @@ function handleMapChart(chartId, chart) {
                 pointFormat: '<span class="f32"><span class="flag {point.flag}"></span></span>' +
                 ' {point.name}: <b>{point.value}</b>',
                 positioner: function () {
-                    return { x: 0, y: 250 };
+                    return {x: 0, y: 250};
                 }
             },
 
@@ -383,8 +382,8 @@ function handleMapChart(chartId, chart) {
                 maxColor: '#B71C1C'
             },
 
-            series : [{
-                data : data,
+            series: [{
+                data: data,
                 mapData: Highcharts.maps['custom/world'],
                 joinBy: ['iso-a2', 'code'],
                 name: chart.data.valueName,

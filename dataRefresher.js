@@ -8,22 +8,22 @@ const databaseManager = require('./util/databaseManager');
 function refreshLineCharts() {
     var sql =
         'SELECT ' +
-            '`line_charts_processed`.`chart_uid`, ' +
-            '`line_charts_processed`.`line`, ' +
-            '`line_charts_processed`.`data`, ' +
-            '`line_charts_processed`.`last_processed_tms_2000`, ' +
-            '`plugins`.`plugin_id`, ' +
-            '`charts`.`chart_id` ' +
+        '`line_charts_processed`.`chart_uid`, ' +
+        '`line_charts_processed`.`line`, ' +
+        '`line_charts_processed`.`data`, ' +
+        '`line_charts_processed`.`last_processed_tms_2000`, ' +
+        '`plugins`.`plugin_id`, ' +
+        '`charts`.`chart_id` ' +
         'FROM ' +
-            '`line_charts_processed` ' +
+        '`line_charts_processed` ' +
         'INNER JOIN ' +
-            '`charts` ' +
+        '`charts` ' +
         'ON ' +
-            '(`line_charts_processed`.`chart_uid` = `charts`.`chart_uid`) ' +
+        '(`line_charts_processed`.`chart_uid` = `charts`.`chart_uid`) ' +
         'INNER JOIN ' +
-            '`plugins` ' +
+        '`plugins` ' +
         'ON ' +
-            '(`charts`.`plugin_id` = `plugins`.`plugin_id`)';
+        '(`charts`.`plugin_id` = `plugins`.`plugin_id`)';
     databaseManager.getConnectionPool('linecharts-refresh').query(sql, [],
         function (err, rows, fields) {
             if (err) {
@@ -71,13 +71,13 @@ function refreshLineCharts() {
 function updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId) {
     var sql =
         'SELECT ' +
-            '`line_charts`.`value`' +
+        '`line_charts`.`value`' +
         'FROM ' +
-            '`line_charts` ' +
+        '`line_charts` ' +
         'WHERE ' +
-            '`line_charts`.`chart_uid` = ? AND ' + // chart id
-            '`line_charts`.`tms_2000` = ? AND ' + // tms2000
-            '`line_charts`.`line` = ?;'; // line
+        '`line_charts`.`chart_uid` = ? AND ' + // chart id
+        '`line_charts`.`tms_2000` = ? AND ' + // tms2000
+        '`line_charts`.`line` = ?;'; // line
 
     var tms2000Now = timeUtil.dateToTms2000(new Date());
     var counter = tms2000Now - startTms2000;
@@ -97,7 +97,7 @@ function updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId) 
     }
 
     // Don't include tms2000Now or there will be missing data
-    for (;startTms2000 < tms2000Now; startTms2000++) {
+    for (; startTms2000 < tms2000Now; startTms2000++) {
         (function (tms2000, chartUid, line) {
             // Query data
             databaseManager.getConnectionPool('linecharts-refresh').query(sql, [parseInt(chartUid), tms2000, line],
@@ -107,20 +107,20 @@ function updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId) 
                         return;
                     }
                     try {
-                        var value = rows.length == 0 ? 0 : rows[0].value;
+                        var value = rows.length === 0 ? 0 : rows[0].value;
                         data.push([timeUtil.tms2000ToDate(tms2000).getTime(), value]);
                         if (--counter <= 0) {
                             console.log('Finished refreshing data for chart with uid ' + chartUid + ' and line ' + line);
                             dataCache.lineChartsData[pluginId][chartId][line] = data.sort();
                             var sql =
                                 'UPDATE ' +
-                                    '`line_charts_processed` ' +
+                                '`line_charts_processed` ' +
                                 'SET ' +
-                                    '`data` = ?, ' +
-                                    '`last_processed_tms_2000` = ? ' +
+                                '`data` = ?, ' +
+                                '`last_processed_tms_2000` = ? ' +
                                 'WHERE ' +
-                                    '`chart_uid` = ? AND ' +
-                                    '`line` = ?;';
+                                '`chart_uid` = ? AND ' +
+                                '`line` = ?;';
                             databaseManager.getConnectionPool('linecharts-refresh').query(sql, [JSON.stringify(data), tms2000Now - 1, parseInt(chartUid), line],
                                 function (err, rows, fields) {
                                     if (err) {
@@ -141,19 +141,19 @@ function updateLineChart(chartUid, chartId, line, data, startTms2000, pluginId) 
 function startup() {
     var sqlGetPlugins =
         'SELECT ' +
-            '`plugins`.`plugin_id`, `plugins`.`plugin_name`, `plugins`.`owner_id`, `users`.`username`, ' +
-            '`server_software`.`software_name`, `server_software`.`software_id`, ' +
-            '`server_software`.`plugin_id` AS global_id, `server_software`.`software_url` ' +
+        '`plugins`.`plugin_id`, `plugins`.`plugin_name`, `plugins`.`owner_id`, `users`.`username`, ' +
+        '`server_software`.`software_name`, `server_software`.`software_id`, ' +
+        '`server_software`.`plugin_id` AS global_id, `server_software`.`software_url` ' +
         'FROM ' +
-            '`plugins` ' +
+        '`plugins` ' +
         'INNER JOIN ' +
-            '`users` ' +
+        '`users` ' +
         'ON ' +
-            '`users`.`id` = `plugins`.`owner_id` ' +
+        '`users`.`id` = `plugins`.`owner_id` ' +
         'INNER JOIN ' +
-            '`server_software` ' +
+        '`server_software` ' +
         'ON ' +
-            '`plugins`.`server_software` = `server_software`.`software_id`';
+        '`plugins`.`server_software` = `server_software`.`software_id`';
     databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetPlugins, [], function (err, rows, fields) {
         if (err) {
             console.log(err);
@@ -174,7 +174,7 @@ function startup() {
                         name: row.software_name,
                         url: row.software_url
                     },
-                    isGlobal: row.plugin_id == row.global_id
+                    isGlobal: row.plugin_id === row.global_id
                 }
             );
         }
@@ -182,14 +182,14 @@ function startup() {
 
     var sqlGetCharts =
         'SELECT ' +
-            '`charts`.`chart_uid`, `charts`.`chart_id`, `charts`.`chart_type`, `charts`.`position`, ' +
-            '`charts`.`default_chart`, `charts`.`title`, `charts`.`data`, `plugins`.`plugin_id` ' +
+        '`charts`.`chart_uid`, `charts`.`chart_id`, `charts`.`chart_type`, `charts`.`position`, ' +
+        '`charts`.`default_chart`, `charts`.`title`, `charts`.`data`, `plugins`.`plugin_id` ' +
         'FROM ' +
-            '`charts` ' +
+        '`charts` ' +
         'INNER JOIN ' +
-            '`plugins` ' +
+        '`plugins` ' +
         'ON ' +
-            '`plugins`.`plugin_id` = `charts`.`plugin_id`;';
+        '`plugins`.`plugin_id` = `charts`.`plugin_id`;';
     databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetCharts, [],
         function (err, rows, fields) {
             if (err) {
@@ -216,14 +216,14 @@ function startup() {
 
     var sqlGetServerSoftwareWithGlobalPlugin =
         'SELECT ' +
-            '`software_id`, `software_name`, `software_url`, `default_charts`, `server_software`.`max_requests_per_ip`, ' +
-            '`plugins`.`plugin_id`, `plugins`.`plugin_name`, `metrics_class`, `class_creation` ' +
+        '`software_id`, `software_name`, `software_url`, `default_charts`, `server_software`.`max_requests_per_ip`, ' +
+        '`plugins`.`plugin_id`, `plugins`.`plugin_name`, `metrics_class`, `class_creation` ' +
         'FROM ' +
-            '`server_software` ' +
+        '`server_software` ' +
         'INNER JOIN ' +
-            '`plugins` ' +
+        '`plugins` ' +
         'ON ' +
-            '`plugins`.`plugin_id` = `server_software`.`plugin_id`';
+        '`plugins`.`plugin_id` = `server_software`.`plugin_id`';
     databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetServerSoftwareWithGlobalPlugin, [],
         function (err, rows, fields) {
             if (err) {
@@ -253,12 +253,12 @@ function startup() {
 
     var sqlGetServerSoftwareWithoutGlobalPlugin =
         'SELECT ' +
-            '`software_id`, `software_name`, `software_url`, `default_charts`, `max_requests_per_ip`, ' +
-            '`metrics_class`, `class_creation` ' +
+        '`software_id`, `software_name`, `software_url`, `default_charts`, `max_requests_per_ip`, ' +
+        '`metrics_class`, `class_creation` ' +
         'FROM ' +
-            '`server_software` ' +
+        '`server_software` ' +
         'WHERE ' +
-            '`plugin_id` IS NULL';
+        '`plugin_id` IS NULL';
     databaseManager.getConnectionPool('linecharts-refresh').query(sqlGetServerSoftwareWithoutGlobalPlugin, [],
         function (err, rows, fields) {
             if (err) {

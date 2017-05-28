@@ -2,12 +2,12 @@
   "database": {
     "host": "127.0.0.1",
     "user": "root",
-    "password": "top secret",
+    "password": "supersecretstuff.orwellit'ssupposedtobelolignorethatlastcommit.thepasswordchange:)",
     "database": "stats"
   },
   "recaptcha": {
-    "publicKey": "abc123",
-    "secretKey": "123abc"
+    "publicKey": "123abc",
+    "secretKey": "cba321"
   },
   "sessionSecret": "super secret session secret"
 }

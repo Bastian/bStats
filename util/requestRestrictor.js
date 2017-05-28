@@ -1,19 +1,19 @@
 const timeUtil = require('../util/timeUtil');
 
 /*
-  Format:
-  {
-    uuid-softwareId: lastTms2000
-  }
+ Format:
+ {
+ uuid-softwareId: lastTms2000
+ }
  */
 var uuidConnectionThrottle = {};
 /*
-  Format:
-  {
-    tms2000: {
-      ip-softwareId: requestCounter
-    }
-  }
+ Format:
+ {
+ tms2000: {
+ ip-softwareId: requestCounter
+ }
+ }
  */
 var ipConnectionThrottle = {};
 
@@ -63,7 +63,7 @@ function checkThrottle(serverUUID, ip, software) {
 setInterval(function () {
     var tms2000 = timeUtil.dateToTms2000(new Date()) - 2;
     delete ipConnectionThrottle[tms2000];
-}, 1000*60*15);
+}, 1000 * 60 * 15);
 
 module.exports.checkThrottle = checkThrottle;
 

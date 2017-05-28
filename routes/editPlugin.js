@@ -5,9 +5,9 @@ const timeUtil = require('../util/timeUtil');
 const dataCache = require('../util/dataCache');
 
 /* GET edit plugin page. */
-router.get('/:software/:plugin', function(request, response, next) {
+router.get('/:software/:plugin', function (request, response, next) {
 
-    if (request.user == undefined) {
+    if (request.user === undefined) {
         response.redirect('/login');
         return;
     }
@@ -21,9 +21,9 @@ router.get('/:software/:plugin', function(request, response, next) {
 
     response.render('editPlugin', {
         plugin: plugin,
-        user: request.user == undefined ? null : request.user,
-        loggedIn: request.user != undefined,
-        isOwner: request.user != undefined && plugin.owner.id == request.user.id,
+        user: request.user === undefined ? null : request.user,
+        loggedIn: request.user !== undefined,
+        isOwner: request.user !== undefined && plugin.owner.id === request.user.id,
         charts: dataCache.charts[plugin.id],
         customColor1: customColor1
     });
@@ -36,12 +36,12 @@ router.post('/:software/:plugin', function (request, response, next) {
     var softwareUrl = request.params.software;
     var plugin = dataCache.getPluginByNameAndSoftwareUrl(pluginName, softwareUrl);
 
-    if (plugin == null) {
+    if (plugin === null) {
         sendResponse(response, {error: 'Unknown plugin'}, 400);
         return;
     }
 
-    if (request.user == undefined || (plugin.owner.id != request.user.id && request.user.admin != 1)) {
+    if (request.user === undefined || (plugin.owner.id !== request.user.id && request.user.admin !== 1)) {
         sendResponse(response, {error: 'You are not the owner of ' + pluginName}, 403);
         return;
     }
@@ -233,18 +233,18 @@ function deletePlugin(request, response, plugin) {
 }
 
 function transferPlugin(request, response, plugin) {
-    if (request.user.admin != 1) {
+    if (request.user.admin !== 1) {
         sendResponse(response, {error: 'This action is only allowed for admins!'}, 403);
         return;
     }
 
     var sqlTransferPlugin =
         'UPDATE' +
-            '`plugins`, `users`' +
+        '`plugins`, `users`' +
         'SET' +
-            '`plugins`.`owner_id` = `users`.`id`' +
+        '`plugins`.`owner_id` = `users`.`id`' +
         'WHERE' +
-            '`users`.`username` = ?' +
+        '`users`.`username` = ?' +
         'AND' +
         '   `plugins`.`plugin_id` = ?;';
     databaseManager.getConnectionPool('plugin-update').query(sqlTransferPlugin, [request.body.newOwner, plugin.id],
@@ -378,11 +378,11 @@ function writeChartToDatabase(pluginId, pluginName, chart, position) {
 
 function getChartData(chartType, chartId, request, response, plugin) {
     var data = {};
-    var filterEnabled = request.body.filterEnabled != undefined;
+    var filterEnabled = request.body.filterEnabled !== undefined;
     switch (chartType) {
         case 'simple_pie':
-            var regexEnabled = request.body.regexEnabled != undefined;
-            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var regexEnabled = request.body.regexEnabled !== undefined;
+            var blacklistEnabled = request.body.blacklistEnabled !== undefined;
             var filter = request.body.filter;
             if (typeof filter !== 'string') {
                 filter = [];
@@ -401,10 +401,10 @@ function getChartData(chartType, chartId, request, response, plugin) {
             };
             break;
         case 'advanced_pie':
-            var regexEnabled = request.body.regexEnabled != undefined;
-            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var regexEnabled = request.body.regexEnabled !== undefined;
+            var blacklistEnabled = request.body.blacklistEnabled !== undefined;
             var filter = request.body.filter;
-            var maxValue =  request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
+            var maxValue = request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
             if (isNaN(maxValue)) {
                 maxValue = 0;
             }
@@ -426,10 +426,10 @@ function getChartData(chartType, chartId, request, response, plugin) {
             };
             break;
         case 'drilldown_pie':
-            var regexEnabled = request.body.regexEnabled != undefined;
-            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var regexEnabled = request.body.regexEnabled !== undefined;
+            var blacklistEnabled = request.body.blacklistEnabled !== undefined;
             var filter = request.body.filter;
-            var maxValue =  request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
+            var maxValue = request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
             if (isNaN(maxValue)) {
                 maxValue = 0;
             }
@@ -492,10 +492,10 @@ function getChartData(chartType, chartId, request, response, plugin) {
                 sendResponse(response, {error: 'Invalid or missing bar name'}, 400);
                 return null;
             }
-            var regexEnabled = request.body.regexEnabled != undefined;
-            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var regexEnabled = request.body.regexEnabled !== undefined;
+            var blacklistEnabled = request.body.blacklistEnabled !== undefined;
             var filter = request.body.filter;
-            var maxValue =  request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
+            var maxValue = request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
             if (isNaN(maxValue)) {
                 maxValue = 0;
             }
@@ -537,10 +537,10 @@ function getChartData(chartType, chartId, request, response, plugin) {
                 sendResponse(response, {error: 'Invalid bar names'}, 400);
                 return null;
             }
-            var regexEnabled = request.body.regexEnabled != undefined;
-            var blacklistEnabled = request.body.blacklistEnabled != undefined;
+            var regexEnabled = request.body.regexEnabled !== undefined;
+            var blacklistEnabled = request.body.blacklistEnabled !== undefined;
             var filter = request.body.filter;
-            var maxValue =  request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
+            var maxValue = request.body.maxValue === undefined ? 0 : parseInt(request.body.maxValue);
             if (isNaN(maxValue)) {
                 maxValue = 0;
             }

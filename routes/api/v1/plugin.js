@@ -3,7 +3,7 @@ const router = express.Router();
 const dataCache = require('../../../util/dataCache');
 
 /* GET general data. */
-router.get('/', function(request, response, next) {
+router.get('/', function (request, response, next) {
     var jsonResponse = dataCache.plugins;
 
     response.header('Access-Control-Allow-Origin', '*');
@@ -14,7 +14,7 @@ router.get('/', function(request, response, next) {
 });
 
 /* GET plugin specific data. */
-router.get('/:pluginId', function(request, response, next) {
+router.get('/:pluginId', function (request, response, next) {
     var pluginId = request.params.pluginId;
     var plugin = dataCache.getPluginById(pluginId);
     var jsonResponse;
@@ -28,10 +28,10 @@ router.get('/:pluginId', function(request, response, next) {
             name: plugin.name,
             owner: plugin.owner,
             type: plugin.type,
-            charts: dataCache.charts[pluginId] == undefined ? {} : dataCache.charts[pluginId]
+            charts: dataCache.charts[pluginId] === undefined ? {} : dataCache.charts[pluginId]
         };
     }
-    
+
     response.header('Access-Control-Allow-Origin', '*');
     response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     response.writeHead(200, {'Content-Type': 'application/json'});
@@ -40,7 +40,7 @@ router.get('/:pluginId', function(request, response, next) {
 });
 
 /* GET all charts */
-router.get('/:pluginId/charts/', function(request, response, next) {
+router.get('/:pluginId/charts/', function (request, response, next) {
     var pluginId = request.params.pluginId;
     var plugin = dataCache.getPluginById(pluginId);
     var jsonResponse;
@@ -49,7 +49,7 @@ router.get('/:pluginId/charts/', function(request, response, next) {
             error: 'Unknown plugin'
         };
     } else {
-        jsonResponse = dataCache.charts[plugin.id] == undefined ? {} : dataCache.charts[plugin.id];
+        jsonResponse = dataCache.charts[plugin.id] === undefined ? {} : dataCache.charts[plugin.id];
     }
 
     response.header('Access-Control-Allow-Origin', '*');
@@ -60,7 +60,7 @@ router.get('/:pluginId/charts/', function(request, response, next) {
 });
 
 /* GET specific chart data */
-router.get('/:pluginId/charts/:chartId', function(request, response, next) {
+router.get('/:pluginId/charts/:chartId', function (request, response, next) {
     var pluginId = request.params.pluginId;
     var plugin = dataCache.getPluginById(pluginId);
     var chartId = request.params.chartId;
@@ -85,20 +85,20 @@ router.get('/:pluginId/charts/:chartId', function(request, response, next) {
 });
 
 /* GET specific chart data */
-router.get('/:pluginId/charts/:chartId/data', function(request, response, next) {
+router.get('/:pluginId/charts/:chartId/data', function (request, response, next) {
     var pluginId = request.params.pluginId;
     var plugin = dataCache.getPluginById(pluginId);
     var chartId = request.params.chartId;
     var maxElements = parseInt(request.query.maxElements);
     if (isNaN(maxElements)) {
-        maxElements = 2*24*30; // Default: 1 month
+        maxElements = 2 * 24 * 30; // Default: 1 month
     }
     var jsonResponse;
     if (plugin === null) {
         jsonResponse = {
             error: 'Unknown plugin'
         };
-    } else if (dataCache.charts[plugin.id] === undefined || dataCache.charts[plugin.id][chartId] === undefined){
+    } else if (dataCache.charts[plugin.id] === undefined || dataCache.charts[plugin.id][chartId] === undefined) {
         jsonResponse = {
             error: 'Unknown chart'
         };
