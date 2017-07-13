@@ -93,6 +93,24 @@
                 </div>
             </div>
         </div>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="center <%= customColor1 %>-text">Bar charts</h3>
+                    <div class="row">
+                        <div id="example" class="col s12">
+                            <div id="exampleBar" style="min-width: 310px; margin: 0 auto"></div>
+                        </div>
+                    </div>
+                    <p>A <b>Simple Bar Chart</b> represents a bar chart, where each category only has 1 bar. The
+                    first value of the map is the category name and the second value of the map is the value of the bar (most of the time you want it to be 1).</p>
+                    <p>An <b>Advanced Bar Chart</b> represents a bar chart, where each category can have multiple bars (defined at the creation).
+                    The first value of the map is the category name and the second value of the map are the values for the bars.
+                    The example you can see above is an advanced pie chart.</p>
+                    <script src="https://gist.github.com/BtoBastian/474cf7eb3c2997d3cab73e560dce0caa.js"></script>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 <% include ../templates/footer.ejs %>
@@ -116,6 +134,72 @@
     Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
         proceed.call(this);
         this.container.style.background = '';
+    });
+
+    var data = {
+        valueName: 'Servers',
+        categories: ['Feature 1', 'Feature 2'],
+        series: [{
+            name: 'disabled',
+            data: [1337, 226]
+        }, {
+            name: 'enabled',
+            data: [123, 1234]
+        }]
+    }
+    $('#exampleBar').highcharts({
+        chart: {
+            type: 'bar',
+            renderTo: 'container',
+            marginTop: 40,
+            marginBottom: 80,
+            height: data.categories.length * data.series.length * (30 + data.series.length * 15) + 120 // 20px per data item plus top and bottom margins
+        },
+        title: {
+            text: '<a href="#example" style="text-decoration: none; color: inherit;">Example Bar Chart</a>'
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            },
+            series: {
+                pointWidth: 25
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size: 18px"><u><b>{point.key}</b></u></span><br/>',
+            pointFormat: '<b>Total</b>: {point.y} ' + data.valueName
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 80,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        exporting: {
+            enabled: false
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: data.valueName,
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        xAxis: {
+            categories: data.categories
+        },
+        series: data.series
     });
 </script>
 
