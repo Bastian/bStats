@@ -14,9 +14,13 @@ router.get('/', function(request, response, next) {
         var serverCount = dataCache.lineChartsData[plugin.id]['servers'][1][dataCache.lineChartsData[plugin.id]['servers'][1].length-1][1];
         if (serverCount > 0) {
             var playerCount = dataCache.lineChartsData[plugin.id]['players'][1][dataCache.lineChartsData[plugin.id]['players'][1].length-1][1];
+            var softwareName = plugin.software.name;
+            if (plugin.software.metricsClass != null) {
+                softwareName = '<a href="/global/' + plugin.software.url + '">' + plugin.software.name + '</a>'
+            }
             jsonResponse.push({
                 name: '<a href="/plugin/' + plugin.software.url + '/' + plugin.name + '">' + plugin.name + '</a>',
-                softwareName: '<a href="/global/' + plugin.software.url + '">' + plugin.software.name + '</a>',
+                softwareName: softwareName,
                 ownerName: plugin.owner.name,
                 servers: serverCount,
                 players: playerCount
