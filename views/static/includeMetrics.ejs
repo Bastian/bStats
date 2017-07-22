@@ -190,7 +190,7 @@
                                                 <tr>
                                                     <td><b><%= software[i].name %></b></td>
                                                     <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a></td>
-                                                    <td><a href="<%= software[i].metricsClass.replace("/src/main/java/org/bstats/Metrics.java", "-lite/src/main/java/org/bstats/MetricsLite.java") %>" target="_blank">MetricsLite.java</a></td>
+                                                    <td><a href="<%= software[i].metricsClass.replace("/src/main/java", "-lite/src/main/java").replace('Metrics.java', 'MetricsLite.java') %>" target="_blank">MetricsLite.java</a></td>
                                                 </tr>
                                                 <% } %>
                                                 <% } %>
