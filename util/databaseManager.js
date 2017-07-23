@@ -6,7 +6,7 @@ let pools = {};
 let cluster = null;
 
 /**
- * Gets a connection pool by it's name or create one if it does not exist.
+ * Gets a connection pool by its name or create one if it does not exist.
  *
  * @param {string} poolName The name of the connection pool.
  * @returns {object} A connection pool with the given name.
