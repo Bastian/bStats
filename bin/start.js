@@ -13,6 +13,6 @@ if (cluster.isMaster) {
         console.log(`Worker ${worker.process.pid} died`);
     });
 } else {
-    const www = require('./www');
+    let www = require('./www');
     console.log(`Worker ${process.pid} started`);
 }
