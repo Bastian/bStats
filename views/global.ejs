@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- Note: IntelliJ has problems with width, ... in jQuery .html() -->
+<!--suppress CssUnknownProperty -->
+<html lang="en">
+<head>
+    <!-- Twitter stuff -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@btobastian" />
+    <meta name="twitter:title" content="bStats - Plugin Metrics made with <3" />
+    <meta name="twitter:description" content="bStats collects data for plugin authors. It's free and easy to use!" />
+    <meta name="twitter:image" content="https://bstats.org/images/Twitter.jpg" />
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="bStats global stats.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Global <%= plugin.software.name %> stats</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <!-- Flags for the map -->
+    <link rel="stylesheet" type="text/css" href="https://cloud.github.com/downloads/lafeber/world-flags-sprite/flags32.css" />
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<body>
+<% include templates/navigation.ejs %>
+<main>
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <br><br>
+            <h1 class="header center <%= customColor1 %>-text truncate">Global stats</h1>
+            <div class="row center">
+                <h5 class="header col s12 light">Here are our fancy global stats for <%= plugin.software.name %></h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6 l4 offset-l2">
+            <div class="card-panel <%= customColor1 %>">
+                <span class="white-text"><i class="material-icons left">storage</i><b>Servers (Current/Record): <%= serversCurrent %> / <%= serversRecord %></b></span>
+            </div>
+        </div>
+        <div class="col s12 m6 l4">
+            <div class="card-panel <%= customColor1 %>">
+                <span class="white-text"><i class="material-icons left">people</i><b>Players (Current/Record): <%= playersCurrent %> / <%= playersRecord %></b></span>
+            </div>
+        </div>
+    </div>
+    <br><br>
+
+    <div id="charts" class="row">
+
+    </div>
+
+    <script type="application/javascript">
+        $.getJSON('/api/v1/plugins/<%= plugin.id %>/charts', function (charts) {
+            var chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
+            var previousRowWasFull = true;
+            for (var i = 0; i < chartIdsSorted.length; i++) {
+                var chartId = chartIdsSorted[i];
+                if (!charts.hasOwnProperty(chartId)) {
+                    continue;
+                }
+                var chart = charts[chartId];
+
+                var nextChartIsCompleteRow = true;
+                if (chartIdsSorted.length > i + 1) {
+                    var nextChartId = chartIdsSorted[i + 1];
+                    if (charts.hasOwnProperty(nextChartId)) {
+                        var nextChart = charts[nextChartId];
+                        switch (nextChart.type) {
+                            case 'simple_pie':
+                            case 'advanced_pie':
+                            case 'drilldown_pie':
+                                nextChartIsCompleteRow = false;
+                                break;
+                            case 'single_linechart':
+                            case 'simple_map':
+                            case 'advanced_map':
+                                nextChartIsCompleteRow = true;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                var jQueryChart = $('#charts');
+                switch (chart.type) {
+                    case 'simple_pie':
+                    case 'advanced_pie':
+                    case 'drilldown_pie':
+                        var colWidth = "s12 m12 l12";
+                        if (previousRowWasFull && nextChartIsCompleteRow) {
+                            colWidth = "s12 m12 l12";
+                            previousRowWasFull = true;
+                        } else if (!previousRowWasFull) {
+                            colWidth = "s12 m6 l6";
+                            previousRowWasFull = true;
+                        } else if (!nextChartIsCompleteRow) {
+                            colWidth = "s12 m6 l6";
+                            previousRowWasFull = false;
+                        }
+                        jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col ' + colWidth + '"><div id="' + chartId + 'Pie" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div></div>');
+
+                        break;
+                    case 'single_linechart':
+                        jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col s12"><div id="' + chartId + 'LineChart" class="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div><br><br></div>');
+                        previousRowWasFull = true;
+                        break;
+                    case 'simple_map':
+                    case 'advanced_map':
+                        jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col s12"><div id="' + chartId + 'Map" class="container" style="min-width: 310px; height: 600px; margin: 0 auto"></div><br><br></div>');
+                        previousRowWasFull = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (window.location.hash) { // Scroll to anchor
+                $('html,body').animate({
+                    scrollTop: $(window.location.hash).offset().top
+                }, 2000);
+            }
+        });
+    </script>
+
+</main>
+<% include templates/footer.ejs %>
+
+<!-- Scripts -->
+
+<!-- Materialize -->
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+<!-- Charts -->
+<script src="https://code.highcharts.com/stock/5.0.10/highstock.js"></script>
+<script src="https://code.highcharts.com/maps/5.0.10/modules/map.js"></script>
+<script src="https://code.highcharts.com/5.0.10/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/5.0.10/modules/no-data-to-display.js"></script>
+<script src="https://code.highcharts.com/5.0.10/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/maps/5.0.10/modules/data.js"></script>
+<script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
+<script src="/javascripts/charts/themes/chartTheme.js"></script>
+<script src="/javascripts/charts/charts.js"></script>
+<script type="application/javascript">
+    function getPluginId() {
+        return "<%= plugin.id %>";
+    }
+</script>
+
+</body>
+</html>

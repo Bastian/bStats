@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="Add a plugin to bStats.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Add plugin</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<% include templates/navigation.ejs %>
+<main>
+    <div class="container">
+        <br><br>
+        <div class="hide-on-med-and-down"><br><br></div>
+        <div class="row">
+            <% if (failed) { %>
+            <h5 class="red-text col s12 center-align">Something went wrong on our side :(</h5>
+            <% } else if (alreadyAdded) { %>
+            <h5 class="red-text col s12 center-align">Plugin already added!</h5>
+            <% } else if (wrongCaptcha) { %>
+            <h5 class="red-text col s12 center-align">Please solve the capture!</h5>
+            <% } else { %>
+            <h5 class="<%= customColor1 %>-text col s12 center-align">Add plugin</h5>
+            <% } %>
+            <br><br>
+            <div class="col s12 m8 l6 offset-m2 offset-l3 z-depth-1 grey lighten-4 row">
+                <form class="col s12" method="post">
+                    <br>
+                    <div class="row">
+                        <!-- Server software -->
+                        <div class="input-field col s12">
+                            <select id="software" name="software">
+                                <option value="" disabled selected>Select software</option>
+                                <% for (var i = 0; i < serverSoftware.length; i++) { %>
+                                <% if (serverSoftware[i].globalPlugin !== undefined || (user != null && user.admin === 1)) { %>
+                                <option value="<%= serverSoftware[i].id %>"><%= serverSoftware[i].name %></option>
+                                <% } %>
+                                <% } %>
+                            </select>
+                            <label>Select server software</label>
+                        </div>
+                        <!-- Name -->
+                        <div class="input-field col s12">
+                            <input id="pluginName" type="text" name="pluginName"
+                                   pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" class="validate">
+                            <label for="pluginName" data-error="Invalid plugin name">Plugin name</label>
+                        </div>
+                    </div>
+                    <div style="text-align: center">
+                        <div class="g-recaptcha" style="display: inline-block"
+                             data-sitekey="<%= publicKey %>"></div>
+                    </div>
+                    <br/>
+                    <!-- Add plugin button -->
+                    <div class='row'>
+                        <button type='submit' name='btn_add_plugin' class='col s12 btn btn-large waves-effect <%= customColor1 %>'>
+                            Add plugin
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<% include templates/footer.ejs %>
+
+<!-- Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+
+<script type="application/javascript">
+    $(document).ready(function() {
+        $('select').material_select();
+    });
+</script>
+
+</body>
+</html>

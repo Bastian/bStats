@@ -1,0 +1,58 @@
+<footer class="page-footer <%= customColor1 %> darken-2">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h5 class="white-text">About bStats</h5>
+                <p class="grey-text text-lighten-4">Made with ❤</p>
+            </div>
+            <div class="col l3 s12">
+                <h5 class="white-text">Useful links</h5>
+                <ul>
+                    <li><a class="white-text" href="/getting-started">Getting started</a></li>
+                    <br class="hide-on-med-and-up">
+                    <% if (loggedIn) { %>
+                    <li><a class="white-text" href="/add-plugin">Add plugin</a></li>
+                    <% } else { %>
+                    <li><a class="white-text" href="/login">Login</a></li>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="/register">Create Account</a></li>
+                    <% } %>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="/credits">Credits / Sponsor</a></li>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="javascript:void(0)" onclick="randomizeColor();">Random color</a></li>
+                </ul>
+            </div>
+            <div class="col l3 s12">
+                <h5 class="white-text">Legal notices</h5>
+                <ul>
+                    <li><a class="white-text" href="/imprint">Imprint</a></li>
+                    <br class="hide-on-med-and-up">
+                    <li><a class="white-text" href="/privacy-policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            Made with <a class="<%= customColor1 %>-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+        </div>
+    </div>
+</footer>
+
+<script type="application/javascript">
+    function setCookie(name, value, exdays) {
+        var date = new Date();
+        date.setTime(date.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires="+ date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+    function randomizeColor() {
+        var colors = [
+            'red', 'teal', 'blue', 'pink', 'brown', 'green', 'black', 'purple', 'deep-purple', 'indigo', 'light-blue',
+            'cyan', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'grey', 'blue-grey'
+        ];
+        setCookie('custom-color1', colors[Math.floor(Math.random()*colors.length)], 365);
+        location.reload();
+    }
+</script>

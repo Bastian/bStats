@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="bStats collects data for plugin authors. It's free and easy to use!">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Plugin list</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="../../../../../../stylesheets/dataTablesMaterialDesign.css" type="text/css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+
+<% include templates/navigation.ejs %>
+<main>
+    <div class="container">
+        <br><br>
+        <!-- Search form -->
+        <div class="input-field">
+            <i class="material-icons prefix grey-text text-darken-2" style="margin-top: 10px">search</i>
+            <input id="searchTable" type="text">
+            <label for="searchTable">Search plugins</label>
+        </div>
+        <!-- Datatables design by Azamat Mukhiddinov (http://codepen.io/azamatms/pen/ZGwOMM/) -->
+        <div class="row">
+            <div id="admin" class="col s12">
+                <div class="card material-table">
+                    <div class="table-header">
+                        <span class="table-title">Plugin List</span>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <div style="min-width: 650px">
+                            <table id="pluginList">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Software</th>
+                                    <th>Owner</th>
+                                    <th>Servers</th>
+                                    <th>Players</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<% include templates/footer.ejs %>
+
+<!--  Scripts-->
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="../../../../../../javascripts/dataTablesMaterialDesign.js"></script>
+
+<script type="application/javascript">
+
+    $(document).on('input','#searchTable',function () {
+        var table = $('#pluginList').DataTable();
+        table.search(document.getElementById('searchTable').value).draw();
+    });
+
+    $(document).ready(function() {
+        $('#pluginList').DataTable( {
+            processing: true,
+            ajax: {
+                url: '/api/v1/datatable',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'name' },
+                { data: 'softwareName' },
+                { data: 'ownerName' },
+                { data: 'servers' },
+                { data: 'players' }
+            ],
+            order: [[3, 'desc']]
+        } );
+    } );
+</script>
+
+</body>
+</html>

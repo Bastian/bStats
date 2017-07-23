@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="A description on how to include bStats to your plugin">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Include metrics</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <style>
+        .withBox { outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    </style>
+</head>
+<body>
+
+<% include ../templates/navigation.ejs %>
+<main>
+    <div class="container">
+
+        <br>
+        <% if (addedPlugin) { %>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <b>You successfully added your plugin!</b><br>
+                    If you haven't done it already you now have to add bStats to your plugin.
+                </div>
+            </div>
+        </div>
+        <% } %>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <p>Including bStats is very easy. There are basically two ways to include bStats:</p>
+                    <ul class="collapsible" data-collapsible="accordion">
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">code</i>Using Maven to shade bStats</div>
+                            <div class="collapsible-body">
+                                <div style="margin-left: 10px; margin-top: 4px; margin-right: 10px;">
+                                    <b class="red-text">Note: You are expected to have a basic understanding on how to use Maven!</b><br>
+                                    <b>1. Include the repository</b><br>
+                                    <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;repository&gt;
+  &lt;id&gt;bstats-repo&lt;/id&gt;
+  &lt;url&gt;http://repo.bstats.org/content/repositories/releases/&lt;/url&gt;
+&lt;/repository&gt;</code></pre>
+                                    <b>2. Include the dependency.</b><br>
+                                    There are 3 possible artifact ids: <i><b>bstats-bukkit</b></i>, <i><b>bstats-bungeecord</b></i> and <i><b>bstats-sponge</b></i> and their
+                                    lite counterparts: <i><b>bstats-bukkit-lite</b></i>, <i><b>bstats-bungeecord-lite</b></i> and <i><b>bstats-sponge-lite</b></i>
+                                    <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.bstats&lt;/groupId&gt;
+  &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
+  &lt;version&gt;1.2&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+                                    <b>3. Shade bStats into your plugin.</b><br>
+                                    This step is very important. Shading means, that the necessary classes are copied into
+                                    your plugin when you compile it. It also relocates the class to an other package.
+                                    Make sure to change <i>your.package</i> to your own package!
+                                    <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;build&gt;
+  &lt;plugins&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.4&lt;/version&gt;
+      &lt;configuration&gt;
+        &lt;artifactSet&gt;
+          &lt;includes&gt;
+            &lt;include&gt;org.bstats:*&lt;/include&gt;
+          &lt;/includes&gt;
+        &lt;/artifactSet&gt;
+        &lt;relocations&gt;
+          &lt;relocation&gt;
+            &lt;pattern&gt;org.bstats&lt;/pattern&gt;
+            &lt;!-- Replace this with your package! --&gt;
+            &lt;shadedPattern&gt;your.package&lt;/shadedPattern&gt;
+          &lt;/relocation&gt;
+        &lt;/relocations&gt;
+      &lt;/configuration&gt;
+      &lt;executions&gt;
+        &lt;execution&gt;
+          &lt;phase&gt;package&lt;/phase&gt;
+          &lt;goals&gt;
+            &lt;goal&gt;shade&lt;/goal&gt;
+          &lt;/goals&gt;
+        &lt;/execution&gt;
+      &lt;/executions&gt;
+    &lt;/plugin&gt;
+  &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+                                    <b>4. You're done!</b><br>
+                                    Your final pom.xml now may look like this:
+                                    <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+     xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;me.name&lt;/groupId&gt;
+  &lt;artifactId&gt;pluginname&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+
+  &lt;repositories&gt;
+    &lt;repository&gt;
+      &lt;id&gt;spigot-repo&lt;/id&gt;
+      &lt;url&gt;https://hub.spigotmc.org/nexus/content/groups/public/&lt;/url&gt;
+    &lt;/repository&gt;
+    &lt;repository&gt;
+      &lt;id&gt;bstats-repo&lt;/id&gt;
+      &lt;url&gt;http://repo.bstats.org/content/repositories/releases/&lt;/url&gt;
+    &lt;/repository&gt;
+  &lt;/repositories&gt;
+
+  &lt;dependencies&gt;
+    &lt;!-- Spigot as an example --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.spigotmc&lt;/groupId&gt;
+      &lt;artifactId&gt;spigot-api&lt;/artifactId&gt;
+      &lt;version&gt;LATEST&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;!-- bStats --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.bstats&lt;/groupId&gt;
+      &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
+      &lt;version&gt;1.2&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.4&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;minimizeJar&gt;true&lt;/minimizeJar&gt;
+          &lt;artifactSet&gt;
+            &lt;includes&gt;
+              &lt;include&gt;org.bstats:*&lt;/include&gt;
+            &lt;/includes&gt;
+          &lt;/artifactSet&gt;
+          &lt;relocations&gt;
+            &lt;relocation&gt;
+              &lt;pattern&gt;org.bstats&lt;/pattern&gt;
+              &lt;shadedPattern&gt;me.name.util&lt;/shadedPattern&gt;
+            &lt;/relocation&gt;
+          &lt;/relocations&gt;
+        &lt;/configuration&gt;
+        &lt;executions&gt;
+          &lt;execution&gt;
+            &lt;phase&gt;package&lt;/phase&gt;
+            &lt;goals&gt;
+              &lt;goal&gt;shade&lt;/goal&gt;
+            &lt;/goals&gt;
+          &lt;/execution&gt;
+        &lt;/executions&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+
+&lt;/project&gt;</code></pre>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">code</i>Manually copy the Metrics class</div>
+                            <div class="collapsible-body">
+                                <div style="margin-left: 10px; margin-top: 4px; margin-right: 10px;">
+                                    If you don't want to use Maven that's no problem. You can just copy and paste the required class into your project.
+                                    All classes can be found in the <a href="https://github.com/BtoBastian/bStats-Metrics">GitHub repository</a>.<br>
+                                    Just copy the class fitting your server software.
+                                    Make sure to change the package from <i>org.bstats</i> to your own package.<br>
+                                    <div style="overflow-x:auto;">
+                                        <div style="min-width: 300px">
+                                            <table>
+                                                <thead>
+                                                <tr>
+                                                    <th data-field="id">Software</th>
+                                                    <th data-field="name">Standard</th>
+                                                    <th data-field="price">Lite Version</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                <% for (var i = 0; i < software.length; i++) { %>
+                                                <% if (software[i].metricsClass != null) { %>
+                                                <tr>
+                                                    <td><b><%= software[i].name %></b></td>
+                                                    <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a></td>
+                                                    <td><a href="<%= software[i].metricsClass.replace("/src/main/java", "-lite/src/main/java").replace('Metrics.java', 'MetricsLite.java') %>" target="_blank">MetricsLite.java</a></td>
+                                                </tr>
+                                                <% } %>
+                                                <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    After adding the Metrics class to your plugin, you now have to initialise the class.
+                    How this is done depends on the server software you are using.<br>
+                    Just take a look at the examples for your server software:
+                    <table>
+                        <thead>
+                        <tr>
+                            <th data-field="id">Software</th>
+                            <th data-field="name">Example</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <% for (var i = 0; i < software.length; i++) { %>
+                        <% if (software[i].classCreation != null) { %>
+                        <tr>
+                            <td><b><%= software[i].name %></b></td>
+                            <td><a href="<%= software[i].classCreation %>" target="_blank">ExamplePlugin.java</a></td>
+                        </tr>
+                        <% } %>
+                        <% } %>
+                        </tbody>
+                    </table>
+                    You may notice all examples also include a very basic example on how to use custom charts. You can
+                    find a detailed tutorial on how to use them <a href="/help/custom-charts">here</a>. If you don't need
+                    custom charts you can (but not have to) use the lite version of the Metrics class, too, which is called
+                    <i>MetricsLite</i>.
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+<% include ../templates/footer.ejs %>
+
+<!-- Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
+<script src="../../../../../../javascripts/materialize/init.js"></script>
+<!-- Code prettify -->
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+</body>
+</html>
