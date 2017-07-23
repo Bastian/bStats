@@ -19,6 +19,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', require('./routes/index'));
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     let err = new Error('Not Found');
@@ -28,13 +30,25 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    let customColor1 = req.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
 
-    // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.render('error', {
+        message: err.message,
+        error: err,
+        user: req.user === undefined ? null : req.user,
+        loggedIn: req.user !== undefined,
+        customColor1: customColor1
+    });
 });
+
+app.locals.getPlugins = function (ownerId) {
+    // dummy return value
+    return [];
+};
+
+// dummy value
+app.locals.software = [];
 
 module.exports = app;
