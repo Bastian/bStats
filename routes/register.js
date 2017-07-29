@@ -43,7 +43,12 @@ router.post('/', function (req, res, next) {
     let verificationUrl = 'https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + req.body['g-recaptcha-response'] + '&remoteip=' + req.connection.remoteAddress;
     // Hitting GET request to the URL, Google will respond with success or error scenario.
     request(verificationUrl, function(error, r, body) {
-        body = JSON.parse(body);
+        try {
+            body = JSON.parse(body);
+            res.redirect('/register?wrongCaptcha=true');
+        } catch (err) {
+            console.log(err);
+        }
         // Success will be true or false depending upon captcha validation.
         if (body.success !== undefined && !body.success) {
             res.redirect('/register?wrongCaptcha=true');
