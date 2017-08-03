@@ -1,10 +1,4 @@
 {
-  "mysql": {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "top secret",
-    "database": "stats"
-  },
   "redis": [
     {
       "port": 1234,
