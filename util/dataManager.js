@@ -1,4 +1,5 @@
 const databaseManager = require('./databaseManager');
+const timeUtil = require('../util/timeUtil');
 
 /**
  * Gets an unordered array with all plugin ids.
@@ -212,6 +213,53 @@ function getChartByPluginIdAndChartId() {
     });
 }
 
+/**
+ * Updates the data for the chart with the given uid. The chart must be a simple pie or advanced pie.
+ */
+function updatePieData(chartUid, tms2000, valueName, value) {
+    databaseManager.getRedisCluster().zincrby(`data:${chartUid}.${tms2000}`, value, valueName, function (err, res) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}`, 60*31);
+    });
+}
+
+/**
+ * Updates the data for the chart with the given uid. The chart must be a map chart.
+ */
+function updateMapData(chartUid, tms2000, valueName, value) {
+    // The charts are saved the same way
+    updatePieData(chartUid, tms2000, valueName, value);
+}
+
+/**
+ * Updates the data for the chart with the given uid. The chart must be a line chart.
+ */
+function updateLineChartData(chartUid, value, line, tms2000) {
+    databaseManager.getRedisCluster().hincrby(`data:${chartUid}.${line}`, timeUtil.tms2000ToDate(tms2000).getUTCDate(), value, function (err, res) {
+        if (err) {
+            console.log(err);
+        }
+    });
+}
+
+/**
+ * Updates the data for the chart with the given uid. The chart must be a drilldown pie chart.
+ */
+function updateDrilldownPieData(chartUid, tms2000, valueName, values) {
+    // TODO
+}
+
+/**
+ * Updates the data for the chart with the given uid. The chart must be a bar chart.
+ */
+function updateBarData(chartUid, tms2000, category, values) {
+    // TODO
+}
+
+// Methods to access existing data
 module.exports.getPluginIds = getPluginIds;
 module.exports.getSoftwareByUrl = getSoftwareByUrl;
 module.exports.getSoftwareById = getSoftwareById;
@@ -220,3 +268,10 @@ module.exports.getPluginBySoftwareUrlAndName = getPluginBySoftwareUrlAndName;
 module.exports.getGlobalPluginBySoftwareUrl = getGlobalPluginBySoftwareUrl;
 module.exports.getChartByUid = getChartByUid;
 module.exports.getChartByPluginIdAndChartId = getChartByPluginIdAndChartId;
+
+// Methods for updating existing data
+module.exports.updatePieData = updatePieData;
+module.exports.updateMapData = updateMapData;
+module.exports.updateLineChartData = updateLineChartData;
+module.exports.updateDrilldownPieData = updateDrilldownPieData;
+module.exports.updateBarData = updateBarData;
