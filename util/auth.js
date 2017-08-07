@@ -61,7 +61,7 @@ module.exports = function (passport) {
             passReqToCallback: true
         },
         function (request, username, password, done) { // Callback with username and password
-            databaseManager.getRedisCluster().hmget(`user:${username}`, ['name', 'password', 'admin'], function (err, res) {
+            databaseManager.getRedisCluster().hmget(`user:${username.toLowerCase()}`, ['name', 'password', 'admin'], function (err, res) {
                 if (err) {
                     return done(err); // Error
                 }
