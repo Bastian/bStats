@@ -227,7 +227,7 @@ router.post('/:software?', function(request, response, next) {
             }
 
             dataManager.getGlobalPluginBySoftwareUrl(software.url, function (err, res) {
-                callback(err, res, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, geo, tms2000);
+                callback(err, res, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo);
             });
         },
         function (globalPlugin, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo, callback) {
