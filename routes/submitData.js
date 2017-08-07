@@ -227,10 +227,10 @@ router.post('/:software?', function(request, response, next) {
             }
 
             dataManager.getGlobalPluginBySoftwareUrl(software.url, function (err, res) {
-                callback(err, res, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000);
+                callback(err, res, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, geo, tms2000);
             });
         },
-        function (globalPlugin, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, callback) {
+        function (globalPlugin, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo, callback) {
             if (globalPlugin !== null) {
                 plugins.push({
                     customCharts: [],
@@ -250,6 +250,7 @@ router.post('/:software?', function(request, response, next) {
                 if (typeof pluginName !== 'string') {
                     continue; // Invalid plugin
                 }
+
                 if (handledPlugins.indexOf(pluginName) > -1) {
                     console.log('Plugin ' + pluginName + ' sent it\'s data twice (Server-UUID: ' + serverUUID + ')');
                     continue;
@@ -260,7 +261,7 @@ router.post('/:software?', function(request, response, next) {
                     if (err) {
                         console.log(err);
                     } else if (res !== null) {
-                        handlePlugin(res, plugin, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000);
+                        handlePlugin(res, plugin, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo);
                     }
                 });
             }
@@ -278,23 +279,10 @@ router.post('/:software?', function(request, response, next) {
 });
 
 /**
- * Sends a response in JSON format.
- *
- * @param response The response.
- * @param json What should be sent.
- * @param statusCode The status code.
- */
-function sendResponse(response, json, statusCode) {
-    response.writeHead(statusCode, {'Content-Type': 'application/json'});
-    response.write(JSON.stringify(json));
-    response.end();
-}
-
-/**
  * Handles the sent data of a plugin.
  */
-function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000) {
-    if (plugin.global && plugin.requestRandom !== requestRandom) {
+function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo) {
+    if (plugin.global && data.requestRandom !== requestRandom) {
         // Someone tried to trick us
         console.log('Server %s sent a global plugin!', serverUUID);
         return;
@@ -480,6 +468,19 @@ function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalChar
         });
     }
 
+}
+
+/**
+ * Sends a response in JSON format.
+ *
+ * @param response The response.
+ * @param json What should be sent.
+ * @param statusCode The status code.
+ */
+function sendResponse(response, json, statusCode) {
+    response.writeHead(statusCode, {'Content-Type': 'application/json'});
+    response.write(JSON.stringify(json));
+    response.end();
 }
 
 module.exports = router;
