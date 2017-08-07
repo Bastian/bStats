@@ -272,14 +272,31 @@ function getFullLineChartData(chartUid, line, callback) {
     });
 }
 
+/**
+ * Gets the stored data of a pie chart.
+ */
 function getPieData(chartUid, callback) {
-
+    let tms2000 = timeUtil.tms2000ToDate(timeUtil.dateToTms2000(new Date()) - 1).getTime();
+    databaseManager.getRedisCluster().zrange(`data:${chartUid}.${tms2000}`, 0, -1, 'WITHSCORES', function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        // We have to convert the data first, e.g.:
+        // ["offline","1","online","3"] -> [{"name":"offline","y":1},{"name":"online","y":3}]
+        let data = [];
+        for (let i = 0; i < res.length; i += 2) {
+            data.push({name: res[i], y: parseInt(res[i+1])});
+        }
+        callback(null, data);
+    });
 }
 
 /**
  * Updates the data for the chart with the given uid. The chart must be a simple pie or advanced pie.
  */
 function updatePieData(chartUid, tms2000, valueName, value) {
+    console.log(`data:${chartUid}.${tms2000}`);
     databaseManager.getRedisCluster().zincrby(`data:${chartUid}.${tms2000}`, value, valueName, function (err, res) {
         if (err) {
             console.log(err);
