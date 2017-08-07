@@ -45,9 +45,9 @@ router.post('/', function (req, res, next) {
     request(verificationUrl, function(error, r, body) {
         try {
             body = JSON.parse(body);
-            res.redirect('/register?wrongCaptcha=true');
         } catch (err) {
             console.log(err);
+            return;
         }
         // Success will be true or false depending upon captcha validation.
         if (body.success !== undefined && !body.success) {
