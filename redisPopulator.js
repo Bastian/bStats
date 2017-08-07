@@ -1392,10 +1392,10 @@ function populatePlugins() {
         );
         // Set index
         for (let j = 0; j < serverSoftware.length; j++) {
-            if (serverSoftware.id === plugins[i].software) {
+            if (serverSoftware[j].id === plugins[i].software) {
                 databaseManager.getRedisCluster().set(
-                    `plugins.index.id.url+name:${serverSoftware.url.toLowerCase()}.${plugins[i].name.toLowerCase()}`, plugins[i].id,
-                    getCallbackFunction(`plugins.index.id.url+name:${serverSoftware.url.toLowerCase()}.${plugins[i].name.toLowerCase()}`)
+                    `plugins.index.id.url+name:${serverSoftware[j].url.toLowerCase()}.${plugins[i].name.toLowerCase()}`, plugins[i].id,
+                    getCallbackFunction(`plugins.index.id.url+name:${serverSoftware[j].url.toLowerCase()}.${plugins[i].name.toLowerCase()}`)
                 )
             }
         }
