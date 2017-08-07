@@ -273,10 +273,10 @@ function getFullLineChartData(chartUid, line, callback) {
 }
 
 /**
- * Gets the stored data of a pie chart.
+ * Gets the stored data of a simple or advanced pie chart.
  */
 function getPieData(chartUid, callback) {
-    let tms2000 = timeUtil.tms2000ToDate(timeUtil.dateToTms2000(new Date()) - 1).getTime();
+    let tms2000 = timeUtil.dateToTms2000(new Date()) - 1;
     databaseManager.getRedisCluster().zrange(`data:${chartUid}.${tms2000}`, 0, -1, 'WITHSCORES', function (err, res) {
         if (err) {
             callback(err, null);
@@ -352,6 +352,7 @@ module.exports.getAllPluginIds = getAllPluginIds;
 // Methods to access existing chart data
 module.exports.getLimitedLineChartData = getLimitedLineChartData;
 module.exports.getFullLineChartData = getFullLineChartData;
+module.exports.getPieData = getPieData;
 
 // Methods for updating existing data
 module.exports.updatePieData = updatePieData;
