@@ -259,8 +259,14 @@ function getFullLineChartData(chartUid, line, callback) {
             return;
         }
         let data = [];
-        for (let i = 0; i < res.length; i += 2) {
-            data.push([parseInt(res[i*2]), parseInt(res[i*2+1])]);
+        let maxTimestamp = timeUtil.tms2000ToDate(timeUtil.dateToTms2000(new Date()) - 1).getTime();
+        for (let property in res) {
+            if (res.hasOwnProperty(property)) {
+                let timestamp = parseInt(property);
+                if (timestamp <= maxTimestamp) {
+                    data.push([timestamp, parseInt(res[property])]);
+                }
+            }
         }
         callback(null, data);
     });
