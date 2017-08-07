@@ -293,6 +293,26 @@ function getPieData(chartUid, callback) {
 }
 
 /**
+ * Gets the stored data of a simple or advanced map chart.
+ */
+function getMapData(chartUid, callback) {
+    let tms2000 = timeUtil.dateToTms2000(new Date()) - 1;
+    databaseManager.getRedisCluster().zrange(`data:${chartUid}.${tms2000}`, 0, -1, 'WITHSCORES', function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        // We have to convert the data first, e.g.:
+        // ["DE","1","US","3"] -> [{"code":"DE","value":1},{"code":"US","value":3}]
+        let data = [];
+        for (let i = 0; i < res.length; i += 2) {
+            data.push({name: res[i], y: parseInt(res[i+1])});
+        }
+        callback(null, data);
+    });
+}
+
+/**
  * Updates the data for the chart with the given uid. The chart must be a simple pie or advanced pie.
  */
 function updatePieData(chartUid, tms2000, valueName, value) {
@@ -353,6 +373,7 @@ module.exports.getAllPluginIds = getAllPluginIds;
 module.exports.getLimitedLineChartData = getLimitedLineChartData;
 module.exports.getFullLineChartData = getFullLineChartData;
 module.exports.getPieData = getPieData;
+module.exports.getMapData = getMapData;
 
 // Methods for updating existing data
 module.exports.updatePieData = updatePieData;
