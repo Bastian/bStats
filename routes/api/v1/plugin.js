@@ -192,7 +192,7 @@ router.get('/:pluginId/charts/:chartId/data', function(request, response, next) 
     let chartId = request.params.chartId;
     let maxElements = parseInt(request.query.maxElements);
 
-    dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['uid', 'type'], function (err, res) {
+    dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type'], function (err, res) {
         if (err) {
             console.log(err);
             writeResponse(500, {error: 'Unknown error'}, response);
