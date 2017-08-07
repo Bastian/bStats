@@ -228,7 +228,25 @@ router.get('/:pluginId/charts/:chartId/data', function(request, response, next) 
                 break;
             case 'simple_pie':
             case 'advanced_pie':
-                // TODO
+                dataManager.getPieData(res.uid, function (err, data) {
+                    if (err) {
+                        console.log(err);
+                        writeResponse(500, {error: 'Unknown error'}, response);
+                    } else {
+                        writeResponse(200, data, response);
+                    }
+                });
+                break;
+            case 'simple_map':
+            case 'advanced_map':
+                dataManager.getMapData(res.uid, function (err, data) {
+                    if (err) {
+                        console.log(err);
+                        writeResponse(500, {error: 'Unknown error'}, response);
+                    } else {
+                        writeResponse(200, data, response);
+                    }
+                });
                 break;
             default:
                 writeResponse(500, {error: 'Unknown chart type'}, response);
