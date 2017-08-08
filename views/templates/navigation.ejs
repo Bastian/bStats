@@ -33,7 +33,7 @@
         </li>
         <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">language</i>Global stats</a></li>
         <% for (var i = 0; i < software.length; i++) { %>
-        <% if (software[i].globalPlugin !== undefined) { %>
+        <% if (software[i].globalPlugin !== null) { %>
         <li><a href="/global/<%= software[i].url %>"><%= software[i].name %></a></li>
         <% } %>
         <% } %>
@@ -83,7 +83,7 @@
 <!-- Global stats dropdown -->
 <ul id="dropdownGlobalStats" class="dropdown-content">
     <% for (var i = 0; i < software.length; i++) { %>
-    <% if (software[i].globalPlugin !== undefined) { %>
+    <% if (software[i].globalPlugin !== null) { %>
     <li><a href="/global/<%= software[i].url %>" class="truncate <%= customColor1 %>-text"><%= software[i].name %></a></li>
     <% } %>
     <% } %>

@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const passport = require('passport');
+const dataManager = require('./util/dataManager');
 
 const auth = require('./util/auth');
 const config = require('./util/config');
@@ -35,6 +36,20 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Middleware to include software on every local, except the GET/POST /api route and POST /submitData
+app.use(function (req, res, next) {
+    if (req.method === 'POST') {
+        return next();
+    }
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+    dataManager.getAllSoftware(['name', 'url', 'globalPlugin'], function (err, software) {
+        res.locals.software = software;
+        next();
+    });
+});
+
 app.use('/', require('./routes/index'));
 app.use('/login', require('./routes/login'));
 app.use('/register', require('./routes/register'));
@@ -45,7 +60,15 @@ app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
 app.use(function(req, res, next) {
     let err = new Error('Not Found');
     err.status = 404;
-    next(err);
+    if (req.path.startsWith('/api')) {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.writeHead(404, {'Content-Type': 'application/json'});
+        res.write(JSON.stringify({error: 'Invalid URL'}));
+        res.end();
+    } else {
+        next(err);
+    }
 });
 
 // error handler
@@ -54,6 +77,9 @@ app.use(function(err, req, res, next) {
     customColor1 = customColor1 === undefined ? 'teal' : customColor1;
 
     res.status(err.status || 500);
+    if (err.status === undefined) {
+        err.status = 500;
+    }
     res.render('error', {
         message: err.message,
         error: err,
@@ -63,12 +89,10 @@ app.use(function(err, req, res, next) {
     });
 });
 
+app.locals.dataManager = dataManager;
 app.locals.getPlugins = function (ownerId) {
     // dummy return value
     return [];
 };
-
-// dummy value
-app.locals.software = [];
 
 module.exports = app;
