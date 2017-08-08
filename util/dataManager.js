@@ -239,6 +239,40 @@ function getAllSoftwareIds(callback) {
 }
 
 /**
+ * Gets an unordered array with all software.
+ * The method accepts one or two parameters in the following order:
+ * - "callback"
+ * - "fields", "callback"
+ */
+function getAllSoftware() {
+    let fields = arguments.length === 2 ? arguments[0] :
+        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts'];
+    let callback = arguments.length === 2 ? arguments[1] : arguments[0];
+    getAllSoftwareIds(function (err, softwareIds) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        let promises = [];
+        for (let i = 0; i < softwareIds.length; i++) {
+            promises.push(new Promise((resolve, reject) => {
+                getSoftwareById(softwareIds[i], fields, function (err, res) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(res);
+                });
+            }));
+        }
+        // Gets the software objects
+        Promise.all(promises).then(values => {
+            callback(null, values);
+        });
+    });
+}
+
+/**
  * Gets the data of a line chart. The data is limited to a specific amount.
  */
 function getLimitedLineChartData(chartUid, line, amount, callback) {
@@ -386,6 +420,7 @@ module.exports.getChartByUid = getChartByUid;
 module.exports.getChartByPluginIdAndChartId = getChartByPluginIdAndChartId;
 module.exports.getAllPluginIds = getAllPluginIds;
 module.exports.getAllSoftwareIds = getAllSoftwareIds;
+module.exports.getAllSoftware = getAllSoftware;
 
 // Methods to access existing chart data
 module.exports.getLimitedLineChartData = getLimitedLineChartData;
