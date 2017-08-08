@@ -7,16 +7,12 @@ const config = require('../util/config');
 /* GET login page. */
 router.get('/', function(req, res, next) {
 
-    let customColor1 = req.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
     res.render('register', {
         user: req.user === undefined ? null : req.user,
         loggedIn: req.user !== undefined,
         publicKey: config.recaptcha.publicKey,
         failed: req.query.failed === undefined ? false : req.query.failed,
-        wrongCaptcha: req.query.wrongCaptcha === undefined ? false : req.query.wrongCaptcha,
-        customColor1: customColor1
+        wrongCaptcha: req.query.wrongCaptcha === undefined ? false : req.query.wrongCaptcha
     });
 
 });

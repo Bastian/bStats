@@ -36,7 +36,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware to include software on every local, except the GET/POST /api route and POST /submitData
+// Middleware to include software local, except the GET/POST /api route and POST /submitData
 app.use(function (req, res, next) {
     if (req.method === 'POST') {
         return next();
@@ -48,6 +48,14 @@ app.use(function (req, res, next) {
         res.locals.software = software;
         next();
     });
+});
+
+// Middleware to include the custom color local
+app.use(function (req, res, next) {
+    let customColor1 = req.cookies["custom-color1"];
+    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+    res.locals.customColor1 = customColor1;
+    next();
 });
 
 app.use('/', require('./routes/index'));
@@ -73,8 +81,7 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-    let customColor1 = req.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+
 
     res.status(err.status || 500);
     if (err.status === undefined) {
@@ -84,8 +91,7 @@ app.use(function(err, req, res, next) {
         message: err.message,
         error: err,
         user: req.user === undefined ? null : req.user,
-        loggedIn: req.user !== undefined,
-        customColor1: customColor1
+        loggedIn: req.user !== undefined
     });
 });
 
