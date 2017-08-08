@@ -4,7 +4,7 @@ const dataManager = require('../../../util/dataManager');
 const waterfall = require('async-waterfall');
 
 /* GET general data. */
-router.get('/', function(request, response, next) {
+router.get('/', function(req, res, next) {
     waterfall([
         function (callback) {
             dataManager.getAllPluginIds(callback);
@@ -13,21 +13,21 @@ router.get('/', function(request, response, next) {
             let promises = [];
             for (let i = 0; i < pluginIds.length; i++) {
                 promises.push(new Promise((resolve, reject) => {
-                    dataManager.getPluginById(pluginIds[i], ['name', 'software', 'owner', 'global'], function (err, res) {
+                    dataManager.getPluginById(pluginIds[i], ['name', 'software', 'owner', 'global'], function (err, plugin) {
                         if (err) {
                             reject(err);
                             return;
                         }
                         resolve({
-                            id: res.id,
-                            name: res.name,
+                            id: plugin.id,
+                            name: plugin.name,
                             owner: {
-                                name: res.owner
+                                name: plugin.owner
                             },
                             software: {
-                                id: res.software
+                                id: plugin.software
                             },
-                            isGlobal: res.global
+                            isGlobal: plugin.global
                         });
                     });
                 }));
@@ -41,48 +41,48 @@ router.get('/', function(request, response, next) {
             // TODO software name and software url is missing
             callback(null, plugins)
         }
-    ], function (err, res) {
+    ], function (err, plugins) {
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, response);
+            writeResponse(500, {error: 'Unknown error'}, res);
             return;
         }
-        writeResponse(200, res, response);
+        writeResponse(200, plugins, res);
     });
 });
 
 /* GET plugin specific data. */
-router.get('/:pluginId', function(request, response, next) {
-    let pluginId = request.params.pluginId;
+router.get('/:pluginId', function(req, res, next) {
+    let pluginId = req.params.pluginId;
 
     dataManager.getPluginById(pluginId, ['name', 'software', 'charts', 'owner'], function (err, plugin) {
         let jsonResponse = {};
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, response);
+            writeResponse(500, {error: 'Unknown error'}, res);
             return;
         }
         if (plugin === null || plugin.name === null) {
-            writeResponse(404, {error: 'Unknown plugin'}, response);
+            writeResponse(404, {error: 'Unknown plugin'}, res);
             return;
         }
 
         let promises = [];
         for (let i = 0; i < plugin.charts.length; i++) {
             promises.push(new Promise((resolve, reject) => {
-                dataManager.getChartByUid(plugin.charts[i], ['id', 'type', 'position', 'title', 'default', 'data'], function (err, res) {
+                dataManager.getChartByUid(plugin.charts[i], ['id', 'type', 'position', 'title', 'default', 'data'], function (err, chart) {
                     if (err) {
                         reject(err);
                         return;
                     }
                     resolve({
-                        uid: res.uid,
-                        id: res.id,
-                        type: res.type,
-                        position: res.position,
-                        title: res.title,
-                        isDefault: res.default,
-                        data: res.data
+                        uid: chart.uid,
+                        id: chart.id,
+                        type: chart.type,
+                        position: chart.position,
+                        title: chart.title,
+                        isDefault: chart.default,
+                        data: chart.data
                     });
                 });
             }));
@@ -102,44 +102,44 @@ router.get('/:pluginId', function(request, response, next) {
                 },
                 charts: charts
             };
-            writeResponse(200, jsonResponse, response);
+            writeResponse(200, jsonResponse, res);
         });
 
     });
 });
 
 /* GET all charts */
-router.get('/:pluginId/charts/', function(request, response, next) {
-    let pluginId = request.params.pluginId;
+router.get('/:pluginId/charts/', function(req, res, next) {
+    let pluginId = req.params.pluginId;
 
     dataManager.getPluginById(pluginId, ['name', 'charts'], function (err, plugin) {
         let jsonResponse = {};
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, response);
+            writeResponse(500, {error: 'Unknown error'}, res);
             return;
         }
         if (plugin === null || plugin.name === null) {
-            writeResponse(404, {error: 'Unknown plugin'}, response);
+            writeResponse(404, {error: 'Unknown plugin'}, res);
             return;
         }
 
         let promises = [];
         for (let i = 0; i < plugin.charts.length; i++) {
             promises.push(new Promise((resolve, reject) => {
-                dataManager.getChartByUid(plugin.charts[i], ['id', 'type', 'position', 'title', 'default', 'data'], function (err, res) {
+                dataManager.getChartByUid(plugin.charts[i], ['id', 'type', 'position', 'title', 'default', 'data'], function (err, chart) {
                     if (err) {
                         reject(err);
                         return;
                     }
                     resolve({
-                        uid: res.uid,
-                        id: res.id,
-                        type: res.type,
-                        position: res.position,
-                        title: res.title,
-                        isDefault: res.default,
-                        data: res.data
+                        uid: chart.uid,
+                        id: chart.id,
+                        type: chart.type,
+                        position: chart.position,
+                        title: chart.title,
+                        isDefault: chart.default,
+                        data: chart.data
                     });
                 });
             }));
@@ -151,116 +151,114 @@ router.get('/:pluginId/charts/', function(request, response, next) {
                 charts[values[i].id] = values[i];
                 delete charts[values[i].id].id;
             }
-            writeResponse(200, charts, response);
+            writeResponse(200, charts, res);
         });
 
     });
 });
 
 /* GET specific chart data */
-router.get('/:pluginId/charts/:chartId', function(request, response, next) {
-    let pluginId = request.params.pluginId;
-    let chartId = request.params.chartId;
+router.get('/:pluginId/charts/:chartId', function(req, res, next) {
+    let pluginId = req.params.pluginId;
+    let chartId = req.params.chartId;
 
-    dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type', 'position', 'title', 'default', 'data'], function (err, res) {
+    dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type', 'position', 'title', 'default', 'data'], function (err, chart) {
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, response);
+            writeResponse(500, {error: 'Unknown error'}, res);
             return;
         }
-        if (res === null) {
-            writeResponse(404, {error: 'Unknown chart or plugin'}, response);
+        if (chart === null) {
+            writeResponse(404, {error: 'Unknown chart or plugin'}, res);
             return;
         }
 
-        let chart = {
-            uid: res.uid,
-            type: res.type,
-            position: res.position,
-            title: res.title,
-            isDefault: res.default,
-            data: res.data
-        };
-
-        writeResponse(200, chart, response);
+        writeResponse(200, {
+            uid: chart.uid,
+            type: chart.type,
+            position: chart.position,
+            title: chart.title,
+            isDefault: chart.default,
+            data: chart.data
+        }, res);
     });
 });
 
 /* GET specific chart data */
-router.get('/:pluginId/charts/:chartId/data', function(request, response, next) {
-    let pluginId = request.params.pluginId;
-    let chartId = request.params.chartId;
-    let maxElements = parseInt(request.query.maxElements);
+router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
+    let pluginId = req.params.pluginId;
+    let chartId = req.params.chartId;
+    let maxElements = parseInt(req.query.maxElements);
 
-    dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type'], function (err, res) {
+    dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type'], function (err, chart) {
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, response);
+            writeResponse(500, {error: 'Unknown error'}, res);
             return;
         }
-        if (res === null) {
-            writeResponse(404, {error: 'Unknown chart or plugin'}, response);
+        if (chart === null) {
+            writeResponse(404, {error: 'Unknown chart or plugin'}, res);
             return;
         }
 
-        switch (res.type) {
+        switch (chart.type) {
             case 'single_linechart':
                 if (!isNaN(parseInt(maxElements))) {
                     maxElements = parseInt(maxElements) > 2*24*30*365*5 ? 2*24*30*365*5 : parseInt(maxElements);
-                    dataManager.getLimitedLineChartData(res.uid, 1, maxElements, function (err, data) {
+                    dataManager.getLimitedLineChartData(chart.uid, 1, maxElements, function (err, data) {
                         if (err) {
                             console.log(err);
-                            writeResponse(500, {error: 'Unknown error'}, response);
+                            writeResponse(500, {error: 'Unknown error'}, res);
                         } else {
-                            writeResponse(200, data, response);
+                            writeResponse(200, data, res);
                         }
                     });
                 } else {
-                    dataManager.getFullLineChartData(res.uid, 1, function (err, data) {
+                    dataManager.getFullLineChartData(chart.uid, 1, function (err, data) {
                         if (err) {
                             console.log(err);
-                            writeResponse(500, {error: 'Unknown error'}, response);
+                            writeResponse(500, {error: 'Unknown error'}, res);
                         } else {
-                            writeResponse(200, data, response);
+                            writeResponse(200, data, res);
                         }
                     });
                 }
                 break;
             case 'simple_pie':
             case 'advanced_pie':
-                dataManager.getPieData(res.uid, function (err, data) {
+                dataManager.getPieData(chart.uid, function (err, data) {
                     if (err) {
                         console.log(err);
-                        writeResponse(500, {error: 'Unknown error'}, response);
+                        writeResponse(500, {error: 'Unknown error'}, res);
                     } else {
-                        writeResponse(200, data, response);
+                        writeResponse(200, data, res);
                     }
                 });
                 break;
             case 'simple_map':
             case 'advanced_map':
-                dataManager.getMapData(res.uid, function (err, data) {
+                dataManager.getMapData(chart.uid, function (err, data) {
                     if (err) {
                         console.log(err);
-                        writeResponse(500, {error: 'Unknown error'}, response);
+                        writeResponse(500, {error: 'Unknown error'}, res);
                     } else {
-                        writeResponse(200, data, response);
+                        writeResponse(200, data, res);
                     }
                 });
                 break;
             default:
-                writeResponse(500, {error: 'Unknown chart type'}, response);
+                writeResponse(500, {error: 'Unknown chart type'}, res);
                 break;
         }
     });
 });
 
-function writeResponse(statusCode, jsonResponse, response) {
-    response.header('Access-Control-Allow-Origin', '*');
-    response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    response.writeHead(statusCode, {'Content-Type': 'application/json'});
-    response.write(JSON.stringify(jsonResponse));
-    response.end();
+function writeResponse(statusCode, jsonResponse, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.writeHead(statusCode, {'Content-Type': 'application/json'});
+    res.write(JSON.stringify(jsonResponse));
+    res.end();
 }
 
 module.exports = router;
