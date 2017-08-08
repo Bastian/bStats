@@ -373,7 +373,7 @@ function updatePieData(chartUid, tms2000, valueName, value) {
             console.log(err);
             return;
         }
-        databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}`, 60*31);
+        databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}`, 60*61);
     });
 }
 
