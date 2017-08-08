@@ -222,6 +222,23 @@ function getAllPluginIds(callback) {
 }
 
 /**
+ * Gets an unordered array with all software ids.
+ */
+function getAllSoftwareIds(callback) {
+    databaseManager.getRedisCluster().smembers('software.ids', function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        let data = [];
+        for (let i = 0; i < res.length; i++) {
+            data.push(parseInt(res[i]));
+        }
+        callback(null, res);
+    });
+}
+
+/**
  * Gets the data of a line chart. The data is limited to a specific amount.
  */
 function getLimitedLineChartData(chartUid, line, amount, callback) {
@@ -368,6 +385,7 @@ module.exports.getGlobalPluginBySoftwareUrl = getGlobalPluginBySoftwareUrl;
 module.exports.getChartByUid = getChartByUid;
 module.exports.getChartByPluginIdAndChartId = getChartByPluginIdAndChartId;
 module.exports.getAllPluginIds = getAllPluginIds;
+module.exports.getAllSoftwareIds = getAllSoftwareIds;
 
 // Methods to access existing chart data
 module.exports.getLimitedLineChartData = getLimitedLineChartData;
