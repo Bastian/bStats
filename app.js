@@ -89,17 +89,13 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-
-
     res.status(err.status || 500);
     if (err.status === undefined) {
         err.status = 500;
     }
     res.render('error', {
         message: err.message,
-        error: err,
-        user: req.user === undefined ? null : req.user,
-        loggedIn: req.user !== undefined
+        error: err
     });
 });
 
