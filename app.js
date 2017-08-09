@@ -67,6 +67,7 @@ app.use(function (req, res, next) {
 
 app.use('/', require('./routes/index'));
 app.use('/login', require('./routes/login'));
+app.use('/logout', require('./routes/logout'));
 app.use('/register', require('./routes/register'));
 app.use('/submitData', require('./routes/submitData'));
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
