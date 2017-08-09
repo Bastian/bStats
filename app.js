@@ -58,6 +58,13 @@ app.use(function (req, res, next) {
     next();
 });
 
+// Middleware to include the user and loggedIn local
+app.use(function (req, res, next) {
+    res.locals.user = req.user === undefined ? null : req.user;
+    res.locals.loggedIn = req.user !== undefined;
+    next();
+});
+
 app.use('/', require('./routes/index'));
 app.use('/login', require('./routes/login'));
 app.use('/register', require('./routes/register'));

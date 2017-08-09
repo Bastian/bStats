@@ -8,8 +8,6 @@ const config = require('../util/config');
 router.get('/', function(req, res, next) {
 
     res.render('register', {
-        user: req.user === undefined ? null : req.user,
-        loggedIn: req.user !== undefined,
         publicKey: config.recaptcha.publicKey,
         failed: req.query.failed === undefined ? false : req.query.failed,
         wrongCaptcha: req.query.wrongCaptcha === undefined ? false : req.query.wrongCaptcha

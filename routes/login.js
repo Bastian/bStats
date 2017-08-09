@@ -6,8 +6,6 @@ const passport = require('passport');
 router.get('/', function(req, res, next) {
 
     res.render('login', {
-        user: req.user === undefined ? null : req.user,
-        loggedIn: req.user !== undefined,
         failed: req.query.failed === undefined ? false : req.query.failed,
         registered: req.query.registered === undefined ? false : req.query.registered
     });

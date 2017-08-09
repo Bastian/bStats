@@ -10,10 +10,7 @@ const waterfall = require('async-waterfall');
 /* GET submit data. */
 router.get('/:software?', function(request, response, next) {
 
-    response.render('static/submitData', {
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user !== undefined
-    });
+    response.render('static/submitData', {});
 
 });
 
