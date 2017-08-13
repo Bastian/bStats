@@ -71,6 +71,7 @@ app.use('/logout', require('./routes/logout'));
 app.use('/register', require('./routes/register'));
 app.use('/submitData', require('./routes/submitData'));
 app.use('/global', require('./routes/global'));
+app.use('/plugin', require('./routes/plugin'));
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
 
 // catch 404 and forward to error handler
