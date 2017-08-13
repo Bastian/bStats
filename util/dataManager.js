@@ -205,6 +205,21 @@ function getChartByPluginIdAndChartId() {
 }
 
 /**
+ * Gets a chart's uid by its plugin id and chart id.
+ * The method accepts three parameters in the following order:
+ * - "plugin id", "chart id", "callback"
+ */
+function getChartUidByPluginIdAndChartId(pluginId, chartId, callback) {
+    databaseManager.getRedisCluster().get(`charts.index.uid.pluginId+chartId:${pluginId}.${chartId}`, function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, parseInt(res));
+    });
+}
+
+/**
  * Gets an unordered array with all plugin ids.
  */
 function getAllPluginIds(callback) {
@@ -418,6 +433,7 @@ module.exports.getPluginBySoftwareUrlAndName = getPluginBySoftwareUrlAndName;
 module.exports.getGlobalPluginBySoftwareUrl = getGlobalPluginBySoftwareUrl;
 module.exports.getChartByUid = getChartByUid;
 module.exports.getChartByPluginIdAndChartId = getChartByPluginIdAndChartId;
+module.exports.getChartUidByPluginIdAndChartId = getChartUidByPluginIdAndChartId;
 module.exports.getAllPluginIds = getAllPluginIds;
 module.exports.getAllSoftwareIds = getAllSoftwareIds;
 module.exports.getAllSoftware = getAllSoftware;
