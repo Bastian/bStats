@@ -179,7 +179,12 @@ function handleDrilldownPieChart(chartId, chart) {
 
 function handleLineChart(chartId, chart) {
     var isMobile = $(window).width() < 600;
-    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (isMobile ? (2*24*30) : (2*24*30*12*2)), function (data) {
+    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (2*24*30*3), function (data) {
+        if (chartId === 'players') {
+            updatePlayersBadge(data);
+        } else if (chartId === 'servers') {
+            updateServersBadge(data);
+        }
         $('#' + chartId + 'LineChart').highcharts('StockChart', {
 
             chart:{

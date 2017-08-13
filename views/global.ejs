@@ -13,7 +13,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="description" content="bStats global stats.">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>bStats - Global <%= plugin.software.name %> stats</title>
+    <title>bStats - Global <%= software.name %> stats</title>
 
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -35,7 +35,7 @@
             <br><br>
             <h1 class="header center <%= customColor1 %>-text truncate">Global stats</h1>
             <div class="row center">
-                <h5 class="header col s12 light">Here are our fancy global stats for <%= plugin.software.name %></h5>
+                <h5 class="header col s12 light">Here are our fancy global stats for <%= software.name %></h5>
             </div>
         </div>
     </div>
@@ -43,12 +43,12 @@
     <div class="row">
         <div class="col s12 m6 l4 offset-l2">
             <div class="card-panel <%= customColor1 %>">
-                <span class="white-text"><i class="material-icons left">storage</i><b>Servers (Current/Record): <%= serversCurrent %> / <%= serversRecord %></b></span>
+                <span class="white-text"><i class="material-icons left">storage</i><b id="serversBadge">Servers (Current/Record): loading...</b></span>
             </div>
         </div>
         <div class="col s12 m6 l4">
             <div class="card-panel <%= customColor1 %>">
-                <span class="white-text"><i class="material-icons left">people</i><b>Players (Current/Record): <%= playersCurrent %> / <%= playersRecord %></b></span>
+                <span class="white-text"><i class="material-icons left">people</i><b id="playersBadge">Players (Current/Record): loading...</b></span>
             </div>
         </div>
     </div>
@@ -152,6 +152,24 @@
 <script type="application/javascript">
     function getPluginId() {
         return "<%= plugin.id %>";
+    }
+
+    function updatePlayersBadge(data) {
+        let current = data[data.length-1][1];
+        let record = 0;
+        for (let i = 0; i < data.length; i++) {
+            record = data[i][1] > record ? data[i][1] : record;
+        }
+        $('#playersBadge').html(`Players (Current/Record): ${current} / ${record}`);
+    }
+
+    function updateServersBadge(data) {
+        let current = data[data.length-1][1];
+        let record = 0;
+        for (let i = 0; i < data.length; i++) {
+            record = data[i][1] > record ? data[i][1] : record;
+        }
+        $('#serversBadge').html(`Servers (Current/Record): ${current} / ${record}`);
     }
 </script>
 
