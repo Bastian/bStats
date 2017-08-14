@@ -84,6 +84,9 @@ function getPluginById() {
                 case 'global':
                     result[fields[i]] = res[i] !== null;
                     break;
+                case 'software':
+                    result[fields[i]] = parseInt(res[i]);
+                    break;
                 default:
                     result[fields[i]] = res[i];
                     break;
