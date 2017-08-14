@@ -514,7 +514,7 @@ const plugins = [
     {
         id: 1,
         name: '_bukkit_',
-        owner: 'admin',
+        owner: 'Admin',
         software: 1,
         global: true,
         charts: [1,2,3,4,5,6,7,8,9,10]
@@ -522,7 +522,7 @@ const plugins = [
     {
         id: 2,
         name: '_bungeecord_',
-        owner: 'admin',
+        owner: 'Admin',
         software: 2,
         global: true,
         charts: [21,22,23,24,25,26,27,28,29,30,31]
@@ -530,7 +530,7 @@ const plugins = [
     {
         id: 3,
         name: '_sponge_',
-        owner: 'admin',
+        owner: 'Admin',
         software: 3,
         global: true,
         charts: [11,12,13,14,15,16,17,18,19,20]
