@@ -72,7 +72,11 @@ app.use('/register', require('./routes/register'));
 app.use('/submitData', require('./routes/submitData'));
 app.use('/global', require('./routes/global'));
 app.use('/plugin', require('./routes/plugin'));
+app.use('/plugin-list', require('./routes/pluginList'));
+
+// Api v1
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
+app.use('/api/v1/datatable', require('./routes/api/v1/datatable'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
