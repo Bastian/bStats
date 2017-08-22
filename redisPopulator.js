@@ -1404,6 +1404,14 @@ function populatePlugins() {
             'plugins.ids', plugins[i].id, getCallbackFunction(`Added ${plugins[i].id} to 'plugins.ids'`, true)
         );
 
+        // Add plugin to the owner's plugin list
+        databaseManager.getRedisCluster().sadd(
+            `users.index.plugins.username:${plugins[i].owner.toLowerCase()}`, plugins[i].id,
+            getCallbackFunction(
+                `Added ${plugins[i].id} to 'users.index.plugins.username:${plugins[i].owner.toLowerCase()}'`, true
+            )
+        );
+
         largestPluginId = largestPluginId > plugins[i].id ? largestPluginId : plugins[i].id;
     }
 
