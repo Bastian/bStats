@@ -11,14 +11,18 @@ module.exports = function (passport) {
     });
 
     passport.deserializeUser(function (username, done) {
-        databaseManager.getRedisCluster().hmget(`user:${username.toLowerCase()}`, ['name', 'admin'], function (err, res) {
+        databaseManager.getRedisCluster().hmget(`users:${username.toLowerCase()}`, ['name', 'admin'], function (err, res) {
             if (err) {
                 done(err);
             } else {
-                done(err, {
-                    username: res[0],
-                    admin: res[1]
-                });
+                if (res[0] === null) {
+                    done(err, null);
+                } else {
+                    done(err, {
+                        username: res[0],
+                        admin: res[1] !== null
+                    });
+                }
             }
         });
     });
@@ -30,7 +34,7 @@ module.exports = function (passport) {
             passReqToCallback: true
         },
         function (request, username, password, done) {
-            databaseManager.getRedisCluster().hexists(`user:${username.toLowerCase()}`, 'name', function (err, res) {
+            databaseManager.getRedisCluster().hexists(`users:${username.toLowerCase()}`, 'name', function (err, res) {
                 if (err) {
                     done(err);
                 } else {
@@ -39,13 +43,13 @@ module.exports = function (passport) {
                     }
                     let hash = bcrypt.hashSync(password, bcrypt.genSaltSync(saltRounds));
 
-                    databaseManager.getRedisCluster().hmset(`user:${username.toLowerCase()}`, {name: username, password: hash}, function (err, res) {
+                    databaseManager.getRedisCluster().hmset(`users:${username.toLowerCase()}`, {name: username, password: hash}, function (err, res) {
                         if (err) {
                             console.log(err);
                         } else {
                             return done(null, {
                                 username: username,
-                                admin: 0
+                                admin: false
                             });
                         }
                     });
@@ -61,7 +65,7 @@ module.exports = function (passport) {
             passReqToCallback: true
         },
         function (request, username, password, done) { // Callback with username and password
-            databaseManager.getRedisCluster().hmget(`user:${username.toLowerCase()}`, ['name', 'password', 'admin'], function (err, res) {
+            databaseManager.getRedisCluster().hmget(`users:${username.toLowerCase()}`, ['name', 'password', 'admin'], function (err, res) {
                 if (err) {
                     return done(err); // Error
                 }
@@ -74,7 +78,7 @@ module.exports = function (passport) {
 
                 return done(null, {
                     username: res[0],
-                    admin: res[2]
+                    admin: res[2] !== null
                 });
             });
         })
