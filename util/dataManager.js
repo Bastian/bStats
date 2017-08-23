@@ -291,6 +291,39 @@ function getAllSoftware() {
 }
 
 /**
+ * Gets the plugins of a user.
+ * The method accepts two or three parameters in the following order:
+ * - "username", "callback"
+ * - "username", "fields", "callback"
+ */
+function getPluginsOfUser() {
+    let username = arguments[0].toLowerCase();
+    let fields = arguments.length === 3 ? arguments[1] :
+        ['name', 'software', 'charts', 'owner', 'global'];
+    let callback = arguments.length === 3 ? arguments[2] : arguments[1];
+    databaseManager.getRedisCluster().smembers(`users.index.plugins.username:${username}`, function (err, pluginIds) {
+        if (err) {
+            return callback(err, null);
+        }
+        let promises = [];
+        for (let i = 0; i < pluginIds.length; i++) {
+            promises.push(new Promise((resolve, reject) => {
+                getPluginById(pluginIds[i], fields, function (err, res) {
+                    if (err) {
+                        console.log(err);
+                        return reject(err);
+                    }
+                    resolve(res);
+                });
+            }));
+        }
+        Promise.all(promises).then(values => {
+            callback(null, values);
+        });
+    });
+}
+
+/**
  * Gets the data of a line chart. The data is limited to a specific amount.
  */
 function getLimitedLineChartData(chartUid, line, amount, callback) {
@@ -440,6 +473,7 @@ module.exports.getChartUidByPluginIdAndChartId = getChartUidByPluginIdAndChartId
 module.exports.getAllPluginIds = getAllPluginIds;
 module.exports.getAllSoftwareIds = getAllSoftwareIds;
 module.exports.getAllSoftware = getAllSoftware;
+module.exports.getPluginsOfUser = getPluginsOfUser;
 
 // Methods to access existing chart data
 module.exports.getLimitedLineChartData = getLimitedLineChartData;

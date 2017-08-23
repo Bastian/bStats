@@ -7,8 +7,9 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const passport = require('passport');
-const dataManager = require('./util/dataManager');
+const async = require('async');
 
+const dataManager = require('./util/dataManager');
 const auth = require('./util/auth');
 const config = require('./util/config');
 
@@ -36,18 +37,47 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware to include software local, except the GET/POST /api route and POST /submitData
+// Middleware to include locals
 app.use(function (req, res, next) {
+    res.locals.user = req.user === undefined ? null : req.user;
+    res.locals.loggedIn = req.user !== undefined;
     if (req.method === 'POST') {
         return next();
     }
     if (req.path.startsWith('/api')) {
         return next();
     }
-    dataManager.getAllSoftware(['name', 'url', 'globalPlugin'], function (err, software) {
-        res.locals.software = software;
-        next();
-    });
+    try {
+        async.parallel([
+            function (callback) {
+                dataManager.getAllSoftware(['name', 'url', 'globalPlugin'], callback);
+            },
+            function (callback) {
+                if (req.user !== undefined) {
+                    dataManager.getPluginsOfUser(req.user.username, ['name', 'software'], callback);
+                } else {
+                    callback(null, []);
+                }
+            }
+        ], function(err, results) {
+            if (err) {
+                return next(err);
+            }
+            res.locals.allSoftware = results[0];
+            res.locals.myPlugins = results[1];
+            // Replace the software id with a proper object
+            for (let i = 0; i < results[1].length; i++) {
+                for (let j = 0; j < results[0].length; j++) {
+                    if (results[1][i].software === results[0][j].id) {
+                        results[1][i].software = results[0][j];
+                    }
+                }
+            }
+            next();
+        });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 // Middleware to include the custom color local
@@ -58,12 +88,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-// Middleware to include the user and loggedIn local
-app.use(function (req, res, next) {
-    res.locals.user = req.user === undefined ? null : req.user;
-    res.locals.loggedIn = req.user !== undefined;
-    next();
-});
 
 app.use('/', require('./routes/index'));
 app.use('/login', require('./routes/login'));
@@ -99,6 +123,10 @@ app.use(function(err, req, res, next) {
     if (err.status === undefined) {
         err.status = 500;
     }
+    if (err.message === undefined) {
+        err.message = 'Unknown';
+    }
+    console.log(JSON.stringify(err));
     res.render('error', {
         message: err.message,
         error: err
@@ -106,9 +134,5 @@ app.use(function(err, req, res, next) {
 });
 
 app.locals.dataManager = dataManager;
-app.locals.getPlugins = function (ownerId) {
-    // dummy return value
-    return [];
-};
 
 module.exports = app;

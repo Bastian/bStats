@@ -32,9 +32,9 @@
             <div class="divider"></div>
         </li>
         <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">language</i>Global stats</a></li>
-        <% for (var i = 0; i < software.length; i++) { %>
-        <% if (software[i].globalPlugin !== null) { %>
-        <li><a href="/global/<%= software[i].url %>"><%= software[i].name %></a></li>
+        <% for (var i = 0; i < allSoftware.length; i++) { %>
+        <% if (allSoftware[i].globalPlugin !== null) { %>
+        <li><a href="/global/<%= allSoftware[i].url %>"><%= allSoftware[i].name %></a></li>
         <% } %>
         <% } %>
         <li>
@@ -49,16 +49,15 @@
     <li><a class="waves-effect" href="/login">Login</a></li>
     <li><a class="waves-effect" href="/register">Create new account</a></li>
     <% } %>
-    <% if (loggedIn && getPlugins(user.id).length > 0) { %>
+    <% if (loggedIn && myPlugins.length > 0) { %>
     <div class="hide-on-large-only">
         <li>
             <div class="divider"></div>
         </li>
         <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">content_paste</i>My Plugins</a>
         </li>
-        <% var plugins = getPlugins(user.id); %>
-        <% for (var i = 0; i < plugins.length; i++) { %>
-        <li><a class="waves-effect truncate" href="/plugin/<%= plugins[i].software.url %>/<%= plugins[i].name %>"><%= plugins[i].name %></a></li>
+        <% for (var i = 0; i < myPlugins.length; i++) { %>
+        <li><a class="waves-effect truncate" href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>"><%= myPlugins[i].name %></a></li>
         <% } %>
     </div>
     <% } %>
@@ -73,18 +72,17 @@
 <!-- My plugins dropdown -->
 <ul id="dropdownMyPlugins" class="dropdown-content">
     <% if (loggedIn) { %>
-    <% var plugins = getPlugins(user.id); %>
-    <% for (var i = 0; i < plugins.length; i++) { %>
-    <li><a href="/plugin/<%= plugins[i].software.url %>/<%= plugins[i].name %>" class="truncate"><%= plugins[i].name %></a></li>
+    <% for (var i = 0; i < myPlugins.length; i++) { %>
+    <li><a href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>" class="truncate"><%= myPlugins[i].name %></a></li>
     <% } %>
     <% } %>
 </ul>
 
 <!-- Global stats dropdown -->
 <ul id="dropdownGlobalStats" class="dropdown-content">
-    <% for (var i = 0; i < software.length; i++) { %>
-    <% if (software[i].globalPlugin !== null) { %>
-    <li><a href="/global/<%= software[i].url %>" class="truncate <%= customColor1 %>-text"><%= software[i].name %></a></li>
+    <% for (var i = 0; i < allSoftware.length; i++) { %>
+    <% if (allSoftware[i].globalPlugin !== null) { %>
+    <li><a href="/global/<%= allSoftware[i].url %>" class="truncate <%= customColor1 %>-text"><%= allSoftware[i].name %></a></li>
     <% } %>
     <% } %>
 </ul>
@@ -101,7 +99,7 @@
             <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownGlobalStats">
                     <i class="material-icons left" style="font-size: 30px">language</i>Global stats
                 </a></li>
-            <% if (loggedIn && getPlugins(user.id).length > 0) { %>
+            <% if (loggedIn && myPlugins.length > 0) { %>
             <li><a href="/add-plugin">
                     <i class="material-icons left" style="font-size: 30px">add</i>Add plugin
                 </a></li>
