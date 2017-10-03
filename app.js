@@ -99,6 +99,7 @@ app.use('/plugin', require('./routes/plugin'));
 app.use('/plugin-list', require('./routes/pluginList'));
 app.use('/add-plugin', require('./routes/addPlugin'));
 app.use('/getting-started', require('./routes/gettingStarted'));
+app.use('/help/custom-charts', require('./routes/customCharts'));
 
 // Api v1
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
