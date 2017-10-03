@@ -101,6 +101,7 @@ app.use('/add-plugin', require('./routes/addPlugin'));
 app.use('/getting-started', require('./routes/gettingStarted'));
 app.use('/help/custom-charts', require('./routes/customCharts'));
 app.use('/imprint', require('./routes/imprint'));
+app.use('/privacy-policy', require('./routes/privacyPolicy'));
 
 // Api v1
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
