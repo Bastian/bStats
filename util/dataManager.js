@@ -461,6 +461,44 @@ function updateBarData(chartUid, tms2000, category, values) {
     // TODO
 }
 
+/**
+ * Adds a plugin to the database and returns it's id in the callback.
+ */
+function addPlugin(plugin, software, callack) {
+    databaseManager.getRedisCluster().incr('plugins.id-increment', function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        let pluginId = res;
+        databaseManager.getRedisCluster().sadd(`plugins.ids`, pluginId, function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+        });
+        databaseManager.getRedisCluster().set(`plugins.index.id.url+name:${software.url.toLowerCase()}.${plugin.name.toLowerCase()}`, pluginId, function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+        });
+        databaseManager.getRedisCluster().sadd(`users.index.plugins.username:${plugin.owner.toLowerCase()}`, pluginId, function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+        });
+        databaseManager.getRedisCluster().hmset(`plugins:${pluginId}`, plugin, function (err, res) {
+            if (err) {
+                callack(err, null);
+                return;
+            }
+            callack(null, pluginId);
+        });
+    });
+}
+
+// Methods to add new objects
+module.exports.addPlugin = addPlugin;
+
 // Methods to access existing structure data
 module.exports.getSoftwareByUrl = getSoftwareByUrl;
 module.exports.getSoftwareById = getSoftwareById;
