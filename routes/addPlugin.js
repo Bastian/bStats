@@ -53,7 +53,7 @@ router.post('/', function(req, res, next) {
 
     async.waterfall([
         function(callback) {
-            dataManager.getSoftwareById(softwareId, ['name', 'url', 'globalPlugin'], function (err, software) {
+            dataManager.getSoftwareById(softwareId, ['name', 'url', 'globalPlugin', 'defaultCharts'], function (err, software) {
                 callback(err, software);
             });
         },
@@ -100,97 +100,60 @@ router.post('/', function(req, res, next) {
             });
         },
         function (plugin, software, pluginId, callback) {
-            console.log("Add plugin " + plugin.name + " with id " + pluginId);
-            // TODO add charts
-        }
-    ], function (err, result) {
-        // result now equals 'done'
-    });
-
-    /*
-
-        let sql = 'INSERT INTO `plugins` (`plugin_name`, `owner_id`, `server_software`) VALUES (?, ?, ?);';
-
-        databaseManager.getConnectionPool('addplugin').query(sql, [pluginName, userId, software.id],
-            function (err, rows) {
-                if (err) {
-                    if (!(err.code === undefined)) {
-                        if (err.code === 'ER_DUP_ENTRY') { // plugin does already exist
-                            res.redirect('/add-plugin?alreadyAdded=true');
-                            return;
+            let promises = [];
+            for (let i = 0; i < software.defaultCharts.length; i++) {
+                promises.push(new Promise((resolve, reject) => {
+                    addChart(pluginId, pluginName, software.defaultCharts[i], i, function (err, chartUid) {
+                        if (err) {
+                            return reject(err);
                         }
-                    }
-                    res.redirect('/add-plugin?failed=true');
-                    console.log(err);
-                    return;
-                }
-                let pluginId = rows.insertId;
-                for (let i = 0; i < software.defaultCharts.length; i++) {
-                    addChart(pluginId, pluginName, software.defaultCharts[i], i);
-                }
-                dataCache.plugins.push(
-                    {
-                        id: pluginId,
-                        name: pluginName,
-                        owner: {
-                            id: userId,
-                            name: req.user.username
-                        },
-                        software: {
-                            id: software.id,
-                            name: software.name,
-                            url: software.url
-                        }
-                    }
-                );
-                res.redirect('/getting-started/include-metrics?addedPlugin=true?software=' + software.url);
+                        resolve(chartUid);
+                    });
+                }));
             }
-        );
+            Promise.all(promises).then(values => {
+                databaseManager.getRedisCluster().hset(`plugins:${pluginId}`, 'charts', JSON.stringify(values), function (err, res) {
+                    callback(err, software);
+                });
+            });
+        }
+    ], function (err, software) {
+        res.redirect('/getting-started/include-metrics?addedPlugin=true?software=' + software.url);
     });
-    */
 });
 
-function addChart(pluginId, pluginName, chart, position) {
-    var chartTitle = chart.title.replace('%plugin.name%', pluginName);
-    var sqlAddLineChart = 'INSERT INTO `line_charts_processed` (`chart_uid`, `line`, `data`, `last_processed_tms_2000`) VALUES (?, ?, ?, ?)';
-    var sqlAddChart = 'INSERT INTO `charts`(`chart_id`, `plugin_id`, `chart_type`, `position`, `default_chart`, `title`, `data`) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    var chartId = chart.id;
-    databaseManager.getConnectionPool('addplugin').query(sqlAddChart, [chart.id, pluginId, chart.type, position, true, chartTitle, JSON.stringify(chart.data)],
-        function (err, rows) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            var chartUid = rows.insertId;
-            if (chart.type === 'single_linechart') {
-                databaseManager.getConnectionPool('addplugin').query(sqlAddLineChart, [chartUid, 1, '[]', 0],
-                    function (err, rows) {
-                        if (err) {
-                            console.log(err);
-                        }
-                    }
-                );
-                if (dataCache.lineChartsData[pluginId] === undefined) {
-                    dataCache.lineChartsData[pluginId] = {};
-                }
-                if (dataCache.lineChartsData[pluginId][chartId] === undefined) {
-                    dataCache.lineChartsData[pluginId][chartId] = {};
-                }
-                dataCache.lineChartsData[pluginId][chartId][1] = [[timeUtil.tms2000ToDate(timeUtil.dateToTms2000(new Date()) - 1).getTime(), 0]];
-            }
-            if (dataCache.charts[pluginId] === undefined) {
-                dataCache.charts[pluginId] = {};
-            }
-            dataCache.charts[pluginId][chartId] = {
-                uid: chartUid,
-                type: chart.type,
-                position: position,
-                title: chartTitle,
-                isDefault: true,
-                data: chart.data
-            };
+function addChart(pluginId, pluginName, chart, position, callback) {
+    let chartTitle = chart.title.replace('%plugin.name%', pluginName);
+
+    databaseManager.getRedisCluster().incr(`charts.uid-increment`, function (err, chartUid) {
+        if (err) {
+            return callback(err);
         }
-    );
+        let chartRedis = {
+            id: chart.id,
+            type: chart.type,
+            position: position,
+            title: chartTitle,
+            default: 1,
+            data: JSON.stringify(chart.data)
+        };
+        databaseManager.getRedisCluster().hmset(`charts:${chartUid}`, chartRedis, function (err, res) {
+            if (err) {
+                return console.log(err);
+            }
+            callback(null, chartUid);
+        });
+        databaseManager.getRedisCluster().set(`charts.index.uid.pluginId+chartId:${pluginId}.${chart.id}`, chartUid, function (err, res) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+        databaseManager.getRedisCluster().sadd(`charts.uids`, chartUid, function (err, res) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+    });
 }
 
 module.exports = router;
