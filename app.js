@@ -98,6 +98,7 @@ app.use('/global', require('./routes/global'));
 app.use('/plugin', require('./routes/plugin'));
 app.use('/plugin-list', require('./routes/pluginList'));
 app.use('/add-plugin', require('./routes/addPlugin'));
+app.use('/getting-started', require('./routes/gettingStarted'));
 
 // Api v1
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
