@@ -464,7 +464,7 @@ function updateBarData(chartUid, tms2000, category, values) {
 /**
  * Adds a plugin to the database and returns it's id in the callback.
  */
-function addPlugin(plugin, software, callack) {
+function addPlugin(plugin, software, callback) {
     databaseManager.getRedisCluster().incr('plugins.id-increment', function (err, res) {
         if (err) {
             callback(err, null);
@@ -488,10 +488,10 @@ function addPlugin(plugin, software, callack) {
         });
         databaseManager.getRedisCluster().hmset(`plugins:${pluginId}`, plugin, function (err, res) {
             if (err) {
-                callack(err, null);
+                callback(err, null);
                 return;
             }
-            callack(null, pluginId);
+            callback(null, pluginId);
         });
     });
 }
