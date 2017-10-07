@@ -395,6 +395,69 @@ function getPieData(chartUid, callback) {
 }
 
 /**
+ * Gets the stored data of a drilldown pie chart.
+ */
+function getDrilldownPieData(chartUid, callback) {
+    let tms2000 = timeUtil.dateToTms2000(new Date()) - 1;
+    databaseManager.getRedisCluster().zrange(`data:${chartUid}.${tms2000}`, 0, -1, 'WITHSCORES', function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        // We have to convert the data first, e.g.:
+        // ["Windows","7","Linux","42"] -> [{"name":"Windows","y":7,"drilldown":"Windows"},{"name":"Linux","y":42,"drilldown":"Linux"}]
+        let seriesData = [];
+        let promises = [];
+        let drilldownData = [];
+        for (let i = 0; i < res.length; i += 2) {
+            seriesData.push({name: res[i], y: parseInt(res[i+1]), drilldown: res[i]});
+            promises.push(new Promise((resolve, reject) => {
+                getDrilldownPieDrilldownData(chartUid, res[i], function (err, drilldownData) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(drilldownData);
+                });
+            }));
+        }
+
+
+        Promise.all(promises).then(values => {
+            drilldownData = values;
+            console.log({
+                seriesData: seriesData,
+                drilldownData: drilldownData
+            });
+            callback(null, {
+                seriesData: seriesData,
+                drilldownData: drilldownData
+            });
+        });
+    });
+}
+
+/**
+ * Internal method to get the drilldown data of a drilldown pie.
+ */
+function getDrilldownPieDrilldownData(chartUid, name, callback) {
+    let tms2000 = timeUtil.dateToTms2000(new Date()) - 1;
+    databaseManager.getRedisCluster().zrange(`data:${chartUid}.${tms2000}.${name}`, 0, -1, 'WITHSCORES', function (err, res) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        // We have to convert the data first, e.g.:
+        // ["Windows 10","4","Windows 7","3"] -> {"name": "Windows", "id": "Windows", "data":[["Windows 10", 4], ["Windows 7", 3]]}
+        let data = [];
+        for (let i = 0; i < res.length; i += 2) {
+            data.push([res[i], parseInt(res[i+1])]);
+        }
+        callback(null, {name: name, id: name, data: data});
+    });
+}
+
+/**
  * Gets the stored data of a simple or advanced map chart.
  */
 function getMapData(chartUid, callback) {
@@ -418,7 +481,6 @@ function getMapData(chartUid, callback) {
  * Updates the data for the chart with the given uid. The chart must be a simple pie or advanced pie.
  */
 function updatePieData(chartUid, tms2000, valueName, value) {
-    console.log(`data:${chartUid}.${tms2000}`);
     databaseManager.getRedisCluster().zincrby(`data:${chartUid}.${tms2000}`, value, valueName, function (err, res) {
         if (err) {
             console.log(err);
@@ -451,7 +513,26 @@ function updateLineChartData(chartUid, value, line, tms2000) {
  * Updates the data for the chart with the given uid. The chart must be a drilldown pie chart.
  */
 function updateDrilldownPieData(chartUid, tms2000, valueName, values) {
-    // TODO
+    console.log("Value name: " + valueName);
+    console.log("Values: " + JSON.stringify(values));
+    let totalValue = 0;
+    Object.keys(values).forEach(function(key) {
+        totalValue += values[key];
+        databaseManager.getRedisCluster().zincrby(`data:${chartUid}.${tms2000}.${valueName}`, values[key], key, function (err, res) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}`, 60*61);
+        });
+    });
+    databaseManager.getRedisCluster().zincrby(`data:${chartUid}.${tms2000}`, totalValue, valueName, function (err, res) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}`, 60*61);
+    });
 }
 
 /**
@@ -517,6 +598,7 @@ module.exports.getPluginsOfUser = getPluginsOfUser;
 module.exports.getLimitedLineChartData = getLimitedLineChartData;
 module.exports.getFullLineChartData = getFullLineChartData;
 module.exports.getPieData = getPieData;
+module.exports.getDrilldownPieData = getDrilldownPieData;
 module.exports.getMapData = getMapData;
 
 // Methods for updating existing data

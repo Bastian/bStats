@@ -235,6 +235,16 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
                     }
                 });
                 break;
+            case 'drilldown_pie':
+                dataManager.getDrilldownPieData(chart.uid, function (err, data) {
+                    if (err) {
+                        console.log(err);
+                        writeResponse(500, {error: 'Unknown error'}, res);
+                    } else {
+                        writeResponse(200, data, res);
+                    }
+                });
+                break;
             case 'simple_map':
             case 'advanced_map':
                 dataManager.getMapData(chart.uid, function (err, data) {
