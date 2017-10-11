@@ -96,6 +96,7 @@ app.use('/register', require('./routes/register'));
 app.use('/submitData', require('./routes/submitData'));
 app.use('/global', require('./routes/global'));
 app.use('/plugin', require('./routes/plugin'));
+app.use('/editPlugin', require('./routes/editPlugin'));
 app.use('/plugin-list', require('./routes/pluginList'));
 app.use('/add-plugin', require('./routes/addPlugin'));
 app.use('/getting-started', require('./routes/gettingStarted'));
