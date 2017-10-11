@@ -42,7 +42,7 @@ router.get('/:software/:plugin', function(req, res, next) {
             });
         },
         function (plugin, callback) {
-            dataManager.getSoftwareById(plugin.software, ['name'], function (err, res) {
+            dataManager.getSoftwareById(plugin.software, ['name', 'url'], function (err, res) {
                 if (err) {
                     callback(err);
                     return;
