@@ -425,10 +425,6 @@ function getDrilldownPieData(chartUid, callback) {
 
         Promise.all(promises).then(values => {
             drilldownData = values;
-            console.log({
-                seriesData: seriesData,
-                drilldownData: drilldownData
-            });
             callback(null, {
                 seriesData: seriesData,
                 drilldownData: drilldownData
