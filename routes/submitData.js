@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const timeUtil = require('../util/timeUtil');
-const databaseManager = require('../util/databaseManager');
+const ratelimiter = require('../util/ratelimiter');
 const dataManager = require('../util/dataManager');
 const countryUtil = require('../util/countryUtil');
 const geoip = require('geoip-lite');
@@ -33,6 +33,34 @@ router.post('/:software?', function(request, response, next) {
             dataManager.getSoftwareByUrl(softwareUrl, function (err, res) {
                 callback(err, res, serverUUID);
             });
+        },
+        function (software, serverUUID, callback) {
+            ratelimiter.isLimited(serverUUID, software.url, 1, function (err, res) {
+                callback(err, software, serverUUID, res);
+            });
+        },
+        function (software, serverUUID, uuidLimited, callback) {
+            if (uuidLimited !== false) {
+                sendResponse(response, {error: 'Hold your horses!'}, 429);
+                return;
+            }
+            // Get the ip
+            // We use CloudFlare so the cf-connecting-ip header can be trusted
+            let ip = (request.connection.remoteAddress ? request.connection.remoteAddress : request.remoteAddress);
+            if (typeof request.headers['cf-connecting-ip'] !== 'undefined')
+            {
+                ip = request.headers['cf-connecting-ip'];
+            }
+            ratelimiter.isLimited(ip, software.url, software.maxRequestsPerIp, function (err, res) {
+                callback(err, software, serverUUID, res);
+            });
+        },
+        function (software, serverUUID, ipLimited, callback) {
+            if (ipLimited !== false) {
+                sendResponse(response, {error: 'Hold your horses!'}, 429);
+                return;
+            }
+            callback(null, software, serverUUID);
         },
         function (software, serverUUID, callback) {
             // Get the current tms2000
