@@ -35,7 +35,7 @@
             <br><br>
             <h1 class="header center <%= customColor1 %>-text truncate">
                 <%= plugin.name %>
-                <% if (isOwner || (user != null && user.admin === 1)) { %>
+                <% if (isOwner || (user != null && user.admin)) { %>
                 <a href="/editPlugin/<%= software.url %>/<%= plugin.name %>"><sup><i title="Edit plugin settings" class="material-icons small">build</i></sup></a>
                 <% } %>
             </h1>
