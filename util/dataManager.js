@@ -513,8 +513,6 @@ function updateLineChartData(chartUid, value, line, tms2000) {
  * Updates the data for the chart with the given uid. The chart must be a drilldown pie chart.
  */
 function updateDrilldownPieData(chartUid, tms2000, valueName, values) {
-    console.log("Value name: " + valueName);
-    console.log("Values: " + JSON.stringify(values));
     let totalValue = 0;
     Object.keys(values).forEach(function(key) {
         totalValue += values[key];
