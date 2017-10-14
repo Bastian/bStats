@@ -35,11 +35,11 @@ router.post('/:software?', function(request, response, next) {
             });
         },
         function (software, serverUUID, callback) {
+            if (software === null) {
+                sendResponse(response, {error: 'Unknown software!'}, 400);
+                return;
+            }
             ratelimiter.isLimited(serverUUID, software.url, 1, function (err, res) {
-                if (software === null) {
-                    sendResponse(response, {error: 'Unknown software!'}, 400);
-                    return;
-                }
                 callback(err, software, serverUUID, res);
             });
         },
@@ -376,6 +376,10 @@ function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalChar
 
     for (let i = 0; i < data.customCharts.length; i++) {
         let chartData = data.customCharts[i];
+
+        if (chartData === null) {
+            continue;
+        }
 
         if (typeof chartData.chartId !== 'string') {
             continue;
