@@ -36,6 +36,10 @@ router.post('/:software?', function(request, response, next) {
         },
         function (software, serverUUID, callback) {
             ratelimiter.isLimited(serverUUID, software.url, 1, function (err, res) {
+                if (software === null) {
+                    sendResponse(response, {error: 'Unknown software!'}, 400);
+                    return;
+                }
                 callback(err, software, serverUUID, res);
             });
         },
