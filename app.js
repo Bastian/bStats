@@ -28,8 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 auth(passport);
 app.use(session({
-    store: new RedisStore(),
-    client: require('./util/databaseManager').getRedisCluster(),
+    store: new RedisStore({
+        client: require('./util/databaseManager').getRedisCluster()
+    }),
     resave: false,
     saveUninitialized: true,
     secret: config.sessionSecret
