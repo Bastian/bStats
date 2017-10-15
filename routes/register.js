@@ -1,53 +1,51 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const req = require('request');
+const request = require('request');
 const config = require('../util/config');
 
 /* GET login page. */
-router.get('/', function(request, response, next) {
+router.get('/', function(req, res, next) {
 
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
-    response.render('register', {
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
+    res.render('register', {
         publicKey: config.recaptcha.publicKey,
-        failed: request.query.failed === undefined ? false : request.query.failed,
-        wrongCaptcha: request.query.wrongCaptcha === undefined ? false : request.query.wrongCaptcha,
-        customColor1: customColor1
+        failed: req.query.failed === undefined ? false : req.query.failed,
+        wrongCaptcha: req.query.wrongCaptcha === undefined ? false : req.query.wrongCaptcha
     });
 
 });
 
 /* POST register */
-router.post('/', function (request, response, next) {
-
-    var userName = request.body.username;
+router.post('/', function (req, res, next) {
+    let userName = req.body.username;
     if (userName === undefined || userName.length === 0 || userName.length > 32) {
-        response.redirect('/register');
+        res.redirect('/register');
         return;
     }
     if (!/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(userName)) {
-        response.redirect('/register');
+        res.redirect('/register');
         return;
     }
 
-    if (request.body['g-recaptcha-response'] === undefined || request.body['g-recaptcha-response'] === '' || request.body['g-recaptcha-response'] === null) {
-        response.redirect('/register?wrongCaptcha=true');
+    if (req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
+        res.redirect('/register?wrongCaptcha=true');
         return;
     }
     // Put your secret key here.
-    var secretKey = config.recaptcha.secretKey;
+    let secretKey = config.recaptcha.secretKey;
     // request.connection.remoteAddress will provide IP address of connected user.
-    var verificationUrl = 'https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + request.body['g-recaptcha-response'] + '&remoteip=' + request.connection.remoteAddress;
+    let verificationUrl = 'https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + req.body['g-recaptcha-response'] + '&remoteip=' + req.connection.remoteAddress;
     // Hitting GET request to the URL, Google will respond with success or error scenario.
-    req(verificationUrl, function(error, r, body) {
-        body = JSON.parse(body);
+    request(verificationUrl, function(error, r, body) {
+        try {
+            body = JSON.parse(body);
+        } catch (err) {
+            console.log(err);
+            return;
+        }
         // Success will be true or false depending upon captcha validation.
         if (body.success !== undefined && !body.success) {
-            response.redirect('/register?wrongCaptcha=true');
+            res.redirect('/register?wrongCaptcha=true');
             return;
         }
 
@@ -55,7 +53,7 @@ router.post('/', function (request, response, next) {
             successRedirect: '/',
             failureRedirect: '/register?failed=true',
             failureFlash : false
-        })(request, response, next);
+        })(req, res, next);
     });
 });
 

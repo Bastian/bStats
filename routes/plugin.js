@@ -1,91 +1,135 @@
 const express = require('express');
 const router = express.Router();
-const dataCache = require('../util/dataCache');
+const dataManager = require('../util/dataManager');
+const waterfall = require('async-waterfall');
 
 /* GET plugin page. */
-router.get('/:software/:plugin', function(request, response, next) {
+router.get('/:software/:plugin', function(req, res, next) {
 
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
-    var pluginName = request.params.plugin;
-    var softwareUrl = request.params.software;
+    let pluginName = req.params.plugin;
+    let softwareUrl = req.params.software;
 
     if (pluginName === 'random') {
-        var randomPlugin = getRandomPlugin();
-        response.redirect("/plugin/" + randomPlugin.software.url + '/' + randomPlugin.name);
+        getRandomPlugin(function (err, pluginName, softwareUrl) {
+            if (err) {
+                console.log(err);
+                res.writeHead(500, {'Content-Type': 'application/json'});
+                res.write(JSON.stringify({
+                    error: 'Unknown error'
+                }));
+                res.end();
+                return;
+            }
+            res.redirect("/plugin/" + softwareUrl + '/' + pluginName);
+        });
         return;
     }
 
-    var plugin = dataCache.getPluginByNameAndSoftwareUrl(pluginName, softwareUrl);
-
-    if (plugin == null) {
-        response.render('static/unknownPlugin', {
-            pluginName: pluginName,
-            user: request.user === undefined ? null : request.user,
-            loggedIn: request.user != undefined,
-            customColor1: customColor1
-        });
-    } else {
-        var serversCurrent = -1;
-        var serversRecord = 0;
-        if (dataCache.lineChartsData[plugin.id]['servers'] !== undefined) {
-            serversCurrent = dataCache.lineChartsData[plugin.id]['servers'][1][dataCache.lineChartsData[plugin.id]['servers'][1].length-1][1];
-            for (var i = 0; i < dataCache.lineChartsData[plugin.id]['servers'][1].length; i++) {
-                if (dataCache.lineChartsData[plugin.id]['servers'][1][i][1] > serversRecord) {
-                    serversRecord = dataCache.lineChartsData[plugin.id]['servers'][1][i][1];
+    waterfall([
+        function (callback) {
+            dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['name', 'software', 'owner'], function (err, plugin) {
+                if (err) {
+                    callback(err);
+                    return;
                 }
-            }
-        }
-
-        var playersCurrent = -1;
-        var playersRecord = 0;
-        if (dataCache.lineChartsData[plugin.id]['players'] !== undefined) {
-            playersCurrent = dataCache.lineChartsData[plugin.id]['players'][1][dataCache.lineChartsData[plugin.id]['players'][1].length-1][1];
-            for (var j = 0; j < dataCache.lineChartsData[plugin.id]['players'][1].length; j++) {
-                if (dataCache.lineChartsData[plugin.id]['players'][1][j][1] > playersRecord) {
-                    playersRecord = dataCache.lineChartsData[plugin.id]['players'][1][j][1];
+                if (plugin === null) { // TODO render proper page
+                    res.render('static/unknownPlugin', {
+                        pluginName: pluginName
+                    });
+                    return;
                 }
+                callback(null, plugin);
+            });
+        },
+        function (plugin, callback) {
+            dataManager.getSoftwareById(plugin.software, ['name', 'url'], function (err, res) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                callback(null, plugin, res);
+            });
+        }
+        ], function (err, plugin, software) {
+            if (err) {
+                console.log(err);
+                res.writeHead(500, {'Content-Type': 'application/json'});
+                res.write(JSON.stringify({
+                    error: 'Unknown error'
+                }));
+                res.end();
+                return;
             }
+            res.render('plugin', {
+                plugin: plugin,
+                software: software,
+                isOwner: req.user !== undefined && req.user.username.toLowerCase() === plugin.owner.toLowerCase()
+            });
         }
-
-        var isOwner = false;
-        if (request.user != undefined) {
-            isOwner = request.user.id == plugin.owner.id;
-        }
-
-        response.render('plugin', {
-            plugin: plugin,
-            user: request.user === undefined ? null : request.user,
-            loggedIn: request.user != undefined,
-            isOwner: isOwner,
-            serversRecord: serversRecord,
-            serversCurrent: serversCurrent,
-            playersRecord: playersRecord,
-            playersCurrent: playersCurrent,
-            customColor1: customColor1
-        });
-    }
+    );
 
 });
 
 /**
  * Gets a random plugin.
  *
+ * @param callback The callback.
  * @returns {object} A random plugin.
  */
-function getRandomPlugin() {
-    // Search for a plugin with 5 or more servers. Give up searching after 50 tries.
-    for (var i = 0; i < 50; i++) {
-        var plugin = dataCache.plugins[Math.floor(Math.random() * (dataCache.plugins.length))];
-        var servers = dataCache.lineChartsData[plugin.id]['servers'][1][dataCache.lineChartsData[plugin.id]['servers'][1].length-1][1];
-        if (servers > 4 && !plugin.isGlobal) {
-            return plugin;
+function getRandomPlugin(callback) {
+    dataManager.getAllPluginIds(function (err, pluginIds) {
+        if (err) {
+            callback(err);
+            return;
         }
-    }
-    return dataCache.plugins[Math.floor(Math.random() * (dataCache.plugins.length))];
+        let promises = [];
+        // Get the server amount of 50 random plugins.
+        for (let i = 0; i < 50; i++) {
+            promises.push(new Promise((resolve, reject) => {
+                let randomId = pluginIds[Math.floor(Math.random() * (pluginIds.length))];
+                dataManager.getChartUidByPluginIdAndChartId(randomId, 'servers', function (err, chartUid) {
+                    if (err) {
+                        console.log(err);
+                        reject(err);
+                        return;
+                    }
+                    dataManager.getLimitedLineChartData(chartUid, 1, 1, function (err, data) {
+                        if (err) {
+                            console.log(err);
+                            reject(err);
+                            return;
+                        }
+                        let servers = data[0][1];
+                        resolve({
+                            pluginId: randomId,
+                            servers: servers
+                        });
+                    });
+                });
+            }));
+        }
+
+        Promise.all(promises).then(values => {
+            for (let i = 0; i < values.length; i++) {
+                if (values[i].servers > 4 || i === values.length-1) {
+                    dataManager.getPluginById(values[i].pluginId, ['name', 'software'], function (err, plugin) {
+                        if (err) {
+                            callback(err);
+                            return;
+                        }
+                        dataManager.getSoftwareById(plugin.software, ['url'], function (err, software) {
+                            if (err) {
+                                callback(err);
+                                return;
+                            }
+                            callback(null, plugin.name, software.url);
+                        });
+                    });
+                    return;
+                }
+            }
+        });
+    });
 }
 
 module.exports = router;
-
-

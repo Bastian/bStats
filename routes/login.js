@@ -3,17 +3,11 @@ const router = express.Router();
 const passport = require('passport');
 
 /* GET login page. */
-router.get('/', function(request, response, next) {
+router.get('/', function(req, res, next) {
 
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
-    response.render('login', {
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
-        failed: request.query.failed === undefined ? false : request.query.failed,
-        registered: request.query.registered === undefined ? false : request.query.registered,
-        customColor1: customColor1
+    res.render('login', {
+        failed: req.query.failed === undefined ? false : req.query.failed,
+        registered: req.query.registered === undefined ? false : req.query.registered
     });
 
 });

@@ -1,41 +1,36 @@
 const express = require('express');
+const dataManager = require('../util/dataManager');
 const router = express.Router();
 
 /* GET getting started page. */
-router.get('/', function(request, response, next) {
+router.get('/', function(req, res, next) {
 
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
-    response.render('static/gettingStarted', {
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
-        customColor1: customColor1
-    });
+    res.render('static/gettingStarted', {});
 
 });
 
 /* GET include metrics. */
-router.get('/include-metrics', function(request, response, next) {
+router.get('/include-metrics', function(req, res, next) {
 
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
-    response.render('static/includeMetrics', {
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
-        addedPlugin: request.query.addedPlugin === undefined ? false : request.query.addedPlugin,
-        highlightedSoftware: request.query.software === undefined ? null : request.query.software,
-        customColor1: customColor1
+    dataManager.getAllSoftware(['name', 'url', 'metricsClass', 'examplePlugin'], function (err, software) {
+        if (err) {
+            return console.log(err);
+        }
+        res.render('static/includeMetrics', {
+            addedPlugin: req.query.addedPlugin === undefined ? false : req.query.addedPlugin,
+            highlightedSoftware: req.query.software === undefined ? null : req.query.software,
+            software: software
+        });
     });
 
 });
 
 /* GET deprecated metrics class. */
-router.get('/metrics-class', function(request, response, next) {
+router.get('/metrics-class', function(req, res, next) {
+
 
     // The metrics class page has been replaced!
-    response.redirect('/getting-started/include-metrics');
+    res.redirect('/getting-started/include-metrics');
 
 });
 

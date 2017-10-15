@@ -35,8 +35,8 @@
             <br><br>
             <h1 class="header center <%= customColor1 %>-text truncate">
                 <%= plugin.name %>
-                <% if (isOwner || (user != null && user.admin === 1)) { %>
-                <a href="/editPlugin/<%= plugin.software.url %>/<%= plugin.name %>"><sup><i title="Edit plugin settings" class="material-icons small">build</i></sup></a>
+                <% if (isOwner || (user != null && user.admin)) { %>
+                <a href="/editPlugin/<%= software.url %>/<%= plugin.name %>"><sup><i title="Edit plugin settings" class="material-icons small">build</i></sup></a>
                 <% } %>
             </h1>
             <div class="row center">
@@ -50,12 +50,12 @@
     <div class="row">
         <div class="col s12 m6 l4 offset-l2">
             <div class="card-panel <%= customColor1 %>">
-                <span class="white-text"><i class="material-icons left">storage</i><b>Servers (Current/Record): <%= serversCurrent %> / <%= serversRecord %></b></span>
+                <span class="white-text"><i class="material-icons left">storage</i><b id="serversBadge">Servers (Current/Record): loading...</b></span>
             </div>
         </div>
         <div class="col s12 m6 l4">
             <div class="card-panel <%= customColor1 %>">
-                <span class="white-text"><i class="material-icons left">people</i><b>Players (Current/Record): <%= playersCurrent %> / <%= playersRecord %></b></span>
+                <span class="white-text"><i class="material-icons left">people</i><b id="playersBadge">Players (Current/Record): loading...</b></span>
             </div>
         </div>
     </div>
@@ -165,6 +165,24 @@
 <script type="application/javascript">
     function getPluginId() {
         return "<%= plugin.id %>";
+    }
+
+    function updatePlayersBadge(data) {
+        let current = data[data.length-1][1];
+        let record = 0;
+        for (let i = 0; i < data.length; i++) {
+            record = data[i][1] > record ? data[i][1] : record;
+        }
+        $('#playersBadge').html(`Players (Current/Record): ${current} / ${record}`);
+    }
+
+    function updateServersBadge(data) {
+        let current = data[data.length-1][1];
+        let record = 0;
+        for (let i = 0; i < data.length; i++) {
+            record = data[i][1] > record ? data[i][1] : record;
+        }
+        $('#serversBadge').html(`Servers (Current/Record): ${current} / ${record}`);
     }
 </script>
 

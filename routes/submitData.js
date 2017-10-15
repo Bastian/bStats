@@ -1,463 +1,503 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const timeUtil = require('../util/timeUtil');
-const dataCache = require('../util/dataCache');
-const databaseManager = require('../util/databaseManager');
+const ratelimiter = require('../util/ratelimiter');
+const dataManager = require('../util/dataManager');
 const countryUtil = require('../util/countryUtil');
-const requestRestrictor = require('../util/requestRestrictor');
 const geoip = require('geoip-lite');
+const waterfall = require('async-waterfall');
 
 /* GET submit data. */
 router.get('/:software?', function(request, response, next) {
 
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
+    response.render('static/submitData', {});
 
-    response.render('static/submitData', {
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
-        customColor1: customColor1
-    });
 });
-
 
 /* POST submit data. */
 router.post('/:software?', function(request, response, next) {
-    try {
-        var serverUUID = request.body.serverUUID;
-        // Server uuid is required
-        if (typeof serverUUID !== 'string') {
-            sendResponse(response, {error: 'Invalid request! Missing or invalid server uuid!'}, 400);
-            return;
-        }
 
-        var softwareUrl = request.params.software;
-
-        // This only exists for legacy reasons
-        softwareUrl = typeof softwareUrl === 'string' ? softwareUrl : 'bukkit';
-
-        var software = dataCache.getSoftwareByUrl(softwareUrl);
-
-        // Get the current tms2000
-        var tms2000 = timeUtil.dateToTms2000(new Date());
-
-        // Get the ip
-        // We use CloudFlare so the cf-connecting-ip header can be trusted
-        var ip = (request.connection.remoteAddress ? request.connection.remoteAddress : request.remoteAddress);
-        if (typeof request.headers['cf-connecting-ip'] !== 'undefined')
-        {
-            ip = request.headers['cf-connecting-ip'];;
-        }
-
-        // Check if connection should be throttled
-        var throttle = requestRestrictor.checkThrottle(serverUUID, ip, software);
-        if (throttle.throttled) {
-            console.log('Connection throttled for server with uuid %s and ip %s with plugins and reason %s:', serverUUID, ip, throttle.reason);
-            for (var i = 0; i < request.body.plugins.length; i++) {
-                console.log(request.body.plugins[i].pluginName);
+    waterfall([
+        function (callback) {
+            let serverUUID = request.body.serverUUID;
+            // Server uuid is required
+            if (typeof serverUUID !== 'string') {
+                sendResponse(response, {error: 'Invalid request! Missing or invalid server uuid!'}, 400);
+                return;
             }
-            sendResponse(response, {error: 'Connection throttled!'}, 200); // Status code 200 but error? bStats is special!
-            return;
-        }
 
-        if (software === null) {
-            sendResponse(response, {error: 'Invalid request! Unknown server software!'}, 400);
-            return;
-        }
+            let softwareUrl = request.params.software;
 
-        var plugins = request.body.plugins; // The plugins
-        if (plugins == undefined || !Array.isArray(plugins)) {
-            sendResponse(response, {error: 'Invalid request! Missing or invalid plugins array!'}, 400);
-            return;
-        }
+            // This only exists for legacy reasons
+            softwareUrl = typeof softwareUrl === 'string' ? softwareUrl : 'bukkit';
+            dataManager.getSoftwareByUrl(softwareUrl, function (err, res) {
+                callback(err, res, serverUUID);
+            });
+        },
+        function (software, serverUUID, callback) {
+            if (software === null) {
+                sendResponse(response, {error: 'Unknown software!'}, 400);
+                return;
+            }
+            ratelimiter.isLimited(serverUUID, software.url, 1, function (err, res) {
+                callback(err, software, serverUUID, res);
+            });
+        },
+        function (software, serverUUID, uuidLimited, callback) {
+            if (uuidLimited !== false) {
+                sendResponse(response, {error: 'Hold your horses!'}, 429);
+                return;
+            }
+            // Get the ip
+            // We use CloudFlare so the cf-connecting-ip header can be trusted
+            let ip = (request.connection.remoteAddress ? request.connection.remoteAddress : request.remoteAddress);
+            if (typeof request.headers['cf-connecting-ip'] !== 'undefined')
+            {
+                ip = request.headers['cf-connecting-ip'];
+            }
+            ratelimiter.isLimited(ip, software.url, software.maxRequestsPerIp, function (err, res) {
+                callback(err, software, serverUUID, res);
+            });
+        },
+        function (software, serverUUID, ipLimited, callback) {
+            if (ipLimited !== false) {
+                sendResponse(response, {error: 'Hold your horses!'}, 429);
+                return;
+            }
+            callback(null, software, serverUUID);
+        },
+        function (software, serverUUID, callback) {
+            // Get the current tms2000
+            let tms2000 = timeUtil.dateToTms2000(new Date());
 
-        // Get the location of the ip
-        var geo = geoip.lookup(ip);
+            // Get the ip
+            // We use CloudFlare so the cf-connecting-ip header can be trusted
+            let ip = (request.connection.remoteAddress ? request.connection.remoteAddress : request.remoteAddress);
+            if (typeof request.headers['cf-connecting-ip'] !== 'undefined')
+            {
+                ip = request.headers['cf-connecting-ip'];
+            }
 
-        var requestRandom = Math.random();
+            if (software === null) {
+                sendResponse(response, {error: 'Invalid request! Unknown server software!'}, 400);
+                return;
+            }
 
-        var defaultGlobalCharts = [];
-        var defaultPluginCharts = [];
+            let plugins = request.body.plugins; // The plugins
+            if (plugins === undefined || plugins === null || !Array.isArray(plugins)) {
+                sendResponse(response, {error: 'Invalid request! Missing or invalid plugins array!'}, 400);
+                return;
+            }
 
-        for (var i = 0; i < software.defaultCharts.length; i++) {
-            var chart = software.defaultCharts[i];
-            if (chart.requestParser.predefinedValue !== undefined) {
-                var value = chart.requestParser.predefinedValue;
-                if (value === '%country.name%') {
-                    value = geo === null ? 'Unknown' : countryUtil.getCountryName(geo.country);
+            // Get the location of the ip
+            let geo = geoip.lookup(ip);
+
+            let requestRandom = Math.random();
+
+            let defaultGlobalCharts = [];
+            let defaultPluginCharts = [];
+
+            for (let i = 0; i < software.defaultCharts.length; i++) {
+                let chart = software.defaultCharts[i];
+                if (chart.requestParser.predefinedValue !== undefined) {
+                    let value = chart.requestParser.predefinedValue;
+                    if (value === '%country.name%') {
+                        value = geo === null ? 'Unknown' : countryUtil.getCountryName(geo.country);
+                    }
+                    defaultGlobalCharts.push({
+                        chartId: chart.id,
+                        data: {
+                            value: value
+                        },
+                        requestRandom: requestRandom
+                    });
+                    continue;
                 }
-                defaultGlobalCharts.push({
+
+                let useHardcodedParser = chart.requestParser.useHardcodedParser;
+                if (typeof useHardcodedParser === 'string') {
+                    switch (useHardcodedParser) {
+                        case 'os':
+                            let osName = request.body.osName;
+                            let osVersion = request.body.osVersion;
+                            if (typeof osName !== 'string' || typeof osVersion !== 'string') {
+                                continue;
+                            }
+                            let operatingSystemChart = {
+                                chartId: 'os',
+                                data: {
+                                    values: {}
+                                },
+                                requestRandom: requestRandom
+                            };
+                            if (osName.startsWith("Windows Server")) {
+                                operatingSystemChart.data.values['Windows Server'] = {};
+                                operatingSystemChart.data.values['Windows Server'][osName] = 1;
+                            } else if (osName.startsWith("Windows NT")) {
+                                operatingSystemChart.data.values['Windows NT'] = {};
+                                operatingSystemChart.data.values['Windows NT'][osName] = 1;
+                            } else if (osName.startsWith("Windows")) {
+                                operatingSystemChart.data.values['Windows'] = {};
+                                operatingSystemChart.data.values['Windows'][osName] = 1;
+                            } else if (osName.startsWith("Linux")) {
+                                operatingSystemChart.data.values['Linux'] = {};
+                                operatingSystemChart.data.values['Linux'][osVersion] = 1;
+                            } else if (osName.startsWith("Mac OS X")) {
+                                operatingSystemChart.data.values['Mac OS X'] = {};
+                                operatingSystemChart.data.values['Mac OS X']['Mac OS X ' + osVersion] = 1;
+                            } else {
+                                operatingSystemChart.data.values['Other'] = {};
+                                operatingSystemChart.data.values['Other'][osName + ' (' + osVersion + ')'] = 1;
+                            }
+                            defaultGlobalCharts.push(operatingSystemChart);
+                            continue;
+                            break;
+                        case 'javaVersion':
+                            let javaVersion = request.body.javaVersion;
+                            if (typeof javaVersion !== 'string') {
+                                continue;
+                            }
+                            let javaVersionChart = {
+                                chartId: 'javaVersion',
+                                data: {
+                                    values: {}
+                                },
+                                requestRandom: requestRandom
+                            };
+                            if (javaVersion.startsWith("1.7")) {
+                                javaVersionChart.data.values['Java 1.7'] = {};
+                                javaVersionChart.data.values['Java 1.7'][javaVersion] = 1;
+                            } else if (javaVersion.startsWith("1.8")) {
+                                javaVersionChart.data.values['Java 1.8'] = {};
+                                javaVersionChart.data.values['Java 1.8'][javaVersion] = 1;
+                            } else {
+                                javaVersionChart.data.values['Other'] = {};
+                                javaVersionChart.data.values['Other'][javaVersion] = 1;
+                            }
+                            defaultGlobalCharts.push(javaVersionChart);
+                            continue;
+                            break;
+                        case 'bungeecordVersion':
+                            let bungeecordVersion = request.body.bungeecordVersion;
+                            let split = bungeecordVersion.split(":");
+                            let version = bungeecordVersion;
+                            if (split.length > 2) {
+                                version = split[2];
+                            }
+                            defaultGlobalCharts.push({
+                                chartId: chart.id,
+                                data: {
+                                    value: version
+                                },
+                                requestRandom: requestRandom
+                            });
+                            break;
+                        default:
+                            continue;
+                    }
+                }
+
+                let position = chart.requestParser.position;
+                let nameInRequest = chart.requestParser.nameInRequest;
+                let valueType = chart.requestParser.type;
+                valueType = typeof valueType !== 'string' ? 'string' : valueType;
+
+                if (position === 'global') {
+                    let value = request.body[nameInRequest];
+                    if (typeof value !== valueType) {
+                        if (valueType === 'boolean' && typeof value === 'number') {
+                            value = value !== 0;
+                        } else {
+                            continue;
+                        }
+                    }
+                    if (valueType === 'boolean') {
+                        value = value ? chart.requestParser.trueValue : chart.requestParser.falseValue;
+                    }
+                    switch (chart.type) {
+                        case 'simple_pie':
+                        case 'simple_map':
+                            defaultGlobalCharts.push({
+                                chartId: chart.id,
+                                data: {
+                                    value: value.toString()
+                                },
+                                requestRandom: requestRandom
+                            });
+                            break;
+                        case 'single_linechart':
+                            if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                                let maxValue = chart.data.filter.maxValue;
+                                let minValue = chart.data.filter.minValue;
+                                if (typeof maxValue === 'number' && value > maxValue) {
+                                    value = maxValue;
+                                } else if (typeof minValue === 'number' && value <= minValue) {
+                                    value = minValue;
+                                }
+                            }
+                            defaultGlobalCharts.push({
+                                chartId: chart.id,
+                                data: {
+                                    value: value
+                                },
+                                requestRandom: requestRandom
+                            });
+                            break;
+                        default:
+                            continue;
+                    }
+                } else if (position === 'plugin') {
+                    defaultPluginCharts.push(chart);
+                }
+            }
+
+            dataManager.getGlobalPluginBySoftwareUrl(software.url, function (err, res) {
+                callback(err, res, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo);
+            });
+        },
+        function (globalPlugin, plugins, requestRandom, software, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo, callback) {
+            if (globalPlugin !== null) {
+                plugins.push({
+                    customCharts: [],
+                    pluginVersion: "13.3.7",
+                    pluginName: globalPlugin.name,
+                    requestRandom: requestRandom
+                });
+            }
+
+            let handledPlugins = [];
+
+            // Iterate through plugins
+            for (let j = 0; j < plugins.length; j++) {
+                let plugin = plugins[j];
+
+                let pluginName = plugin.pluginName;
+                if (typeof pluginName !== 'string') {
+                    continue; // Invalid plugin
+                }
+
+                if (handledPlugins.indexOf(pluginName) > -1) {
+                    console.log('Plugin ' + pluginName + ' sent it\'s data twice (Server-UUID: ' + serverUUID + ')');
+                    continue;
+                }
+                handledPlugins.push(pluginName);
+
+                dataManager.getPluginBySoftwareUrlAndName(software.url, pluginName, function (err, res) {
+                    if (err) {
+                        console.log(err);
+                    } else if (res !== null) {
+                        handlePlugin(res, plugin, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo);
+                    }
+                });
+            }
+
+            callback(null, 'OK');
+        }
+    ], function (err, res) {
+        if (err) {
+            console.log(err);
+            sendResponse(response, {status: 'FAILED'}, 400);
+        } else {
+            sendResponse(response, {status: res}, 201);
+        }
+    });
+});
+
+/**
+ * Handles the sent data of a plugin.
+ */
+function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo) {
+    if (plugin.global && data.requestRandom !== requestRandom) {
+        // Someone tried to trick us
+        console.log('Server %s sent a global plugin!', serverUUID);
+        return;
+    }
+
+    // Custom charts must be an array
+    if (!Array.isArray(data.customCharts)) {
+        data.customCharts = [];
+    }
+
+    // Add default global charts
+    for (let i = 0; i < defaultGlobalCharts.length; i++) {
+        data.customCharts.push(defaultGlobalCharts[i]);
+    }
+
+    // Add default plugin charts
+    for (let i = 0; i < defaultPluginCharts.length && !plugin.isGlobal; i++) {
+        let chart = defaultPluginCharts[i];
+        let nameInRequest = chart.requestParser.nameInRequest;
+        let valueType = chart.requestParser.type;
+        valueType = typeof valueType !== 'string' ? 'string' : valueType;
+        let value = plugin[nameInRequest];
+        if (typeof value !== valueType) {
+            if (valueType === 'boolean' && typeof value === 'number') {
+                value = value !== 0;
+            } else {
+                continue;
+            }
+        }
+        if (valueType === 'boolean') {
+            value = value ? chart.requestParser.trueValue : chart.requestParser.falseValue;
+        }
+        switch (chart.type) {
+            case 'simple_pie':
+            case 'simple_map':
+                data.customCharts.push({
+                    chartId: chart.id,
+                    data: {
+                        value: value.toString()
+                    },
+                    requestRandom: requestRandom
+                });
+                break;
+            case 'single_linechart':
+                if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                    let maxValue = chart.data.filter.maxValue;
+                    let minValue = chart.data.filter.minValue;
+                    if (typeof maxValue === 'number' && value > maxValue) {
+                        value = maxValue;
+                    } else if (typeof minValue === 'number' && value <= minValue) {
+                        value = minValue;
+                    }
+                }
+                data.customCharts.push({
                     chartId: chart.id,
                     data: {
                         value: value
                     },
                     requestRandom: requestRandom
                 });
-                continue;
-            }
+                break;
+            default:
+                break;
+        }
+    }
 
-            var useHardcodedParser = chart.requestParser.useHardcodedParser;
-            if (typeof useHardcodedParser === 'string') {
-                switch (useHardcodedParser) {
-                    case 'os':
-                        var osName = request.body.osName;
-                        var osVersion = request.body.osVersion;
-                        if (typeof osName !== 'string' || typeof osVersion !== 'string') {
-                            continue;
-                        }
-                        var operatingSystemChart = {
-                            chartId: 'os',
-                            data: {
-                                values: {}
-                            },
-                            requestRandom: requestRandom
-                        };
-                        if (osName.startsWith("Windows Server")) {
-                            operatingSystemChart.data.values['Windows Server'] = {};
-                            operatingSystemChart.data.values['Windows Server'][osName] = 1;
-                        } else if (osName.startsWith("Windows NT")) {
-                            operatingSystemChart.data.values['Windows NT'] = {};
-                            operatingSystemChart.data.values['Windows NT'][osName] = 1;
-                        } else if (osName.startsWith("Windows")) {
-                            operatingSystemChart.data.values['Windows'] = {};
-                            operatingSystemChart.data.values['Windows'][osName] = 1;
-                        } else if (osName.startsWith("Linux")) {
-                            operatingSystemChart.data.values['Linux'] = {};
-                            operatingSystemChart.data.values['Linux'][osVersion] = 1;
-                        } else if (osName.startsWith("Mac OS X")) {
-                            operatingSystemChart.data.values['Mac OS X'] = {};
-                            operatingSystemChart.data.values['Mac OS X']['Mac OS X ' + osVersion] = 1;
-                        } else {
-                            operatingSystemChart.data.values['Other'] = {};
-                            operatingSystemChart.data.values['Other'][osName + ' (' + osVersion + ')'] = 1;
-                        }
-                        defaultGlobalCharts.push(operatingSystemChart);
-                        continue;
-                        break;
-                    case 'javaVersion':
-                        var javaVersion = request.body.javaVersion;
-                        if (typeof javaVersion !== 'string') {
-                            continue;
-                        }
-                        var javaVersionChart = {
-                            chartId: 'javaVersion',
-                            data: {
-                                values: {}
-                            },
-                            requestRandom: requestRandom
-                        };
-                        if (javaVersion.startsWith("1.7")) {
-                            javaVersionChart.data.values['Java 1.7'] = {};
-                            javaVersionChart.data.values['Java 1.7'][javaVersion] = 1;
-                        } else if (javaVersion.startsWith("1.8")) {
-                            javaVersionChart.data.values['Java 1.8'] = {};
-                            javaVersionChart.data.values['Java 1.8'][javaVersion] = 1;
-                        } else {
-                            javaVersionChart.data.values['Other'] = {};
-                            javaVersionChart.data.values['Other'][javaVersion] = 1;
-                        }
-                        defaultGlobalCharts.push(javaVersionChart);
-                        continue;
-                        break;
-                    case 'bungeecordVersion':
-                        var bungeecordVersion = request.body.bungeecordVersion;
-                        var split = bungeecordVersion.split(":");
-                        var version = bungeecordVersion;
-                        if (split.length > 2) {
-                            version = split[2];
-                        }
-                        defaultGlobalCharts.push({
-                            chartId: chart.id,
-                            data: {
-                                value: version
-                            },
-                            requestRandom: requestRandom
-                        });
-                        break;
-                        continue;
-                        break;
-                    default:
-                        continue;
-                }
-            }
+    for (let i = 0; i < data.customCharts.length; i++) {
+        let chartData = data.customCharts[i];
 
-            var position = chart.requestParser.position;
-            var nameInRequest = chart.requestParser.nameInRequest;
-            var valueType = chart.requestParser.type;
-            valueType = typeof valueType !== 'string' ? 'string' : valueType;
-
-            if (position === 'global') {
-                var value = request.body[nameInRequest];
-                if (typeof value !== valueType) {
-                    if (valueType === 'boolean' && typeof value === 'number') {
-                        value = value !== 0;
-                    } else {
-                        continue;
-                    }
-                }
-                if (valueType === 'boolean') {
-                    value = value ? chart.requestParser.trueValue : chart.requestParser.falseValue;
-                }
-                switch (chart.type) {
-                    case 'simple_pie':
-                    case 'simple_map':
-                        defaultGlobalCharts.push({
-                            chartId: chart.id,
-                            data: {
-                                value: value.toString()
-                            },
-                            requestRandom: requestRandom
-                        });
-                        break;
-                    case 'single_linechart':
-                        if (chart.data.filter !== undefined && chart.data.filter.enabled) {
-                            var maxValue = chart.data.filter.maxValue;
-                            var minValue = chart.data.filter.minValue;
-                            if (typeof maxValue === 'number' && value > maxValue) {
-                                value = maxValue;
-                            } else if (typeof minValue === 'number' && value <= minValue) {
-                                value = minValue;
-                            }
-                        }
-                        defaultGlobalCharts.push({
-                            chartId: chart.id,
-                            data: {
-                                value: value
-                            },
-                            requestRandom: requestRandom
-                        });
-                        break;
-                    default:
-                        continue;
-                }
-            } else if (position === 'plugin') {
-                defaultPluginCharts.push(chart);
-            }
+        if (chartData === null) {
+            continue;
         }
 
-        var globalPlugin = dataCache.getGlobalPluginBySoftwareUrl(software.url);
-
-        if (globalPlugin != null) {
-            plugins.push({
-                customCharts: [],
-                pluginVersion: "13.3.7",
-                pluginName: globalPlugin.name,
-                requestRandom: requestRandom
-            });
+        if (typeof chartData.chartId !== 'string') {
+            continue;
         }
 
-        var handledPlugins = [];
+        dataManager.getChartByPluginIdAndChartId(plugin.id, chartData.chartId, function (err, res) {
+            let chart = res;
 
-        // Iterate through plugins
-        for (var j = 0; j < plugins.length; j++) {
-            var plugin = plugins[j];
-
-            var pluginName = plugin.pluginName;
-            if (typeof pluginName !== 'string') {
-                continue; // Invalid plugin
-            }
-            if (handledPlugins.indexOf(pluginName) > -1) {
-                console.log('Plugin ' + pluginName + ' sent it\'s data twice (Server-UUID: ' + serverUUID + ')');
-                continue;
-            }
-            handledPlugins.push(pluginName);
-
-            var pluginObj = dataCache.getPluginByNameAndSoftwareUrl(pluginName, software.url);
-            if (pluginObj === null) {
-                continue;
+            if (chart === null) {
+                return;
             }
 
-            if (pluginObj.isGlobal && plugin.requestRandom !== requestRandom) {
-                // Someone tried to trick us
-                console.log('Server %s sent a global plugin!', serverUUID);
-                continue;
+            if (chart.default && chartData.requestRandom !== requestRandom) {
+                console.log('The plugin ' + plugin.name + ' tried to trick us and sent a default chart (Server-UUID: ' + serverUUID + ')');
+                return;
             }
 
-            if (plugin.customCharts == undefined || !Array.isArray(plugin.customCharts)) {
-                plugin.customCharts = [];
+            // Simple Pie
+            if (chart.type === 'simple_pie') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'string') {
+                    return;
+                }
+                dataManager.updatePieData(chart.uid, tms2000, chartData.data.value, 1);
             }
 
-            // Add default global charts
-            for (var l = 0; l < defaultGlobalCharts.length; l++) {
-                plugin.customCharts.push(defaultGlobalCharts[l]);
-            }
-
-            // Add default plugin charts
-            for (var l = 0; l < defaultPluginCharts.length && !pluginObj.isGlobal; l++) {
-                var chart = defaultPluginCharts[l];
-                var nameInRequest = chart.requestParser.nameInRequest;
-                var valueType = chart.requestParser.type;
-                valueType = typeof valueType !== 'string' ? 'string' : valueType;
-                var value = plugin[nameInRequest];
-                if (typeof value !== valueType) {
-                    if (valueType === 'boolean' && typeof value === 'number') {
-                        value = value !== 0;
-                    } else {
+            // Advanced Pie
+            if (chart.type === 'advanced_pie') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
+                    return;
+                }
+                for (let value in chartData.data.values) {
+                    if (!chartData.data.values.hasOwnProperty(value) || typeof chartData.data.values[value] !== 'number') {
                         continue;
                     }
-                }
-                if (valueType === 'boolean') {
-                    value = value ? chart.requestParser.trueValue : chart.requestParser.falseValue;
-                }
-                switch (chart.type) {
-                    case 'simple_pie':
-                    case 'simple_map':
-                        plugin.customCharts.push({
-                            chartId: chart.id,
-                            data: {
-                                value: value.toString()
-                            },
-                            requestRandom: requestRandom
-                        });
-                        break;
-                    case 'single_linechart':
-                        if (chart.data.filter !== undefined && chart.data.filter.enabled) {
-                            var maxValue = chart.data.filter.maxValue;
-                            var minValue = chart.data.filter.minValue;
-                            if (typeof maxValue === 'number' && value > maxValue) {
-                                value = maxValue;
-                            } else if (typeof minValue === 'number' && value <= minValue) {
-                                value = minValue;
-                            }
-                        }
-                        plugin.customCharts.push({
-                            chartId: chart.id,
-                            data: {
-                                value: value
-                            },
-                            requestRandom: requestRandom
-                        });
-                        break;
-                    default:
-                        break;
+                    dataManager.updatePieData(chart.uid, tms2000, value, chartData.data.values[value]);
                 }
             }
 
-            for (var k = 0; k < plugin.customCharts.length; k++) {
-                var chartData = plugin.customCharts[k];
-
-                if (typeof chartData.chartId !== 'string') {
-                    continue;
+            // Drilldown Pie
+            if (chart.type === 'drilldown_pie') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
+                    return;
                 }
-
-                if (dataCache.charts[pluginObj.id] === undefined || dataCache.charts[pluginObj.id][chartData.chartId] === undefined) {
-                    continue;
-                }
-
-                var chart = dataCache.charts[pluginObj.id][chartData.chartId];
-
-                if (chart.isDefault && chartData.requestRandom !== requestRandom) {
-                    console.log('The plugin ' + pluginName + ' tried to trick us and sent a default chart (Server-UUID: ' + serverUUID + ')');
-                    continue;
-                }
-
-                // Simple Pie
-                if (chart.type === 'simple_pie') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'string') {
+                for (let value in chartData.data.values) {
+                    if (!chartData.data.values.hasOwnProperty(value) || typeof chartData.data.values[value] !== 'object') {
                         continue;
                     }
-                    updatePieData(pluginObj.id, chartData.chartId, tms2000, chartData.data.value, 1);
+                    dataManager.updateDrilldownPieData(chart.uid, tms2000, value, chartData.data.values[value]);
                 }
+            }
 
-                // Advanced Pie
-                if (chart.type === 'advanced_pie') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
-                        continue;
-                    }
-                    for (var value in chartData.data.values) {
-                        if (!chartData.data.values.hasOwnProperty(value) || typeof chartData.data.values[value] !== 'number') {
-                            continue;
-                        }
-                        updatePieData(pluginObj.id, chartData.chartId, tms2000, value, chartData.data.values[value]);
-                    }
+            // Single Linechart
+            if (chart.type === 'single_linechart') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'number') {
+                    return;
                 }
-
-                // Drilldown Pie
-                if (chart.type === 'drilldown_pie') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
-                        continue;
-                    }
-                    for (var value in chartData.data.values) {
-                        if (!chartData.data.values.hasOwnProperty(value) || typeof chartData.data.values[value] !== 'object') {
-                            continue;
-                        }
-                        updateDrilldownPieData(pluginObj.id, chartData.chartId, tms2000, value, chartData.data.values[value]);
+                let value = chartData.data.value;
+                if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                    let maxValue = chart.data.filter.maxValue;
+                    let minValue = chart.data.filter.minValue;
+                    if (typeof maxValue === 'number' && value > maxValue) {
+                        value = maxValue;
+                    } else if (typeof minValue === 'number' && value <= minValue) {
+                        value = minValue;
                     }
                 }
+                dataManager.updateLineChartData(chart.uid, value, 1, tms2000);
+            }
 
-                // Single Linechart
-                if (chart.type === 'single_linechart') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'number') {
-                        continue;
-                    }
-                    var value = chartData.data.value;
-                    if (chart.data.filter !== undefined && chart.data.filter.enabled) {
-                        var maxValue = chart.data.filter.maxValue;
-                        var minValue = chart.data.filter.minValue;
-                        if (typeof maxValue === 'number' && value > maxValue) {
-                            value = maxValue;
-                        } else if (typeof minValue === 'number' && value <= minValue) {
-                            value = minValue;
-                        }
-                    }
-                    updateLineChartData(chart.uid, value, 1, tms2000);
+            // Bar charts
+            if (chart.type === 'simple_bar' || chart.type === 'advanced_bar') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
+                    return;
                 }
-
-                // Bar charts
-                if (chart.type === 'simple_bar' || chart.type === 'advanced_bar') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
-                        continue;
-                    }
-                    for (var category in chartData.data.values) {
-                        if (chartData.data.values.hasOwnProperty(category)) {
-                            var categoryValues = chartData.data.values[category];
-                            updateBarData(pluginObj.id, chartData.chartId, tms2000, category, categoryValues);
-                        }
+                for (let category in chartData.data.values) {
+                    if (chartData.data.values.hasOwnProperty(category)) {
+                        let categoryValues = chartData.data.values[category];
+                        dataManager.updateBarData(chart.uid, tms2000, category, categoryValues);
                     }
                 }
+            }
 
-                // Simple Map
-                if (chart.type === 'simple_map') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'string') {
+            // Simple Map
+            if (chart.type === 'simple_map') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.value !== 'string') {
+                    return;
+                }
+                let value = chartData.data.value;
+                if (value === 'AUTO' && (geo === null || geo === undefined)) {
+                    return;
+                }
+                value = value === 'AUTO' ? geo.country : value;
+                // The format of map charts is the same as pie charts so we can use the same method
+                dataManager.updateMapData(chart.uid, tms2000, value, 1);
+            }
+
+            // Advanced Map
+            if (chart.type === 'advanced_map') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
+                    return;
+                }
+                for (let value in chartData.data.values) {
+                    if (!chartData.data.values.hasOwnProperty(value) || typeof chartData.data.values[value] !== 'number') {
                         continue;
                     }
-                    var value = chartData.data.value;
-                    if (value === 'AUTO' && geo == null) {
+                    let weight = chartData.data.values[value];
+                    if (value === 'AUTO' && (geo === null || geo === undefined)) {
                         continue;
                     }
                     value = value === 'AUTO' ? geo.country : value;
                     // The format of map charts is the same as pie charts so we can use the same method
-                    updatePieData(pluginObj.id, chartData.chartId, tms2000, value, 1);
-                }
-
-                // Advanced Map
-                if (chart.type === 'advanced_map') {
-                    if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
-                        continue;
-                    }
-                    for (var value in chartData.data.values) {
-                        if (!chartData.data.values.hasOwnProperty(value) || typeof chartData.data.values[value] !== 'number') {
-                            continue;
-                        }
-                        var weight = chartData.data.values[value];
-                        if (value === 'AUTO' && geo === undefined) {
-                            continue;
-                        }
-                        value = value === 'AUTO' ? geo.country : value;
-                    }
+                    dataManager.updateMapData(chart.uid, tms2000, value, 1);
                 }
             }
-
-        }
-
-        sendResponse(response, {status: 'OK'}, 201);
-
-    } catch (err) {
-        console.log(err);
-        sendResponse(response, {status: 'FAILED'}, 400);
+        });
     }
-});
+
+}
 
 /**
  * Sends a response in JSON format.
@@ -470,99 +510,6 @@ function sendResponse(response, json, statusCode) {
     response.writeHead(statusCode, {'Content-Type': 'application/json'});
     response.write(JSON.stringify(json));
     response.end();
-}
-
-function updatePieData(pluginId, chartId, tms2000, valueName, value) {
-    if (dataCache.chartData[tms2000] === undefined) {
-        dataCache.chartData[tms2000] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId] === undefined) {
-        dataCache.chartData[tms2000][pluginId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId][valueName] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId][valueName] = value;
-    } else {
-        dataCache.chartData[tms2000][pluginId][chartId][valueName] += value;
-    }
-}
-
-function updateDrilldownPieData(pluginId, chartId, tms2000, valueName, values) {
-    if (dataCache.chartData[tms2000] === undefined) {
-        dataCache.chartData[tms2000] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId] === undefined) {
-        dataCache.chartData[tms2000][pluginId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId][valueName] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId][valueName] = {};
-    }
-    for (var value in values) {
-        if (!values.hasOwnProperty(value) || typeof values[value] !== 'number') {
-            continue;
-        }
-        if (dataCache.chartData[tms2000][pluginId][chartId][valueName][value] === undefined) {
-            dataCache.chartData[tms2000][pluginId][chartId][valueName][value] = values[value];
-        } else {
-            dataCache.chartData[tms2000][pluginId][chartId][valueName][value] += values[value];
-        }
-    }
-}
-
-function updateLineChartData(chartUid, value, line, tms2000) {
-    var sql =
-        'INSERT INTO ' +
-            '`line_charts` ' +
-        '(' +
-            '`chart_uid`, `value`, `line`, `tms_2000`' +
-        ') VALUES (' +
-            '?, ?, ?, ?' +
-        ') ON DUPLICATE KEY UPDATE ' +
-            '`value` = `value` + ?;';
-    databaseManager.getConnectionPool("linecharts-submit").query(sql, [chartUid, value, line, tms2000, value],
-        function (err, results) {
-            if (err) {
-                if (!(err.code == undefined)) {
-                    if (err.code === 'ER_DUP_ENTRY') {
-                        return; // not my fault that the client is sending shit
-                    }
-                }
-                console.log(err);
-            }
-        }
-    );
-}
-
-function updateBarData(pluginId, chartId, tms2000, category, values) {
-    if (dataCache.chartData[tms2000] === undefined) {
-        dataCache.chartData[tms2000] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId] === undefined) {
-        dataCache.chartData[tms2000][pluginId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId] = {};
-    }
-    if (dataCache.chartData[tms2000][pluginId][chartId][category] === undefined) {
-        dataCache.chartData[tms2000][pluginId][chartId][category] = values;
-    } else {
-        var largestIndex = dataCache.chartData[tms2000][pluginId][chartId][category].length;
-        largestIndex = values.length > largestIndex ? values.length : largestIndex;
-        for (var i = 0; i < largestIndex; i++) {
-            if (i > values.length) {
-                break;
-            }
-            if (largestIndex > dataCache.chartData[tms2000][pluginId][chartId][category].length) {
-                dataCache.chartData[tms2000][pluginId][chartId][category].push(values[i]);
-            }
-            dataCache.chartData[tms2000][pluginId][chartId][category][i] += values[i];
-        }
-    }
 }
 
 module.exports = router;

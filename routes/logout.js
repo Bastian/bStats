@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 /* GET logout page. */
-router.get('/', function(request, response, next) {
+router.get('/', function(req, res, next) {
 
-    request.logout();
-    response.redirect('/');
+    req.logout();
+    res.redirect('/');
 
 });
 

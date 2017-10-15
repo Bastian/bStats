@@ -21,7 +21,6 @@
 <% include ../templates/navigation.ejs %>
 <main>
     <div class="container">
-
         <br>
         <% if (addedPlugin) { %>
         <div class="col s12">
@@ -186,7 +185,7 @@
 
                                                 <tbody>
                                                 <% for (var i = 0; i < software.length; i++) { %>
-                                                <% if (software[i].metricsClass != null) { %>
+                                                <% if (software[i].metricsClass !== null) { %>
                                                 <tr>
                                                     <td><b><%= software[i].name %></b></td>
                                                     <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a></td>
@@ -215,10 +214,10 @@
 
                         <tbody>
                         <% for (var i = 0; i < software.length; i++) { %>
-                        <% if (software[i].classCreation != null) { %>
+                        <% if (software[i].examplePlugin !== null) { %>
                         <tr>
                             <td><b><%= software[i].name %></b></td>
-                            <td><a href="<%= software[i].classCreation %>" target="_blank">ExamplePlugin.java</a></td>
+                            <td><a href="<%= software[i].examplePlugin %>" target="_blank">ExamplePlugin.java</a></td>
                         </tr>
                         <% } %>
                         <% } %>

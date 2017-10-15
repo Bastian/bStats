@@ -1,10 +1,10 @@
 {
-  "database": {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "top secret",
-    "database": "stats"
-  },
+  "redis": [
+    {
+      "port": 1234,
+      "host": "127.0.0.1"
+    }
+  ],
   "recaptcha": {
     "publicKey": "abc123",
     "secretKey": "123abc"

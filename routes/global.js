@@ -1,49 +1,54 @@
 const express = require('express');
 const router = express.Router();
-const dataCache = require('../util/dataCache');
+const dataManager = require('../util/dataManager');
+const waterfall = require('async-waterfall');
 
 /* GET global page. */
-router.get('/:software', function(request, response, next) {
-
-    var plugin = dataCache.getGlobalPluginBySoftwareUrl(request.params.software);
-
-    if (plugin === null) { // TODO render
-        response.writeHead(200, {'Content-Type': 'application/json'});
-        response.write(JSON.stringify({
-            error: 'Unknown software'
-        }));
-        response.end();
-        return;
-    }
-
-    var serversCurrent = dataCache.lineChartsData[plugin.id]['servers'][1][dataCache.lineChartsData[plugin.id]['servers'][1].length-1][1];
-    var serversRecord = 0;
-    for (var i = 0; i < dataCache.lineChartsData[plugin.id]['servers'][1].length; i++) {
-        if (dataCache.lineChartsData[plugin.id]['servers'][1][i][1] > serversRecord) {
-            serversRecord = dataCache.lineChartsData[plugin.id]['servers'][1][i][1];
+router.get('/:software', function(req, res, next) {
+    
+    waterfall([
+        function (callback) {
+            dataManager.getGlobalPluginBySoftwareUrl(req.params.software, ['name', 'software', 'owner'], function (err, plugin) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                if (plugin === null) { // TODO render proper page
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.write(JSON.stringify({
+                        error: 'Unknown software'
+                    }));
+                    res.end();
+                    return;
+                }
+                callback(null, plugin);
+            });
+        },
+        function (plugin, callback) {
+            dataManager.getSoftwareById(plugin.software, ['name'], function (err, res) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                callback(null, plugin, res);
+            });
         }
-    }
-    var playersCurrent = dataCache.lineChartsData[plugin.id]['players'][1][dataCache.lineChartsData[plugin.id]['players'][1].length-1][1];
-    var playersRecord = 0;
-    for (var j = 0; j < dataCache.lineChartsData[plugin.id]['players'][1].length; j++) {
-        if (dataCache.lineChartsData[plugin.id]['players'][1][j][1] > playersRecord) {
-            playersRecord = dataCache.lineChartsData[plugin.id]['players'][1][j][1];
+        ], function (err, plugin, software) {
+            if (err) {
+                console.log(err);
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.write(JSON.stringify({
+                    error: 'Unknown error'
+                }));
+                res.end();
+                return;
+            }
+            res.render('global', {
+                plugin: plugin,
+                software: software
+            });
         }
-    }
-
-    var customColor1 = request.cookies["custom-color1"];
-    customColor1 = customColor1 === undefined ? 'teal' : customColor1;
-
-    response.render('global', {
-        plugin: plugin,
-        user: request.user === undefined ? null : request.user,
-        loggedIn: request.user != undefined,
-        serversRecord: serversRecord,
-        serversCurrent: serversCurrent,
-        playersRecord: playersRecord,
-        playersCurrent: playersCurrent,
-        customColor1: customColor1
-    });
+    );
 
 });
 

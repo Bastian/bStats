@@ -11,7 +11,7 @@
  * @returns {number} The tms2000 value.
  */
 function dateToTms2000(date) {
-    var past = new Date(2000, 1, 1, 0, 0, 0, 0).getTime();
+    let past = new Date(2000, 1, 1, 0, 0, 0, 0).getTime();
     return ((date - past) / (1000*60*30) | 0);
 }
 
@@ -22,8 +22,8 @@ function dateToTms2000(date) {
  * @returns {Date} The date.
  */
 function tms2000ToDate(tms2000) {
-    var past = new Date(2000, 1, 1, 0, 0, 0, 0).getTime();
-    return new Date(past + tms2000 * 1000*60*30)
+    let past = new Date(2000, 1, 1, 0, 0, 0, 0).getTime();
+    return new Date(past + tms2000 * 1000*60*30);
 }
 
 // Exports
