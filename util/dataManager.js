@@ -467,7 +467,7 @@ function getMapData(chartUid, callback) {
         // ["DE","1","US","3"] -> [{"code":"DE","value":1},{"code":"US","value":3}]
         let data = [];
         for (let i = 0; i < res.length; i += 2) {
-            data.push({name: res[i], y: parseInt(res[i+1])});
+            data.push({code: res[i], value: parseInt(res[i+1])});
         }
         callback(null, data);
     });
