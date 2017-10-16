@@ -517,7 +517,7 @@ function updateDrilldownPieData(chartUid, tms2000, valueName, values) {
                 console.log(err);
                 return;
             }
-            databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}`, 60*61);
+            databaseManager.getRedisCluster().expire(`data:${chartUid}.${tms2000}.${valueName}`, 60*61);
         });
     });
     databaseManager.getRedisCluster().zincrby(`data:${chartUid}.${tms2000}`, totalValue, valueName, function (err, res) {

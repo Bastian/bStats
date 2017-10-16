@@ -145,6 +145,9 @@ router.post('/:software?', function(request, response, next) {
                             } else if (osName.startsWith("Mac OS X")) {
                                 operatingSystemChart.data.values['Mac OS X'] = {};
                                 operatingSystemChart.data.values['Mac OS X']['Mac OS X ' + osVersion] = 1;
+                            } else if (osName.indexOf('BSD') !== -1) {
+                                operatingSystemChart.data.values['BSD'] = {};
+                                operatingSystemChart.data.values['BSD'][osName + ' ' + osVersion] = 1;
                             } else {
                                 operatingSystemChart.data.values['Other'] = {};
                                 operatingSystemChart.data.values['Other'][osName + ' (' + osVersion + ')'] = 1;
@@ -170,6 +173,11 @@ router.post('/:software?', function(request, response, next) {
                             } else if (javaVersion.startsWith("1.8")) {
                                 javaVersionChart.data.values['Java 1.8'] = {};
                                 javaVersionChart.data.values['Java 1.8'][javaVersion] = 1;
+                            } else if (javaVersion.startsWith("9") || javaVersion === "1.9.0-ea") {
+                                //java 9 changed the version format to 9.0.1 and 1.9.0 is only used for early access
+                                //reference: http://openjdk.java.net/jeps/223
+                                javaVersionChart.data.values['Java 1.9'] = {};
+                                javaVersionChart.data.values['Java 1.9'][javaVersion] = 1;
                             } else {
                                 javaVersionChart.data.values['Other'] = {};
                                 javaVersionChart.data.values['Other'][javaVersion] = 1;
