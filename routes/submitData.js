@@ -332,12 +332,12 @@ function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalChar
     }
 
     // Add default plugin charts
-    for (let i = 0; i < defaultPluginCharts.length && !plugin.isGlobal; i++) {
+    for (let i = 0; i < defaultPluginCharts.length && !plugin.global; i++) {
         let chart = defaultPluginCharts[i];
         let nameInRequest = chart.requestParser.nameInRequest;
         let valueType = chart.requestParser.type;
         valueType = typeof valueType !== 'string' ? 'string' : valueType;
-        let value = plugin[nameInRequest];
+        let value = data[nameInRequest];
         if (typeof value !== valueType) {
             if (valueType === 'boolean' && typeof value === 'number') {
                 value = value !== 0;
