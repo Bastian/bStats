@@ -32,7 +32,7 @@ app.use(session({
         client: require('./util/databaseManager').getRedisCluster()
     }),
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     secret: config.sessionSecret
 }));
 app.use(passport.initialize());
