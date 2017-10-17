@@ -220,22 +220,28 @@ function handleLineChart(chartId, chart) {
                     type: 'all',
                     text: 'All'
                 }],
-                selected: 3
+                selected: 3,
+                inputEnabled: false
             },
 
             exporting: {
-                buttons: [
-                    {
-                        _id: 'signatureImage',
-                        symbol: 'diamond',
-                        symbolFill: '#B5C9DF',
-                        hoverSymbolFill: '#779ABF',
-                        onclick: function() {
-                            alert('Coming soon™!')
+                menuItemDefinitions: {
+                    loadFullData: {
+                        onclick: function () {
+                            $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (2*24*30*12*2), function (data) {
+                                $('#' + chartId + 'LineChart').highcharts().series[0].update({
+                                    data: data
+                                }, true);
+                            });
                         },
-                        _titleKey: "signatureImageTitle"
+                        text: 'Load full data'
                     }
-                ]
+                },
+                buttons: {
+                    contextButton: {
+                        menuItems: ['loadFullData']
+                    }
+                }
             },
 
             yAxis: {
