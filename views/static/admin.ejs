@@ -8,9 +8,9 @@
 
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
-    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
     <% if (!loggedIn || user.admin != 1) { %>
     <style>
@@ -40,7 +40,7 @@
         <div class="nyan" style=""></div>
         <div style="height: 500px"></div>
         <audio loop="loop" autoplay="autoplay">
-            <source src="../../../../../../nyan.mp3" type="audio/mpeg">
+            <source src="/nyan.mp3" type="audio/mpeg">
         </audio>
         <% } else { %>
         <br><br>
@@ -64,8 +64,8 @@
 
 <!--  Scripts-->
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
-<script src="../../../../../../javascripts/materialize/init.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
 
 <% if (!loggedIn || user.admin != 1) { %>
 <script type="application/javascript">
