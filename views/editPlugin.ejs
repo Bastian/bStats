@@ -4,13 +4,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="description" content="Edit your plugin">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>bStats - Edit <%= pluginName %></title>
+    <title>bStats - Edit <%= plugin.name %></title>
 
-    <!-- CSS  -->
+    <!-- CSS -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../../../../../../stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
           media="screen,projection"/>
-    <link href="../../../../../../stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <!-- Scripts (Pls don't punch me, that it's in the head) -->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="/javascripts/materialize/materialize.min.js"></script>
+    <script src="/javascripts/materialize/init.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
 
     <style type="text/css">
         .depending_box {
@@ -20,34 +26,54 @@
             display: none;
         }
         .filterOptions {
-             display: none;
-         }
+            display: none;
+        }
     </style>
 </head>
 
 <body>
 <% include templates/navigation.ejs %>
 <main>
-    <div class="container">
-
-        <div class="section no-pad-bot" id="index-banner">
-            <div class="container">
-                <br><br>
-                <h1 class="header center red-text">Temporary not available!</h1>
-                <div class="row center">
-                    <h5 class="header col s12 light">This page currently gets rewritten. Please check again in a few days.</h5>
-                </div>
-            </div>
-        </div>
-
-    </div>
+    <% if (!(isOwner || (user !== undefined && user.admin))) { %>
+    <% include editPlugin/notOwner.ejs %>
+    <% } else { %>
+    <% include editPlugin/addChart.ejs %>
+    <% } %>
 </main>
+
+<!-- Error modal -->
+<div id="errorModal" class="modal">
+    <div class="modal-content">
+        <h4 class="red-text" id="errorModalTitle"></h4>
+        <p id="errorModalText"></p>
+    </div>
+    <div class="modal-footer">
+        <b><a href="#" class="modal-action modal-close waves-effect waves-red btn-flat grey-text">Ok</a></b>
+    </div>
+</div>
+
 <% include templates/footer.ejs %>
 
-<!--  Scripts-->
-<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="../../../../../../javascripts/materialize/materialize.min.js"></script>
-<script src="../../../../../../javascripts/materialize/init.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+<script type="application/javascript">
+    $(document).ready(function() {
+        $('select').material_select();
+    });
+
+    $('.chips').material_chip({
+        placeholder: 'Add an other value',
+        secondaryPlaceholder: 'Add entry'
+    });
+
+    $(document).ready(function() {
+        $('.modal').modal();
+    });
+
+    function showErrorModal(title, text) {
+        $('#errorModalTitle').text(title);
+        $('#errorModalText').text(text);
+        $('#errorModal').modal('open');
+    }
+</script>
+
 </body>
 </html>

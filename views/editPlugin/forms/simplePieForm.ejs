@@ -1,0 +1,87 @@
+<div class="depending_box simple_pie">
+    <div id="simple_pie_form" class="col s12">
+        <!-- Chart title -->
+        <br>
+        <div class="input-field">
+            <input placeholder="The title of the chart" id="chart_title_simple_pie" type="text" class="validate"
+                   pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" name="chartTitle">
+            <label for="chart_title_simple_pie">Chart title</label>
+        </div>
+        <!-- Chart id -->
+        <div class="input-field">
+            <input placeholder="Give the chart an undique id (e.g. 'myChart1')" id="chart_id_simple_pie" class="validate"
+                   pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
+            <label for="chart_id_simple_pie">Chart id</label>
+        </div>
+        <!-- Filter on/off -->
+        <div class="divider"></div>
+        <br>
+        <div class="switch">
+            <b>Filter data</b>
+            <label>
+                <input class="checkboxFilter" type="checkbox" name="filterEnabled">
+                <span class="lever"></span>
+            </label>
+        </div>
+        <br>
+        <div class="filterOptions">
+            <!-- Regex on/off -->
+            <div class="divider"></div>
+            <br>
+            <div class="switch">
+                <!-- Webdesign like a pro! (&nbsp; rulez) -->
+                <b>Regex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                <label>
+                    <input type="checkbox" name="regexEnabled">
+                    <span class="lever"></span>
+                </label>
+            </div>
+            <br>
+            <!-- Switch Whitelist/Blacklist -->
+            <div class="divider"></div>
+            <br>
+            <div class="switch">
+                <b>Blacklist&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                <label>
+                    <input class="checkboxBlacklist" type="checkbox" name="blacklistEnabled">
+                    <span class="lever"></span>
+                </label>
+            </div>
+            <br>
+            <!-- White-/Blacklist -->
+            <div class="divider"></div>
+            <br>
+            <b class="whitelistLabel" name="filter">Whitelist: </b><b class="blacklistLabel">Blacklist: </b><div id="simple_pie_filter" class="chips"></div>
+        </div>
+        <!-- Submit button -->
+        <div class='row'>
+            <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>', onclick="createSimplePieChart()">
+                Submit Chart
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="application/javascript">
+    $(document).on('input','#chart_title_simple_pie',function () {
+        document.getElementById('chart_id_simple_pie').value = $('#chart_title_simple_pie').val().toLowerCase().replace(/ /g, "_");
+    });
+
+    function createSimplePieChart() {
+        let currentForm = $('#simple_pie_form');
+        let filterData = $('#simple_pie_filter').material_chip('data');
+        let filter = [];
+        for (let i = 0; i < filterData.length; i++) {
+            filter.push(filterData[i].tag);
+        }
+        addChart({
+            chartTitle: $("#chart_title_simple_pie").val(),
+            chartId: $("#chart_id_simple_pie").val(),
+            filterEnabled: currentForm.find('input[name="filterEnabled"]').is(":checked"),
+            filter: filter,
+            regexEnabled: currentForm.find('input[name="regexEnabled"]').is(":checked"),
+            blacklistEnabled: currentForm.find('input[name="blacklistEnabled"]').is(":checked"),
+            chart_type: 'simple_pie'
+        });
+    }
+</script>

@@ -32,7 +32,6 @@ router.post('/', function(req, res, next) {
         return;
     }
 
-    let userId = req.user.id;
     let pluginName = req.body.pluginName;
     let softwareId = req.body.software;
     if (pluginName === undefined || pluginName.length === 0 || pluginName.length > 32) {

@@ -1,0 +1,122 @@
+<br><br>
+<div class="container row">
+    <!-- START Add chart -->
+    <h5 class="<%= customColor1 %>-text col s12 center-align">Add custom chart <a href="/help/custom-charts"><i class="material-icons blue-text" style="font-size: 20px">help</i></a></h5>
+
+    <br><br>
+    <div class="col s12 z-depth-1 grey lighten-4 row">
+        <br>
+        <div class="input-field col s12">
+            <select id="select_chart">
+                <option value="" disabled selected><b>Choose a chart type</b></option>
+                <optgroup label="Pies">
+                    <option value="simple_pie" title="A pie, perfect for settings">Simple Pie</option>
+                    <option value="advanced_pie" title="A pie, perfect if a plugin can send more than one value">Advanced Pie</option>
+                    <option value="drilldown_pie" title="A pie, perfect for more complex data">Drilldown Pie</option>
+                </optgroup>
+                <optgroup label="Line Charts">
+                    <option value="single_linechart" title="A line chart with a single line">Single line Chart</option>
+                    <option value="multi_linechart" title="A line chart with multiple lines">Multi line Chart</option>
+                </optgroup>
+                <optgroup label="Bar Charts">
+                    <option value="simple_bar" title="A simple bar chart">Simple Bar Chart</option>
+                    <option value="advanced_bar" title="An advanced bar chart">Advanced Bar Chart</option>
+                </optgroup>
+                <optgroup label="Miscellaneous">
+                    <option value="mapchart" title="A map chart">Map Chart</option>
+                </optgroup>
+            </select>
+            <label>Chart type</label>
+        </div>
+
+        <% include forms/simplePieForm.ejs %>
+        <% include forms/advancedPieForm.ejs %>
+
+        <div class="depending_box drilldown_pie single_linechart simple_bar advanced_bar">
+            <div id="advanced_pie_form" class="col s12">
+                <h2 class="red-text center-align">Coming (back) soon!</h2>
+                <div class="center-align">Check again in a few days! :-)</div>
+                <br><br>
+            </div>
+        </div>
+
+        <div class="depending_box multi_linechart">
+            <div id="advanced_pie_form" class="col s12">
+                <h2 class="red-text center-align">Coming <s>soon</s>!</h2>
+                <div class="center-align">Too be honest I have no clue when it will come. But it's on the todo list!</div>
+                <br><br>
+            </div>
+        </div>
+
+        <div class="depending_box mapchart">
+            <div id="advanced_pie_form" class="col s12">
+                <h2 class="red-text center-align">Coming <s>soon</s> maybe never!</h2>
+                <div class="center-align">I don't think there's much interest in map charts. Feel free to convince me I'm wrong!</div>
+                <br><br>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Chart created modal -->
+<div id="chartCreatedModal" class="modal">
+    <div class="modal-content">
+        <h4 class="green-text" id="chartCreatedModalTitle">Chart created</h4>
+        <p id="chartCreatedModalText">Chart <b id="createdChartTitle"></b> was successfully created!</p>
+    </div>
+    <div class="modal-footer">
+        <b><a id="createdChartLink" href="#" class="modal-action modal-close waves-effect btn-flat grey-text">View chart</a></b>
+        <b><a href="#" class="modal-action modal-close waves-effect btn-flat grey-text">Keep editing</a></b>
+    </div>
+</div>
+
+<script type="application/javascript">
+    $("#select_chart").on("change", function() {
+        let selectedVal = this.value;
+        $(".depending_box").not("." + selectedVal).hide();
+        $("." + selectedVal).show();
+    });
+
+    $('.checkboxBlacklist').on("change", function() {
+        let whitelistLabel = $('.whitelistLabel');
+        let blacklistLabel = $('.blacklistLabel');
+        if($(this).is(":checked")) {
+            whitelistLabel.hide();
+            blacklistLabel.show();
+            return;
+        }
+        whitelistLabel.show();
+        blacklistLabel.hide();
+    });
+
+    $('.checkboxFilter').on("change", function() {
+        let filterOptions = $(".filterOptions");
+        if($(this).is(":checked")) {
+            filterOptions.show();
+            return;
+        }
+        filterOptions.hide();
+    });
+
+    function addChart(chartData) {
+        chartData.action = 'addChart';
+        console.log('Creating chart:');
+        console.log(chartData);
+        $.post(window.location.href, chartData)
+            .done(function(data) {
+                $('#createdChartTitle').text(chartData.chartTitle);
+                $("#createdChartLink").attr("href", "/plugin/<%= softwareUrl %>/<%= plugin.name %>/#" + chartData.chartId)
+                $('#chartCreatedModal').modal('open');
+            }).fail(function(err) {
+                if (err.responseJSON.error === undefined) {
+                    showErrorModal('Ooops', 'Something happened, which should not happen. Please report this bug.');
+                } else {
+                    showErrorModal('Error', err.responseJSON.error + '.');
+                }
+                console.log(err);
+            }
+        );
+    }
+</script>
