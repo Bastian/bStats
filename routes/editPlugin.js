@@ -117,7 +117,7 @@ function addChart(req, res, plugin) {
     chartTitle = chartTitle.substring(0, 50);
     chartId = chartId.substring(0, 50);
     if (!/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(chartTitle) || !/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(chartId)) {
-        return sendResponse(res, {error: 'Invalid chart id or title!'}, 400);
+        return sendResponse(res, {error: 'Invalid chart id or title'}, 400);
     }
 
     dataManager.getChartByPluginIdAndChartId(plugin.id, chartId, function (err, chart) {
