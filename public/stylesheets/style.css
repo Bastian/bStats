@@ -26,3 +26,18 @@ main {
     padding: 15px;
     margin: 15px;
 }
+
+.coloredBox {
+    margin: 5px 1px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 28px;
+    color: white;
+    padding: 0px;
+    text-shadow: 2px 2px #000;
+    cursor: pointer;
+}
+
+.coloredBox:hover {
+    font-size: 30px;
+}

@@ -14,9 +14,6 @@
 
     <!-- Scripts (Pls don't punch me, that it's in the head) -->
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="/javascripts/materialize/materialize.min.js"></script>
-    <script src="/javascripts/materialize/init.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
 
     <style type="text/css">
         .depending_box {
@@ -58,6 +55,11 @@
 
 <% include templates/footer.ejs %>
 
+<!-- Scripts -->
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+
 <script type="application/javascript">
     $(document).ready(function() {
         $('select').material_select();
@@ -68,16 +70,14 @@
         secondaryPlaceholder: 'Add entry'
     });
 
-    $(document).ready(function() {
-        $('.modal').modal();
-    });
-
     function showErrorModal(title, text) {
         $('#errorModalTitle').text(title);
         $('#errorModalText').text(text);
         $('#errorModal').modal('open');
     }
 </script>
+
+<% include templates/globalScripts.ejs %>
 
 </body>
 </html>
