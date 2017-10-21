@@ -344,7 +344,9 @@ function getLimitedLineChartData(chartUid, line, amount, callback) {
             if (!isNaN(parseInt(res[i]))) {
                 data.push([datesToFetch[i], parseInt(res[i])]);
             } else {
-                data.push([datesToFetch[i], 0]);
+                if (res[i] !== 'ignored') {
+                    data.push([datesToFetch[i], 0]);
+                }
             }
         }
         callback(null, data);
@@ -365,7 +367,7 @@ function getFullLineChartData(chartUid, line, callback) {
         for (let property in res) {
             if (res.hasOwnProperty(property)) {
                 let timestamp = parseInt(property);
-                if (timestamp <= maxTimestamp) {
+                if (timestamp <= maxTimestamp && property !== 'ignored') {
                     data.push([timestamp, parseInt(res[property])]);
                 }
             }
