@@ -1,3 +1,11 @@
+td.dataTables_empty {
+    text-align: center;
+}
+
+.dataTables_wrapper .dataTables_processing {
+    visibility: hidden;
+}
+
 div.material-table {
     padding: 0;
 }
