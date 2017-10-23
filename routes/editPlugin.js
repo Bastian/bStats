@@ -16,6 +16,11 @@ router.get('/:software/:plugin', function(req, res, next) {
     let softwareUrl = req.params.software;
     dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['owner', 'charts', 'name'], function (err, plugin) {
 
+        if (plugin === null) {
+            return res.redirect('/404');
+        }
+
+
         let promises = [];
         for (let i = 0; i < plugin.charts.length; i++) {
             promises.push(new Promise((resolve, reject) => {
