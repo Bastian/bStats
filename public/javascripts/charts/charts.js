@@ -244,6 +244,10 @@ function handleLineChart(chartId, chart) {
                 }
             },
 
+            xAxis: {
+                ordinal: false
+            },
+
             yAxis: {
                 min: 0,
                 labels: {
@@ -262,7 +266,7 @@ function handleLineChart(chartId, chart) {
             },
 
             plotOptions:{
-                series:{
+                series: {
                     turboThreshold: 0 // disable the 1000 limit
                 }
             },
