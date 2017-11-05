@@ -349,7 +349,6 @@ function saveChart(plugin, chartData, callback) {
             type: chartData.type,
             position: chartData.position,
             title: chartData.title,
-            default: 0,
             data: JSON.stringify(chartData.data)
         };
         databaseManager.getRedisCluster().hmset(`charts:${chartUid}`, chartRedis, function (err) {
