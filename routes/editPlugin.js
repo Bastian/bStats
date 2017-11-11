@@ -88,8 +88,7 @@ router.post('/:software/:plugin', function (req, res, next) {
                 return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
                 // return deletePlugin(req, res, plugin);
             case 'deleteChart':
-                return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
-                // return deleteChart(req, res, plugin);
+                return deleteChart(req, res, plugin);
             case 'reorderCharts':
                 return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
                 // return reorderCharts(req, res, plugin);
@@ -103,6 +102,77 @@ router.post('/:software/:plugin', function (req, res, next) {
     });
 
 });
+
+function deleteChart(req, res, plugin) {
+    let chartId = req.body.chartId;
+
+    if (typeof chartId !== 'string') {
+        return sendResponse(res, {error: 'Missing or invalid chart id'}, 400);
+    }
+
+    dataManager.getChartByPluginIdAndChartId(plugin.id, chartId, ['default', 'position'], function (err, chart) {
+        if (err) {
+           console.log(err);
+           return sendResponse(res, {error: 'Unknown error!'}, 500);
+        }
+
+        if (chart === null) {
+           return sendResponse(res, {error: 'Unknown chart!'}, 404);
+        }
+
+        if (chart.default) {
+           return sendResponse(res, {error: 'You are not allowed to delete default charts!'}, 403);
+        }
+
+        databaseManager.getRedisCluster().del(`charts:${chart.uid}`, function (err) {
+            if (err) {
+                console.log(err);
+                return sendResponse(res, {error: 'Unknown error!'}, 500);
+            }
+            let index = plugin.charts.indexOf(chart.uid);
+            if (index !== -1) {
+                plugin.charts.splice(index, 1);
+            }
+            databaseManager.getRedisCluster().hset(`plugins:${plugin.id}`, 'charts', JSON.stringify(plugin.charts), function (err) {
+                if (err) {
+                    console.log(err);
+                    return sendResponse(res, {error: 'Unknown error!'}, 500);
+                }
+                dataManager.getChartsByPluginId(plugin.id, ['position'], function (err, charts) {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    if (charts === null) {
+                        return console.log(`No charts found for plugin with id ${plugin.id}`);
+                    }
+                    for (let i = 0; i < charts.length; i++) {
+                        if (charts[i].position > chart.position) {
+                            databaseManager.getRedisCluster().hset(`charts:${charts[i].uid}`, 'position', (charts[i].position - 1), function (err) {
+                                if (err) {
+                                    return console.log(err);
+                                }
+                            });
+                        }
+                    }
+                });
+                return sendResponse(res, {}, 200);
+            });
+        });
+
+        databaseManager.getRedisCluster().del(`charts.index.uid.pluginId+chartId:${plugin.id}.${chartId}`, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+
+        databaseManager.getRedisCluster().srem(`charts.uids`, chart.uid, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+    });
+}
+
 
 /* Add a chart */
 function addChart(req, res, plugin) {

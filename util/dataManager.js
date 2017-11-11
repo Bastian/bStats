@@ -291,6 +291,42 @@ function getAllSoftware() {
 }
 
 /**
+ * Gets the charts of a plugin.
+ * The method accepts two or three parameters in the following order:
+ * - "pluginId", "callback"
+ * - "pluginId", "fields", "callback"
+ */
+function getChartsByPluginId() {
+    let pluginId = arguments[0];
+    let fields = arguments.length === 3 ? arguments[1] :
+        ['id', 'type', 'position', 'title', 'default', 'data'];
+    let callback = arguments.length === 3 ? arguments[2] : arguments[1];
+    getPluginById(pluginId, ['charts'], function (err, plugin) {
+        if (err) {
+            return callback(err, null);
+        }
+        if (plugin === null) {
+            return callback(null, null);
+        }
+        let promises = [];
+        for (let i = 0; i < plugin.charts.length; i++) {
+            promises.push(new Promise((resolve, reject) => {
+                getChartByUid(plugin.charts[i], fields, function (err, chart) {
+                    if (err) {
+                        console.log(err);
+                        return reject(err);
+                    }
+                    resolve(chart);
+                });
+            }));
+        }
+        Promise.all(promises).then(values => {
+            callback(null, values);
+        });
+    });
+}
+
+/**
  * Gets the plugins of a user.
  * The method accepts two or three parameters in the following order:
  * - "username", "callback"
@@ -588,6 +624,7 @@ module.exports.getChartUidByPluginIdAndChartId = getChartUidByPluginIdAndChartId
 module.exports.getAllPluginIds = getAllPluginIds;
 module.exports.getAllSoftwareIds = getAllSoftwareIds;
 module.exports.getAllSoftware = getAllSoftware;
+module.exports.getChartsByPluginId = getChartsByPluginId;
 module.exports.getPluginsOfUser = getPluginsOfUser;
 
 // Methods to access existing chart data
