@@ -94,8 +94,16 @@ router.post('/', function(req, res, next) {
                 owner: req.user.username
             };
 
-            dataManager.addPlugin(plugin, software, function (err, res) {
-                callback(err, plugin, software, res);
+            dataManager.getPluginBySoftwareUrlAndName(software.url, pluginName.toLowerCase(), ['name'], function (err, pl) {
+                if (err) {
+                    return console.log(err);
+                }
+                if (pl !== null) {
+                    return res.redirect('/add-plugin?alreadyAdded=true');
+                }
+                dataManager.addPlugin(plugin, software, function (err, res) {
+                    callback(err, plugin, software, res);
+                });
             });
         },
         function (plugin, software, pluginId, callback) {
