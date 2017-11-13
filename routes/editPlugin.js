@@ -105,7 +105,6 @@ router.post('/:software/:plugin', function (req, res, next) {
 function reorderCharts(req, res, plugin) {
     let oldIndex = parseInt(req.body.oldIndex);
     let newIndex = parseInt(req.body.newIndex);
-    console.log(oldIndex + ' -> ' + newIndex);
     if (isNaN(oldIndex) || isNaN(newIndex)) {
         return sendResponse(res, {error: 'Invalid arguments'}, 400);
     }
