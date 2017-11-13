@@ -90,8 +90,7 @@ router.post('/:software/:plugin', function (req, res, next) {
             case 'deleteChart':
                 return deleteChart(req, res, plugin);
             case 'reorderCharts':
-                return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
-                // return reorderCharts(req, res, plugin);
+                return reorderCharts(req, res, plugin);
             case 'transferPlugin':
                 return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
                 // return transferPlugin(req, res, plugin);
@@ -102,6 +101,57 @@ router.post('/:software/:plugin', function (req, res, next) {
     });
 
 });
+
+function reorderCharts(req, res, plugin) {
+    let oldIndex = parseInt(req.body.oldIndex);
+    let newIndex = parseInt(req.body.newIndex);
+    console.log(oldIndex + ' -> ' + newIndex);
+    if (isNaN(oldIndex) || isNaN(newIndex)) {
+        return sendResponse(res, {error: 'Invalid arguments'}, 400);
+    }
+    dataManager.getChartsByPluginId(plugin.id, ['position'], function (err, charts) {
+        if (err) {
+           console.log(err);
+           return sendResponse(res, {error: 'Unknown error!'}, 500);
+        }
+        if (charts === null) {
+            console.log(`No charts found for plugin with id ${plugin.id}`);
+            return sendResponse(res, {error: 'Unknown error!'}, 500);
+        }
+
+        for (let i = 0; i < charts.length; i++) {
+            if (oldIndex > newIndex) {
+                // pos = pos + 1
+                if (charts[i].position >= newIndex && charts[i].position < oldIndex) {
+                    databaseManager.getRedisCluster().hset(`charts:${charts[i].uid}`, 'position', (charts[i].position + 1), function (err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                    });
+                }
+            }
+            if (oldIndex < newIndex) {
+                // pos = pos - 1;
+                if (charts[i].position > oldIndex && charts[i].position <= newIndex) {
+                    databaseManager.getRedisCluster().hset(`charts:${charts[i].uid}`, 'position', (charts[i].position - 1), function (err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                    });
+                }
+            }
+            if (charts[i].position === oldIndex) {
+                // pos = newIndex
+                databaseManager.getRedisCluster().hset(`charts:${charts[i].uid}`, 'position', newIndex, function (err) {
+                    if (err) {
+                        return console.log(err);
+                    }
+                });
+            }
+        }
+        return sendResponse(res, {}, 200);
+    });
+}
 
 function deleteChart(req, res, plugin) {
     let chartId = req.body.chartId;

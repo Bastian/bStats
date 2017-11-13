@@ -3,7 +3,7 @@
 <br><br>
 <ul id="chartsList" class="list-group collection col s12 z-depth-1 grey lighten-4">
     <%
-        var chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
+    var chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
     for (var i = 0; i < chartIdsSorted.length; i++) {
         var chartId = chartIdsSorted[i];
     %>
@@ -27,6 +27,7 @@
     <% } %>
 </ul>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
 <script type="application/javascript">
     function deleteChart(chartId) {
         // TODO use a modal for the confirmation, because it's fancy
@@ -52,6 +53,12 @@
         animation: 150,
         handle: '.glyphicon-move',
         onEnd: function (event) {
+            if (event.oldIndex === event.newIndex) {
+                return;
+            }
+            if (event.oldIndex === undefined || event.newIndex === undefined) {
+                return;
+            }
             console.log('Moved chart from ' + event.oldIndex + ' to ' + event.newIndex);
             $.post(window.location.pathname, {
                 action: 'reorderCharts',
