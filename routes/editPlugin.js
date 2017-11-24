@@ -20,7 +20,6 @@ router.get('/:software/:plugin', function(req, res, next) {
             return res.redirect('/404');
         }
 
-
         let promises = [];
         for (let i = 0; i < plugin.charts.length; i++) {
             promises.push(new Promise((resolve, reject) => {
@@ -70,7 +69,7 @@ router.post('/:software/:plugin', function (req, res, next) {
         return sendResponse(res, {error: 'Missing action'}, 400);
     }
 
-    dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['owner', 'charts'], function (err, plugin) {
+    dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['owner', 'charts', 'name'], function (err, plugin) {
         if (err) {
             console.log(err);
             return sendResponse(res, {error: 'Unknown error'}, 500);
@@ -85,8 +84,7 @@ router.post('/:software/:plugin', function (req, res, next) {
             case 'addChart':
                 return addChart(req, res, plugin);
             case 'deletePlugin':
-                return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
-                // return deletePlugin(req, res, plugin);
+                return deletePlugin(req, res, plugin, softwareUrl);
             case 'deleteChart':
                 return deleteChart(req, res, plugin);
             case 'reorderCharts':
@@ -152,6 +150,71 @@ function reorderCharts(req, res, plugin) {
     });
 }
 
+function deletePlugin(req, res, plugin, softwareUrl) {
+    databaseManager.getRedisCluster().srem('plugins.ids', plugin.id, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
+    databaseManager.getRedisCluster().del(`plugins:${plugin.id}`, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
+    databaseManager.getRedisCluster().del(`plugins.index.id.url+name:${softwareUrl.toLowerCase()}.${plugin.name.toLowerCase()}`, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
+    databaseManager.getRedisCluster().srem(`users.index.plugins.username:${req.user.username.toLowerCase()}`, plugin.id, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
+    for (let i = 0; i < plugin.charts.length; i++) {
+        let chartUid = plugin.charts[i];
+
+        dataManager.getChartByUid(chartUid, ['id', 'type'], function (err, chart) {
+            if (err) {
+                return console.log(err);
+            }
+
+            databaseManager.getRedisCluster().del(`charts.index.uid.pluginId+chartId:${plugin.id}.${chart.id}`, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+
+            databaseManager.getRedisCluster().del(`charts:${chartUid}`, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+
+            databaseManager.getRedisCluster().srem(`charts.uids`, chart.uid, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+
+            if (chart.type === 'single_linechart') {
+                databaseManager.getRedisCluster().del(`data:${chartUid}.1`, function (err) {
+                    if (err) {
+                        return console.log(err);
+                    }
+                });
+            }
+
+        });
+    }
+
+    return sendResponse(res, {}, 200);
+}
+
 function deleteChart(req, res, plugin) {
     let chartId = req.body.chartId;
 
@@ -159,7 +222,7 @@ function deleteChart(req, res, plugin) {
         return sendResponse(res, {error: 'Missing or invalid chart id'}, 400);
     }
 
-    dataManager.getChartByPluginIdAndChartId(plugin.id, chartId, ['default', 'position'], function (err, chart) {
+    dataManager.getChartByPluginIdAndChartId(plugin.id, chartId, ['default', 'position', 'type'], function (err, chart) {
         if (err) {
            console.log(err);
            return sendResponse(res, {error: 'Unknown error!'}, 500);
@@ -204,6 +267,14 @@ function deleteChart(req, res, plugin) {
                         }
                     }
                 });
+
+                if (chart.type === 'single_linechart') {
+                    databaseManager.getRedisCluster().del(`data:${chart.uid}.1`, function (err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                    });
+                }
                 return sendResponse(res, {}, 200);
             });
         });
