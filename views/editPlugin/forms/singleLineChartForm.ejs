@@ -9,7 +9,7 @@
         </div>
         <!-- Chart id -->
         <div class="input-field">
-            <input placeholder="Give the chart an undique id (e.g. 'myChart1')" id="chart_id_single_linechart" class="validate"
+            <input placeholder="Give the chart an unique id (e.g. 'myChart1')" id="chart_id_single_linechart" class="validate"
                    pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
             <label for="chart_id_single_linechart">Chart id</label>
         </div>
@@ -67,7 +67,7 @@
             chartId: $("#chart_id_single_linechart").val(),
             lineName: $("#line_name_single_linechart").val(),
             filterEnabled: currentForm.find('input[name="filterEnabled"]').is(":checked"),
-            maxValue: currentForm.find('input[name="minValue"]').val(),
+            mixValue: currentForm.find('input[name="minValue"]').val(),
             maxValue: currentForm.find('input[name="maxValue"]').val(),
             regexEnabled: currentForm.find('input[name="regexEnabled"]').is(":checked"),
             blacklistEnabled: currentForm.find('input[name="blacklistEnabled"]').is(":checked"),
