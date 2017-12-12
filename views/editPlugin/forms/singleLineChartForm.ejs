@@ -35,13 +35,13 @@
             <div class="divider"></div>
             <br>
             <div class="input-field">
-                <input id="man_value_single_linechart" placeholder="Leave empty for no filtering" type="text" class="validate"
+                <input placeholder="Leave empty for no filtering" type="text" class="validate"
                        pattern="^[0-9]*$" length="16" name="maxValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
                 <label for="maxValue">Max value</label>
             </div>
             <br>
             <div class="input-field">
-                <input id="min_value_single_linechart" placeholder="Leave empty for no filtering" type="text" class="validate"
+                <input placeholder="Leave empty for no filtering" type="text" class="validate"
                        pattern="^[0-9]*$" length="16" name="minValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
                 <label for="minValue">Min value</label>
             </div>
@@ -67,8 +67,8 @@
             chartId: $("#chart_id_single_linechart").val(),
             lineName: $("#line_name_single_linechart").val(),
             filterEnabled: currentForm.find('input[name="filterEnabled"]').is(":checked"),
-            minValue: $("#min_value_single_linechart").val(),
-            manValue: $("#man_value_single_linechart").val(),
+            maxValue: currentForm.find('input[name="minValue"]').val(),
+            maxValue: currentForm.find('input[name="maxValue"]').val(),
             regexEnabled: currentForm.find('input[name="regexEnabled"]').is(":checked"),
             blacklistEnabled: currentForm.find('input[name="blacklistEnabled"]').is(":checked"),
             chart_type: 'single_linechart'
