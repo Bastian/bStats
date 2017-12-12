@@ -1,17 +1,17 @@
-<div class="depending_box advanced_pie">
-    <div id="advanced_pie_form" class="col s12">
+<div class="depending_box drilldown_pie">
+    <div id="drilldown_pie_form" class="col s12">
         <!-- Chart title -->
         <br>
         <div class="input-field">
-            <input placeholder="The title of the chart" id="chart_title_advanced_pie" type="text" class="validate"
+            <input placeholder="The title of the chart" id="chart_title_drilldown_pie" type="text" class="validate"
                    pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" name="chartTitle">
-            <label for="chart_title_advanced_pie">Chart title</label>
+            <label for="chart_title_drilldown_pie">Chart title</label>
         </div>
         <!-- Chart id -->
         <div class="input-field">
-            <input placeholder="Give the chart an unique id (e.g. 'myChart1')" id="chart_id_advanced_pie" class="validate"
+            <input placeholder="Give the chart an unique id (e.g. 'myChart1')" id="chart_id_drilldown_pie" class="validate"
                    pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
-            <label for="chart_id_advanced_pie">Chart id</label>
+            <label for="chart_id_drilldown_pie">Chart id</label>
         </div>
         <!-- Filter on/off -->
         <div class="divider"></div>
@@ -57,11 +57,11 @@
             <!-- White-/Blacklist -->
             <div class="divider"></div>
             <br>
-            <b class="whitelistLabel" name="filter">Whitelist: </b><b class="blacklistLabel">Blacklist: </b><div id="advanced_pie_filter" class="chips"></div>
+            <b class="whitelistLabel" name="filter">Whitelist: </b><b class="blacklistLabel">Blacklist: </b><div id="drilldown_pie_filter" class="chips"></div>
         </div>
         <!-- Submit button -->
         <div class='row'>
-            <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>' onclick="createAdvancedPieChart()">
+            <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>' onclick="createDrilldownPieChart()">
                 Submit Chart
             </button>
         </div>
@@ -69,26 +69,26 @@
 </div>
 
 <script type="application/javascript">
-    $(document).on('input','#chart_title_advanced_pie',function () {
-        document.getElementById('chart_id_advanced_pie').value = $('#chart_title_advanced_pie').val().toLowerCase().replace(/ /g, "_");
+    $(document).on('input','#chart_title_drilldown_pie',function () {
+        document.getElementById('chart_id_drilldown_pie').value = $('#chart_title_drilldown_pie').val().toLowerCase().replace(/ /g, "_");
     });
 
-    function createAdvancedPieChart() {
-        let currentForm = $('#advanced_pie_form');
-        let filterData = $('#advanced_pie_filter').material_chip('data');
+    function createDrilldownPieChart() {
+        let currentForm = $('#drilldown_pie_form');
+        let filterData = $('#drilldown_pie_filter').material_chip('data');
         let filter = [];
         for (let i = 0; i < filterData.length; i++) {
             filter.push(filterData[i].tag);
         }
         addChart({
-            chartTitle: $("#chart_title_advanced_pie").val(),
-            chartId: $("#chart_id_advanced_pie").val(),
+            chartTitle: $("#chart_title_drilldown_pie").val(),
+            chartId: $("#chart_id_drilldown_pie").val(),
             filterEnabled: currentForm.find('input[name="filterEnabled"]').is(":checked"),
             filter: filter,
             maxValue: currentForm.find('input[name="maxValue"]').val(),
             regexEnabled: currentForm.find('input[name="regexEnabled"]').is(":checked"),
             blacklistEnabled: currentForm.find('input[name="blacklistEnabled"]').is(":checked"),
-            chart_type: 'advanced_pie'
+            chart_type: 'drilldown_pie'
         });
     }
 </script>
