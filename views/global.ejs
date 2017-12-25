@@ -54,10 +54,8 @@
     </div>
     <br><br>
 
-    <div class="row">
-        <div id="charts" class="row col s12 m12 l10 xl8 offset-l1 offset-xl2">
-            <!-- Charts get added afterwards using jQuery -->
-        </div>
+    <div id="charts" class="row">
+        <!-- Charts get added afterwards using jQuery -->
     </div>
 
     <script type="application/javascript">
@@ -98,15 +96,15 @@
                     case 'simple_pie':
                     case 'advanced_pie':
                     case 'drilldown_pie':
-                        var colWidth = "s12 m12 l12";
+                        var colWidth = "s12 m12 l12 xl12";
                         if (previousRowWasFull && nextChartIsCompleteRow) {
-                            colWidth = "s12 m12 l12";
+                            colWidth = "s12 m12 l12 xl12";
                             previousRowWasFull = true;
                         } else if (!previousRowWasFull) {
-                            colWidth = "s12 m6 l6";
+                            colWidth = "s12 m6 l6 xl5";
                             previousRowWasFull = true;
                         } else if (!nextChartIsCompleteRow) {
-                            colWidth = "s12 m6 l6";
+                            colWidth = "s12 m6 l6 xl5 offset-xl1";
                             previousRowWasFull = false;
                         }
                         jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col ' + colWidth + '"><div id="' + chartId + 'Pie" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div></div>');
