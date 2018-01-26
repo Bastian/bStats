@@ -54,6 +54,7 @@
   &lt;groupId&gt;org.bstats&lt;/groupId&gt;
   &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
   &lt;version&gt;1.2&lt;/version&gt;
+  &lt;scope&gt;compile&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
                                     <b>3. Shade bStats into your plugin.</b><br>
                                     This step is very important. Shading means, that the necessary classes are copied into
@@ -66,11 +67,6 @@
       &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
       &lt;version&gt;2.4&lt;/version&gt;
       &lt;configuration&gt;
-        &lt;artifactSet&gt;
-          &lt;includes&gt;
-            &lt;include&gt;org.bstats:*&lt;/include&gt;
-          &lt;/includes&gt;
-        &lt;/artifactSet&gt;
         &lt;relocations&gt;
           &lt;relocation&gt;
             &lt;pattern&gt;org.bstats&lt;/pattern&gt;
