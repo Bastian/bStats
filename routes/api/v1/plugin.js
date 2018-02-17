@@ -102,7 +102,7 @@ router.get('/:pluginId', function(req, res, next) {
                 },
                 charts: charts
             };
-            writeResponse(200, jsonResponse, res, req);
+            writeResponse(200, jsonResponse, res);
         });
 
     });
@@ -151,7 +151,7 @@ router.get('/:pluginId/charts/', function(req, res, next) {
                 charts[values[i].id] = values[i];
                 delete charts[values[i].id].id;
             }
-            writeResponse(200, charts, res, req);
+            writeResponse(200, charts, res);
         });
 
     });
