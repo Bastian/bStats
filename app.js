@@ -47,14 +47,14 @@ app.use(function (req, res, next) {
     }
     if (req.path.startsWith('/api')) {
         // Check if we can cache the request
-        dataManager.getCachedPage(req.originalUrl, function (err, res) {
-            if (res === null) {
+        dataManager.getCachedPage(req.originalUrl, function (err, cache) {
+            if (cache === null) {
                 return next();
             }
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.write(res);
+            res.write(cache);
             res.end();
         });
         return;
