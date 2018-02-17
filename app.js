@@ -110,6 +110,7 @@ app.use('/help/rest-api', require('./routes/restApi'));
 // Api v1
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
 app.use('/api/v1/datatable', require('./routes/api/v1/datatable'));
+app.use('/api/v1/software', require('./routes/api/v1/software'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
