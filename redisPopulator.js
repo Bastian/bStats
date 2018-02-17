@@ -1312,6 +1312,17 @@ const serverSoftware = [
         maxRequestsPerIp: 16,
         metricsClass: null,
         examplePlugin: null
+    },
+    {
+        id: 5,
+        name: 'Other',
+        url: 'other',
+        hideInPluginList: 1,
+        globalPlugin: null,
+        defaultCharts: [],
+        maxRequestsPerIp: 100,
+        metricsClass: null,
+        examplePlugin: null
     }
 ];
 
