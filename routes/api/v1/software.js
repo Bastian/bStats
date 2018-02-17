@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
             console.log(err);
             return writeResponse(500, {error: 'Unknown error'}, res);
         }
-        writeResponse(200, JSON.stringify(software), res);
+        writeResponse(200, software, res);
     });
 });
 
