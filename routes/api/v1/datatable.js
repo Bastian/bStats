@@ -134,7 +134,7 @@ router.get('/', function(req, res, next) {
         },
         function (plugins, callback) {
             // Get all server software
-            dataManager.getAllSoftware(['name', 'url', 'globalPlugin'], function (err, software) {
+            dataManager.getAllSoftware(['name', 'url', 'globalPlugin', 'hideInPluginList'], function (err, software) {
                 if (err) {
                     callback(err);
                     return;
@@ -155,6 +155,9 @@ router.get('/', function(req, res, next) {
             let jsonResponse = [];
             for (let i = 0; i < plugins.length; i++) {
                 if (plugins[i].isGlobal) {
+                    continue;
+                }
+                if (plugins[i].software.hideInPluginList) {
                     continue;
                 }
                 jsonResponse.push({

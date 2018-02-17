@@ -10,7 +10,7 @@ const timeUtil = require('../util/timeUtil');
 function getSoftwareById() {
     let id = arguments[0];
     let fields = arguments.length === 3 ? arguments[1] :
-        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts'];
+        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts', 'hideInPluginList'];
     let callback = arguments.length === 3 ? arguments[2] : arguments[1];
     databaseManager.getRedisCluster().hmget(`software:${id}`, fields, function (err, res) {
         if (err || res === null) {
@@ -25,6 +25,9 @@ function getSoftwareById() {
                     break;
                 case 'maxRequestsPerIp':
                     result[fields[i]] = parseInt(res[i]);
+                    break;
+                case 'hideInPluginList':
+                    result[fields[i]] = res[i] !== null;
                     break;
                 default:
                     result[fields[i]] = res[i];
@@ -44,7 +47,7 @@ function getSoftwareById() {
 function getSoftwareByUrl() {
     let url = arguments[0].toLowerCase();
     let fields = arguments.length === 3 ? arguments[1] :
-        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts'];
+        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts', 'hideInPluginList'];
     let callback = arguments.length === 3 ? arguments[2] : arguments[1];
     databaseManager.getRedisCluster().get(`software.index.id.url:${url}`, function (err, res) {
         if (err) {
@@ -264,7 +267,7 @@ function getAllSoftwareIds(callback) {
  */
 function getAllSoftware() {
     let fields = arguments.length === 2 ? arguments[0] :
-        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts'];
+        ['name', 'url', 'globalPlugin', 'metricsClass', 'examplePlugin', 'maxRequestsPerIp', 'defaultCharts', 'hideInPluginList'];
     let callback = arguments.length === 2 ? arguments[1] : arguments[0];
     getAllSoftwareIds(function (err, softwareIds) {
         if (err) {
