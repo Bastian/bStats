@@ -188,7 +188,7 @@ function writeResponse(statusCode, jsonResponse, res, req) {
     res.write(JSON.stringify(jsonResponse));
     res.end();
     if (statusCode === 200 && req !== undefined) {
-        dataManager.addPageToCache(req.baseUrl, JSON.stringify(jsonResponse), function (err) {
+        dataManager.addPageToCache(req.originalUrl, JSON.stringify(jsonResponse), function (err) {
            if (err) {
                console.log(err);
            }
