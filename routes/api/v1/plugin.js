@@ -44,10 +44,10 @@ router.get('/', function(req, res, next) {
     ], function (err, plugins) {
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, res);
+            writeResponse(500, {error: 'Unknown error'}, res, req);
             return;
         }
-        writeResponse(200, plugins, res);
+        writeResponse(200, plugins, res, req);
     });
 });
 
@@ -59,11 +59,11 @@ router.get('/:pluginId', function(req, res, next) {
         let jsonResponse = {};
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, res);
+            writeResponse(500, {error: 'Unknown error'}, res, req);
             return;
         }
         if (plugin === null || plugin.name === null) {
-            writeResponse(404, {error: 'Unknown plugin'}, res);
+            writeResponse(404, {error: 'Unknown plugin'}, res, req);
             return;
         }
 
@@ -102,7 +102,7 @@ router.get('/:pluginId', function(req, res, next) {
                 },
                 charts: charts
             };
-            writeResponse(200, jsonResponse, res);
+            writeResponse(200, jsonResponse, res, req);
         });
 
     });
@@ -116,11 +116,11 @@ router.get('/:pluginId/charts/', function(req, res, next) {
         let jsonResponse = {};
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, res);
+            writeResponse(500, {error: 'Unknown error'}, res, req);
             return;
         }
         if (plugin === null || plugin.name === null) {
-            writeResponse(404, {error: 'Unknown plugin'}, res);
+            writeResponse(404, {error: 'Unknown plugin'}, res, req);
             return;
         }
 
@@ -151,7 +151,7 @@ router.get('/:pluginId/charts/', function(req, res, next) {
                 charts[values[i].id] = values[i];
                 delete charts[values[i].id].id;
             }
-            writeResponse(200, charts, res);
+            writeResponse(200, charts, res, req);
         });
 
     });
@@ -165,11 +165,11 @@ router.get('/:pluginId/charts/:chartId', function(req, res, next) {
     dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type', 'position', 'title', 'default', 'data'], function (err, chart) {
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, res);
+            writeResponse(500, {error: 'Unknown error'}, res, req);
             return;
         }
         if (chart === null) {
-            writeResponse(404, {error: 'Unknown chart or plugin'}, res);
+            writeResponse(404, {error: 'Unknown chart or plugin'}, res, req);
             return;
         }
 
@@ -180,7 +180,7 @@ router.get('/:pluginId/charts/:chartId', function(req, res, next) {
             title: chart.title,
             isDefault: chart.default,
             data: chart.data
-        }, res);
+        }, res, req);
     });
 });
 
@@ -193,11 +193,11 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
     dataManager.getChartByPluginIdAndChartId(pluginId, chartId, ['type'], function (err, chart) {
         if (err) {
             console.log(err);
-            writeResponse(500, {error: 'Unknown error'}, res);
+            writeResponse(500, {error: 'Unknown error'}, res, req);
             return;
         }
         if (chart === null) {
-            writeResponse(404, {error: 'Unknown chart or plugin'}, res);
+            writeResponse(404, {error: 'Unknown chart or plugin'}, res, req);
             return;
         }
 
@@ -208,18 +208,18 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
                     dataManager.getLimitedLineChartData(chart.uid, 1, maxElements, function (err, data) {
                         if (err) {
                             console.log(err);
-                            writeResponse(500, {error: 'Unknown error'}, res);
+                            writeResponse(500, {error: 'Unknown error'}, res, req);
                         } else {
-                            writeResponse(200, data, res);
+                            writeResponse(200, data, res, req);
                         }
                     });
                 } else {
                     dataManager.getFullLineChartData(chart.uid, 1, function (err, data) {
                         if (err) {
                             console.log(err);
-                            writeResponse(500, {error: 'Unknown error'}, res);
+                            writeResponse(500, {error: 'Unknown error'}, res, req);
                         } else {
-                            writeResponse(200, data, res);
+                            writeResponse(200, data, res, req);
                         }
                     });
                 }
@@ -229,9 +229,9 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
                 dataManager.getPieData(chart.uid, function (err, data) {
                     if (err) {
                         console.log(err);
-                        writeResponse(500, {error: 'Unknown error'}, res);
+                        writeResponse(500, {error: 'Unknown error'}, res, req);
                     } else {
-                        writeResponse(200, data, res);
+                        writeResponse(200, data, res, req);
                     }
                 });
                 break;
@@ -239,9 +239,9 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
                 dataManager.getDrilldownPieData(chart.uid, function (err, data) {
                     if (err) {
                         console.log(err);
-                        writeResponse(500, {error: 'Unknown error'}, res);
+                        writeResponse(500, {error: 'Unknown error'}, res, req);
                     } else {
-                        writeResponse(200, data, res);
+                        writeResponse(200, data, res, req);
                     }
                 });
                 break;
@@ -250,25 +250,32 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
                 dataManager.getMapData(chart.uid, function (err, data) {
                     if (err) {
                         console.log(err);
-                        writeResponse(500, {error: 'Unknown error'}, res);
+                        writeResponse(500, {error: 'Unknown error'}, res, req);
                     } else {
-                        writeResponse(200, data, res);
+                        writeResponse(200, data, res, req);
                     }
                 });
                 break;
             default:
-                writeResponse(500, {error: 'Unknown chart type'}, res);
+                writeResponse(500, {error: 'Unknown chart type'}, res, req);
                 break;
         }
     });
 });
 
-function writeResponse(statusCode, jsonResponse, res) {
+function writeResponse(statusCode, jsonResponse, res, req) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.writeHead(statusCode, {'Content-Type': 'application/json'});
     res.write(JSON.stringify(jsonResponse));
     res.end();
+    if (statusCode === 200 && req !== undefined) {
+        dataManager.addPageToCache(res.baseUrl, JSON.stringify(jsonResponse), function (err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    }
 }
 
 module.exports = router;

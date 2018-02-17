@@ -172,21 +172,28 @@ router.get('/', function(req, res, next) {
         }
         ], function (err, jsonResponse) {
             if (err) {
-                writeResponse(500, {error: 'Unknown error'}, res);
+                writeResponse(500, {error: 'Unknown error'}, res, req);
                 return;
             }
-            writeResponse(200, jsonResponse, res);
+            writeResponse(200, jsonResponse, res, req);
         }
     );
 
 });
 
-function writeResponse(statusCode, jsonResponse, res) {
+function writeResponse(statusCode, jsonResponse, res, req) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.writeHead(statusCode, {'Content-Type': 'application/json'});
     res.write(JSON.stringify(jsonResponse));
     res.end();
+    if (statusCode === 200 && req !== undefined) {
+        dataManager.addPageToCache(res.baseUrl, JSON.stringify(jsonResponse), function (err) {
+           if (err) {
+               console.log(err);
+           }
+        });
+    }
 }
 
 

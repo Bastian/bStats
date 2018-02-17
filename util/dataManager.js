@@ -612,6 +612,23 @@ function addPlugin(plugin, software, callback) {
     });
 }
 
+/**
+ * Gets the cached page for a given url.
+ * The callback might return a null response.
+ */
+function getCachedPage(url, callback) {
+    let tms2000 = timeUtil.dateToTms2000(new Date()) - 1;
+    databaseManager.getRedisCluster().get(`urlcache:${tms2000}.${url}`, callback);
+}
+
+/**
+ * Adds a page to the cache.
+ */
+function addPageToCache(url, content, callback) {
+    let tms2000 = timeUtil.dateToTms2000(new Date()) - 1;
+    databaseManager.getRedisCluster().set(`urlcache:${tms2000}.${url}`, content, 'EX', 60*31, callback);
+}
+
 // Methods to add new objects
 module.exports.addPlugin = addPlugin;
 
@@ -643,3 +660,7 @@ module.exports.updateMapData = updateMapData;
 module.exports.updateLineChartData = updateLineChartData;
 module.exports.updateDrilldownPieData = updateDrilldownPieData;
 module.exports.updateBarData = updateBarData;
+
+// Methods for the page cache
+module.exports.getCachedPage = getCachedPage;
+module.exports.addPageToCache = addPageToCache;

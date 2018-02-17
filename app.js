@@ -46,7 +46,18 @@ app.use(function (req, res, next) {
         return next();
     }
     if (req.path.startsWith('/api')) {
-        return next();
+        // Check if we can cache the request
+        dataManager.getCachedPage(req.originalUrl, function (err, res) {
+            if (res === null) {
+                return next();
+            }
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.write(res);
+            res.end();
+        });
+        return;
     }
     try {
         async.parallel([
