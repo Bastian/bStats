@@ -733,7 +733,7 @@ const serverSoftware = [
                 }
             }
         ],
-        maxRequestsPerIp: 8,
+        maxRequestsPerIp: 16,
         metricsClass: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-bukkit/src/main/java/org/bstats/bukkit/Metrics.java',
         examplePlugin: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-bukkit/src/examples/java/ExamplePlugin.java'
     },
@@ -1187,7 +1187,7 @@ const serverSoftware = [
                 }
             }
         ],
-        maxRequestsPerIp: 8,
+        maxRequestsPerIp: 16,
         metricsClass: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-sponge/src/main/java/org/bstats/sponge/Metrics.java',
         examplePlugin: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-sponge/src/examples/java/ExamplePlugin.java'
     },
@@ -1309,7 +1309,7 @@ const serverSoftware = [
                 }
             }
         ],
-        maxRequestsPerIp: 8,
+        maxRequestsPerIp: 16,
         metricsClass: null,
         examplePlugin: null
     }
