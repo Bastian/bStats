@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="The FAQ page.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - FAQ</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+</head>
+<body>
+
+<% include ../templates/navigation.ejs %>
+<main>
+    <br>
+    <div class="container">
+        <!--General-->
+        <ul class="collection with-header">
+            <li class="collection-header"><h4>General</h4></li>
+            <li class="collection-item">
+                <ul class="collapsible" data-collapsible="accordion">
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>Will bStats be free for ever?</div>
+                        <div class="collapsible-body"><span>There are no plans to charge you for anything. <b>Maybe</b> there will be some premium features in the future, but as
+                                bStats has a sponsor (<a href="/credits">LayerWall</a>) I don't need any money at the moment to run the website.</span></div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>Why is there no "Universal" category?</div>
+                        <div class="collapsible-body"><span>A "Universal" category would mess up a lot of charts and make global charts completely useless.
+                            E.g. for Bukkit and Bungeecord the player amount would be counted twice. Trust me, you don't want this. ;-)</span></div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>Is there an API to access the data?</div>
+                        <div class="collapsible-body"><span>Yes, bStats has a REST-API. You can find it <a href="/help/rest-api">here</a></span></div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <!--Account-->
+        <ul class="collection with-header">
+            <li class="collection-header"><h4>Account</h4></li>
+            <li class="collection-item">
+                <ul class="collapsible" data-collapsible="accordion">
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>How do I change my password?</div>
+                        <div class="collapsible-body"><span>That's not supported at the moment. If there's a real reason for you to change your password
+                                (e.g. someone else knows it or your current password is something like 'password') please contact me.</span></div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>I forgot my password!</div>
+                        <div class="collapsible-body"><span>There's no automatic option to reset your password. Please contact me, so I can reset your password.</span></div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <!--Metrics class-->
+        <ul class="collection with-header">
+            <li class="collection-header"><h4>Metrics class</h4></li>
+            <li class="collection-item">
+                <ul class="collapsible" data-collapsible="accordion">
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>How do I add bStats to my plugin?</div>
+                        <div class="collapsible-body"><span><a href="/getting-started/include-metrics">Click here</a></span></div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">question_answer</i>Where do I report bugs or suggest features?</div>
+                        <div class="collapsible-body"><span>You can report bugs or suggest features on GitHub. Website related stuff should be reported
+                                <a href="https://github.com/BtoBastian/bStats/issues"> here</a> and plugin related stuff (the Metrics class) should be
+                                reported <a href="https://github.com/BtoBastian/bStats-Metrics/issues"> here</a>.</span></div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</main>
+<% include ../templates/footer.ejs %>
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
+
+<% include ../templates/globalScripts.ejs %>
+
+</body>
+</html>

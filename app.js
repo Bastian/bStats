@@ -116,6 +116,7 @@ app.use('/help/custom-charts', require('./routes/customCharts'));
 app.use('/imprint', require('./routes/imprint'));
 app.use('/privacy-policy', require('./routes/privacyPolicy'));
 app.use('/credits', require('./routes/credits'));
+app.use('/faq', require('./routes/faq'));
 app.use('/signatures', require('./routes/signatures'));
 app.use('/signature-creator', require('./routes/signatureCreator'));
 app.use('/help/rest-api', require('./routes/restApi'));
