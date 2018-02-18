@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="You can create signatures images for plugins on this page.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - Signature Creator</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+</head>
+<body>
+
+<% include templates/navigation.ejs %>
+<main>
+    <div class="container row">
+        <div class="section no-pad-bot" id="index-banner">
+            <h1 class="header center <%= customColor1 %>-text">Signature creator</h1>
+            <div class="col s12 z-depth-1 grey lighten-4 row">
+                <br>
+                <!-- Select chart -->
+                <div class="input-field col s12">
+                    <select id="select_chart">
+                        <optgroup label="General">
+                            <option value="servers_and_players">Servers and Players</option>
+                        </optgroup>
+                        <optgroup label="Charts">
+                            <%
+                            let chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
+                            for (let i = 0; i < chartIdsSorted.length; i++) {
+                                let chartId = chartIdsSorted[i];
+                                let chartTitle = charts[chartId].title;
+                            %>
+                            <option value="chart:<%= charts[chartId].uid %>"><%= chartTitle %> (<%= chartId %>)</option>
+                            <% }%>
+                        </optgroup>
+                    </select>
+                    <label>Select chart</label>
+                </div>
+
+                <!-- Custom title -->
+                <div id="title_form">
+                    <div class="divider col s12" style="margin-bottom: 10px"></div>
+                    <br>
+                    <div class="switch col s12" style="margin-top: 0px">
+                        <b class="<%= customColor1 %>-text" style="font-size: 16px">Custom Title</b>
+                        <label>
+                            <input id="custom_title_checkbox" type="checkbox">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                    <div id="custom_title_div" class="input-field col s12" hidden>
+                        <input id="custom_title" type="text" class="validate">
+                        <label for="custom_title">Title</label>
+                    </div>
+                </div>
+
+                <!-- Custom line name -->
+                <div id="custom_line_name_form" hidden>
+                    <div class="divider col s12" style="margin-top: 10px;"></div>
+                    <br>
+                    <div class="switch col s12" style="margin-top: 10px">
+                        <b class="<%= customColor1 %>-text" style="font-size: 16px">Custom Line Name</b>
+                        <label>
+                            <input id="custom_line_checkbox" type="checkbox">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                    <div id="line_name_div" class="input-field col s12" hidden>
+                        <input id="line_name" type="text" class="validate">
+                        <label for="line_name">Line Name</label>
+                    </div>
+                </div>
+
+                <!-- Time selector -->
+                <div id="time_selector_form">
+                    <div class="divider col s12" style="margin-top: 10px; margin-bottom: 10px"></div>
+                    <br>
+                    <div class="input-field col s12" style="margin-top: 20px">
+                        <select>
+                            <option value="1d">1 day</option>
+                            <option value="3d">3 days</option>
+                            <option value="1w" selected>1 week</option>
+                            <option value="2w">2 weeks</option>
+                            <option value="1m">1 month</option>
+                        </select>
+                        <label>Time to display</label>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div id="preview">
+                    <div class="col s12"><b class="<%= customColor1 %>-text" style="font-size: 16px">Preview</b></div>
+                    <div style="margin-left: 10px; margin-right: 10px;">
+                        <img src="/signatures/4.svg" alt="Signature image preview" style="width:100%;height:100%;border: 2px solid lightgrey;border-radius: 5px;">
+                    </div>
+                    <br>
+                </div>
+
+                <!-- Not available -->
+                <div id="not_available" hidden>
+                    <br><br>
+                    <h2 class="red-text center-align">Not available!</h2>
+                    <div class="center-align">You cannot create signature images for the selected chart.</div>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</main>
+<% include templates/footer.ejs %>
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
+<script type="application/javascript">
+    $(document).ready(function() {
+        $('select').material_select();
+    });
+
+    $("#select_chart").on("change", function() {
+        let selectedVal = this.value;
+        console.log(selectedVal);
+        if (selectedVal === 'servers_and_players') {
+            hideAllBesides(['title_form', 'time_selector_form', 'preview']);
+        }
+        if (selectedVal.startsWith('chart:')) {
+            hideAllBesides(['not_available']);
+        }
+    });
+
+    function hideAllBesides(notToHide) {
+        hideOrShow(notToHide, 'title_form');
+        hideOrShow(notToHide, 'custom_line_name_form');
+        hideOrShow(notToHide, 'time_selector_form');
+        hideOrShow(notToHide, 'preview');
+        hideOrShow(notToHide, 'not_available');
+    }
+
+    function hideOrShow(notToHide, id) {
+        if (notToHide.indexOf(id) === -1) {
+            $('#' + id).hide();
+        } else {
+            $('#' + id).show();
+        }
+    }
+
+    $('#custom_line_checkbox').change(function() {
+        var lineNameDiv = $('#line_name_div');
+        if ($(this).is(":checked")) {
+            lineNameDiv.show();
+        } else {
+            lineNameDiv.hide();
+        }
+    });
+
+    $('#custom_title_checkbox').change(function() {
+        var customTitleDiv = $('#custom_title_div');
+        if ($(this).is(":checked")) {
+            customTitleDiv.show();
+        } else {
+            customTitleDiv.hide();
+        }
+    });
+</script>
+
+<% include templates/globalScripts.ejs %>
+
+</body>
+</html>

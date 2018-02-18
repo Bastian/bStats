@@ -18,11 +18,13 @@
     "express": "~4.15.2",
     "express-session": "^1.15.4",
     "geoip-lite": "^1.2.1",
+    "highcharts-export-server": "^2.0.2",
     "ioredis": "^3.1.1",
     "morgan": "~1.8.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "request": "^2.81.0",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "uuid": "^3.1.0"
   }
 }
