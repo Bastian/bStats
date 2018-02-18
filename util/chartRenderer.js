@@ -178,7 +178,7 @@ function renderSingleLineChart(options, data, callback) {
                     console.log(err);
                 }
             });
-            contents = contents.replace(fileName, '<a xlink:href="https://bStats.org/" xlink:title="Test" xlink:show="new">View full stats at bStats.org</a>');
+            contents = contents.replace(fileName, '<a xlink:href="https://bStats.org/" xlink:title="bStats.org" xlink:show="new">View full stats at bStats.org</a>');
             callback(null, { result: contents });
         });
     });
@@ -279,7 +279,7 @@ function renderMultiLineChart(options, data, callback) {
                     console.log(err);
                 }
             });
-            contents = contents.replace(fileName, '<a xlink:href="https://bStats.org/" xlink:title="Test" xlink:show="new">View full stats at bStats.org</a>');
+            contents = contents.replace(fileName, '<a xlink:href="https://bStats.org/" xlink:title="bStats.org" xlink:show="new">View full stats at bStats.org</a>');
             callback(null, { result: contents });
         });
     });
