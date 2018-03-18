@@ -1,7 +1,7 @@
 // load all the things we need
 const LocalStrategy = require('passport-local').Strategy;
 const databaseManager = require('./databaseManager');
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 module.exports = function (passport) {
