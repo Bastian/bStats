@@ -178,6 +178,9 @@ router.post('/:software?', function(request, response, next) {
                                 //reference: http://openjdk.java.net/jeps/223
                                 javaVersionChart.data.values['Java 1.9'] = {};
                                 javaVersionChart.data.values['Java 1.9'][javaVersion] = 1;
+                            } else if (javaVersion.startsWith("10")) {
+                                javaVersionChart.data.values['Java 1.10'] = {};
+                                javaVersionChart.data.values['Java 1.10'][javaVersion] = 1;
                             } else {
                                 javaVersionChart.data.values['Other'] = {};
                                 javaVersionChart.data.values['Other'][javaVersion] = 1;
