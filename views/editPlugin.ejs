@@ -39,6 +39,9 @@
         <% include editPlugin/addChart.ejs %>
         <% include editPlugin/editCharts.ejs %>
         <% include editPlugin/deletePlugin.ejs %>
+        <% if (user.admin) { %>
+        <% include editPlugin/transferOwnership.ejs %>
+        <% } %>
     </div>
     <% } %>
 </main>

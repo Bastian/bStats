@@ -89,9 +89,12 @@ router.post('/:software/:plugin', function (req, res, next) {
                 return deleteChart(req, res, plugin);
             case 'reorderCharts':
                 return reorderCharts(req, res, plugin);
-            case 'transferPlugin':
-                return sendResponse(res, {error: 'This feature is temporary not available'}, 503);
-                // return transferPlugin(req, res, plugin);
+            case 'transferOwnership':
+                if (req.user.admin) {
+                    return transferOwnership(req, res, plugin);
+                } else {
+                    return sendResponse(req, {error: 'Only admins are allowed to transfer the ownership!'}, 401);
+                }
             default:
                 break;
         }
@@ -169,7 +172,7 @@ function deletePlugin(req, res, plugin, softwareUrl) {
         }
     });
 
-    databaseManager.getRedisCluster().srem(`users.index.plugins.username:${req.user.username.toLowerCase()}`, plugin.id, function (err) {
+    databaseManager.getRedisCluster().srem(`users.index.plugins.username:${plugin.owner.toLowerCase()}`, plugin.id, function (err) {
         if (err) {
             return console.log(err);
         }
@@ -211,6 +214,28 @@ function deletePlugin(req, res, plugin, softwareUrl) {
 
         });
     }
+
+    return sendResponse(res, {}, 200);
+}
+
+function transferOwnership(req, res, plugin) {
+    databaseManager.getRedisCluster().srem(`users.index.plugins.username:${plugin.owner.toLowerCase()}`, plugin.id, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
+    databaseManager.getRedisCluster().sadd(`users.index.plugins.username:${req.body.newOwner.toLowerCase()}`, plugin.id, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
+    databaseManager.getRedisCluster().hset(`plugins:${plugin.id}`, 'owner', req.body.newOwner, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
 
     return sendResponse(res, {}, 200);
 }
