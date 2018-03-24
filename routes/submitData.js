@@ -168,16 +168,19 @@ router.post('/:software?', function(request, response, next) {
                                 requestRandom: requestRandom
                             };
                             if (javaVersion.startsWith("1.7")) {
-                                javaVersionChart.data.values['Java 1.7'] = {};
-                                javaVersionChart.data.values['Java 1.7'][javaVersion] = 1;
+                                javaVersionChart.data.values['Java 7'] = {};
+                                javaVersionChart.data.values['Java 7'][javaVersion] = 1;
                             } else if (javaVersion.startsWith("1.8")) {
-                                javaVersionChart.data.values['Java 1.8'] = {};
-                                javaVersionChart.data.values['Java 1.8'][javaVersion] = 1;
+                                javaVersionChart.data.values['Java 8'] = {};
+                                javaVersionChart.data.values['Java 8'][javaVersion] = 1;
                             } else if (javaVersion.startsWith("9") || javaVersion === "1.9.0-ea") {
                                 //java 9 changed the version format to 9.0.1 and 1.9.0 is only used for early access
                                 //reference: http://openjdk.java.net/jeps/223
-                                javaVersionChart.data.values['Java 1.9'] = {};
-                                javaVersionChart.data.values['Java 1.9'][javaVersion] = 1;
+                                javaVersionChart.data.values['Java 9'] = {};
+                                javaVersionChart.data.values['Java 9'][javaVersion] = 1;
+                            } else if (javaVersion.startsWith("10")) {
+                                javaVersionChart.data.values['Java 10'] = {};
+                                javaVersionChart.data.values['Java 10'][javaVersion] = 1;
                             } else {
                                 javaVersionChart.data.values['Other'] = {};
                                 javaVersionChart.data.values['Other'][javaVersion] = 1;
