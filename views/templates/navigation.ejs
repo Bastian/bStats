@@ -73,7 +73,7 @@
 <ul id="dropdownMyPlugins" class="dropdown-content">
     <% if (loggedIn) { %>
     <% for (var i = 0; i < myPlugins.length; i++) { %>
-    <li><a href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>" class="truncate"><%= myPlugins[i].name %></a></li>
+    <li><a href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>" class="truncate <%= customColor1 %>-text"><%= myPlugins[i].name %></a></li>
     <% } %>
     <% } %>
 </ul>
