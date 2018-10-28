@@ -611,7 +611,24 @@ const serverSoftware = [
                     }
                 },
                 requestParser: {
-                    nameInRequest: 'bukkitVersion',
+                    useHardcodedParser: 'bukkitMinecraftVersion',
+                    position: 'global'
+                }
+            },
+            {
+                type: 'simple_pie',
+                id: 'serverSoftware',
+                title: 'Server Software',
+                data: {
+                    filter: {
+                        enabled: false,
+                        useRegex: false,
+                        blacklist: false,
+                        filter: []
+                    }
+                },
+                requestParser: {
+                    useHardcodedParser: 'bukkitServerSoftware',
                     position: 'global'
                 }
             },

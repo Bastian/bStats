@@ -154,7 +154,6 @@ router.post('/:software?', function(request, response, next) {
                             }
                             defaultGlobalCharts.push(operatingSystemChart);
                             continue;
-                            break;
                         case 'javaVersion':
                             let javaVersion = request.body.javaVersion;
                             if (typeof javaVersion !== 'string') {
@@ -187,7 +186,72 @@ router.post('/:software?', function(request, response, next) {
                             }
                             defaultGlobalCharts.push(javaVersionChart);
                             continue;
-                            break;
+                        case 'bukkitMinecraftVersion':
+                            let bukkitVersion = request.body.bukkitVersion;
+                            if (typeof bukkitVersion !== 'string') {
+                                continue;
+                            }
+
+                            // If it doesn't contain "MC: ", it's from an old bStats Metrics class
+                            if (bukkitVersion.indexOf('MC:') === -1) {
+                                defaultGlobalCharts.push({
+                                    chartId: chart.id,
+                                    data: {
+                                        value: bukkitVersion
+                                    },
+                                    requestRandom: requestRandom
+                                });
+                            }
+
+                            let parsed = /.+\\(MC: ([\d\\.]+)\\)/gm.exec(bukkitVersion);
+                            if (parsed !== undefined) {
+                                let version = parsed[1];
+                                defaultGlobalCharts.push({
+                                    chartId: chart.id,
+                                    data: {
+                                        value: version
+                                    },
+                                    requestRandom: requestRandom
+                                });
+                            } else {
+                                defaultGlobalCharts.push({
+                                    chartId: chart.id,
+                                    data: {
+                                        value: 'Failed to parse'
+                                    },
+                                    requestRandom: requestRandom
+                                });
+                            }
+                            continue;
+                        case 'bukkitServerSoftware':
+                            bukkitVersion = request.body.bukkitVersion;
+                            if (typeof bukkitVersion !== 'string') {
+                                continue;
+                            }
+
+                            bukkitVersion = bukkitVersion.toLowerCase();
+
+                            let software = 'Unknown';
+
+                            // Maybe there's a good regex pattern, but sometimes the bukkitVersion looks pretty strange
+                            if (bukkitVersion.indexOf('bukkit') !== -1) {
+                                software = 'Bukkit';
+                            } else if (bukkitVersion.indexOf('taco') !== -1) {
+                                software = 'Taco';
+                            } else if (bukkitVersion.indexOf('paper') !== -1) {
+                                software = 'Paper';
+                            } else if (bukkitVersion.indexOf('spigot') !== -1) {
+                                software = 'Spigot';
+                            }
+
+                            defaultGlobalCharts.push({
+                                chartId: chart.id,
+                                data: {
+                                    value: software
+                                },
+                                requestRandom: requestRandom
+                            });
+                            continue;
                         case 'bungeecordVersion':
                             let bungeecordVersion = request.body.bungeecordVersion;
                             let split = bungeecordVersion.split(":");
