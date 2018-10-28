@@ -9,7 +9,7 @@ const charts = [
         uid: 1,
         id: 'javaVersion',
         type: 'drilldown_pie',
-        position: 8,
+        position: 9,
         title: 'Java Version',
         default: true,
         data: {
@@ -25,7 +25,7 @@ const charts = [
         uid: 2,
         id: 'os',
         type: 'drilldown_pie',
-        position: 6,
+        position: 7,
         title: 'Operating System',
         default: true,
         data: {
@@ -102,10 +102,26 @@ const charts = [
         }
     },
     {
-        uid: 7,
-        id: 'coreCount',
+        uid: 32,
+        id: 'serverSoftware',
         type: 'simple_pie',
         position: 4,
+        title: 'Server Software',
+        default: true,
+        data: {
+            filter: {
+                enabled: false,
+                useRegex: false,
+                blacklist: false,
+                filter: []
+            }
+        }
+    },
+    {
+        uid: 8,
+        id: 'coreCount',
+        type: 'simple_pie',
+        position: 5,
         title: 'Core count',
         default: true,
         data: {
@@ -121,7 +137,7 @@ const charts = [
         uid: 8,
         id: 'osArch',
         type: 'simple_pie',
-        position: 5,
+        position: 6,
         title: 'System arch',
         default: true,
         data: {
@@ -137,7 +153,7 @@ const charts = [
         uid: 9,
         id: 'location',
         type: 'simple_pie',
-        position: 7,
+        position: 8,
         title: 'Server Location',
         default: true,
         data: {
@@ -153,7 +169,7 @@ const charts = [
         uid: 10,
         id: 'locationMap',
         type: 'simple_map',
-        position: 9,
+        position: 10,
         title: 'Server Location',
         default: true,
         data: {
@@ -517,7 +533,7 @@ const plugins = [
         owner: 'Admin',
         software: 1,
         global: true,
-        charts: [1,2,3,4,5,6,7,8,9,10]
+        charts: [1,2,3,4,5,6,7,8,9,10,32]
     },
     {
         id: 2,
