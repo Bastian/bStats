@@ -204,7 +204,7 @@ router.post('/:software?', function(request, response, next) {
                             }
 
                             let parsed = /.+\\(MC: ([\d\\.]+)\\)/gm.exec(bukkitVersion);
-                            if (parsed !== undefined) {
+                            if (parsed != null) {
                                 let version = parsed[1];
                                 defaultGlobalCharts.push({
                                     chartId: chart.id,
@@ -224,23 +224,23 @@ router.post('/:software?', function(request, response, next) {
                             }
                             continue;
                         case 'bukkitServerSoftware':
-                            bukkitVersion = request.body.bukkitVersion;
-                            if (typeof bukkitVersion !== 'string') {
+                            let bukkitVersion2 = request.body.bukkitVersion;
+                            if (typeof bukkitVersion2 !== 'string') {
                                 continue;
                             }
 
-                            bukkitVersion = bukkitVersion.toLowerCase();
+                            bukkitVersion2 = bukkitVersion2.toLowerCase();
 
                             let software = 'Unknown';
 
                             // Maybe there's a good regex pattern, but sometimes the bukkitVersion looks pretty strange
-                            if (bukkitVersion.indexOf('bukkit') !== -1) {
+                            if (bukkitVersion2.indexOf('bukkit') !== -1) {
                                 software = 'Bukkit';
-                            } else if (bukkitVersion.indexOf('taco') !== -1) {
+                            } else if (bukkitVersion2.indexOf('taco') !== -1) {
                                 software = 'Taco';
-                            } else if (bukkitVersion.indexOf('paper') !== -1) {
+                            } else if (bukkitVersion2.indexOf('paper') !== -1) {
                                 software = 'Paper';
-                            } else if (bukkitVersion.indexOf('spigot') !== -1) {
+                            } else if (bukkitVersion2.indexOf('spigot') !== -1) {
                                 software = 'Spigot';
                             }
 
