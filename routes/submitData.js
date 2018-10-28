@@ -231,6 +231,11 @@ router.post('/:software?', function(request, response, next) {
 
                             bukkitVersion2 = bukkitVersion2.toLowerCase();
 
+                            // If it doesn't contain "MC: ", it's from an old bStats Metrics class
+                            if (bukkitVersion2.indexOf('MC:') === -1) {
+                                continue;
+                            }
+
                             let software = 'Unknown';
 
                             // Maybe there's a good regex pattern, but sometimes the bukkitVersion looks pretty strange
