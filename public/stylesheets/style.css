@@ -41,3 +41,9 @@ main {
 .coloredBox:hover {
     font-size: 30px;
 }
+
+/* Left to right used to obfuscate the email */
+.ltr-text {
+   unicode-bidi: bidi-override;
+   direction: rtl
+}
