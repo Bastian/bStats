@@ -57,7 +57,7 @@
         <li><a class="subheader"><i class="material-icons left" style="font-size: 30px">content_paste</i>My Plugins</a>
         </li>
         <% for (var i = 0; i < myPlugins.length; i++) { %>
-        <li><a class="waves-effect truncate" href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>"><%= myPlugins[i].name %></a></li>
+        <li><a class="waves-effect truncate" href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>"><%= myPlugins[i].name %> (<%= myPlugins[i].software.name %>)</a></li>
         <% } %>
     </div>
     <% } %>
@@ -73,7 +73,7 @@
 <ul id="dropdownMyPlugins" class="dropdown-content">
     <% if (loggedIn) { %>
     <% for (var i = 0; i < myPlugins.length; i++) { %>
-    <li><a href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>" class="truncate <%= customColor1 %>-text"><%= myPlugins[i].name %></a></li>
+    <li><a href="/plugin/<%= myPlugins[i].software.url %>/<%= myPlugins[i].name %>" class="truncate <%= customColor1 %>-text"><%= myPlugins[i].name %> (<%= myPlugins[i].software.name %>)</a></li>
     <% } %>
     <% } %>
 </ul>
