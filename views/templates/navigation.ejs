@@ -103,12 +103,6 @@
         <a id="logo-container" href="/" class="brand-logo hide-on-large-only">bStats</a>
         <!-- "Normal" Navigation (only show on desktop) -->
         <ul class="right hide-on-med-and-down">
-            <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownAccount">
-                    <i class="material-icons left" style="font-size: 30px">account_circle</i>Account
-                </a></li>
-            <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownGlobalStats">
-                    <i class="material-icons left" style="font-size: 30px">language</i>Global stats
-                </a></li>
             <% if (loggedIn && myPlugins.length > 0) { %>
             <li><a href="/add-plugin">
                     <i class="material-icons left" style="font-size: 30px">add</i>Add plugin
@@ -127,6 +121,12 @@
             <% } %>
             <li><a href="/plugin-list">
                     <i class="material-icons left" style="font-size: 30px">list</i>Plugin list
+                </a></li>
+            <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownGlobalStats">
+                    <i class="material-icons left" style="font-size: 30px">language</i>Global stats
+                </a></li>
+            <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-hover="true" data-activates="dropdownAccount">
+                    <i class="material-icons left" style="font-size: 30px">account_circle</i>Account
                 </a></li>
         </ul>
 
