@@ -767,8 +767,8 @@ const serverSoftware = [
             }
         ],
         maxRequestsPerIp: 16,
-        metricsClass: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-bukkit/src/main/java/org/bstats/bukkit/Metrics.java',
-        examplePlugin: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-bukkit/src/examples/java/ExamplePlugin.java'
+        metricsClass: 'https://github.com/Bastian/bStats-Metrics/blob/master/bstats-bukkit/src/main/java/org/bstats/bukkit/Metrics.java',
+        examplePlugin: 'https://github.com/Bastian/bStats-Metrics/blob/master/bstats-bukkit/src/examples/java/ExamplePlugin.java'
     },
     {
         id: 2,
@@ -1004,8 +1004,8 @@ const serverSoftware = [
             }
         ],
         maxRequestsPerIp: 4,
-        metricsClass: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-bungeecord/src/main/java/org/bstats/bungeecord/Metrics.java',
-        examplePlugin: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-bungeecord/src/examples/java/ExamplePlugin.java'
+        metricsClass: 'https://github.com/Bastian/bStats-Metrics/blob/master/bstats-bungeecord/src/main/java/org/bstats/bungeecord/Metrics.java',
+        examplePlugin: 'https://github.com/Bastian/bStats-Metrics/blob/master/bstats-bungeecord/src/examples/java/ExamplePlugin.java'
     },
     {
         id: 3,
@@ -1221,8 +1221,8 @@ const serverSoftware = [
             }
         ],
         maxRequestsPerIp: 16,
-        metricsClass: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-sponge/src/main/java/org/bstats/sponge/Metrics.java',
-        examplePlugin: 'https://github.com/BtoBastian/bStats-Metrics/blob/master/bstats-sponge/src/examples/java/ExamplePlugin.java'
+        metricsClass: 'https://github.com/Bastian/bStats-Metrics/blob/master/bstats-sponge/src/main/java/org/bstats/sponge/Metrics.java',
+        examplePlugin: 'https://github.com/Bastian/bStats-Metrics/blob/master/bstats-sponge/src/examples/java/ExamplePlugin.java'
     },
     {
         id: 4,
