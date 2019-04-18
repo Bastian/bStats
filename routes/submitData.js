@@ -243,7 +243,7 @@ router.post('/:software?', function(request, response, next) {
                             if (bukkitVersion2.indexOf('bukkit') !== -1) {
                                 software = 'Bukkit';
                             } else if (bukkitVersion2.indexOf('taco') !== -1) {
-                                software = 'Taco';
+                                software = 'TacoSpigot';
                             } else if (bukkitVersion2.indexOf('paper') !== -1) {
                                 software = 'Paper';
                             } else if (bukkitVersion2.indexOf('spigot') !== -1) {
