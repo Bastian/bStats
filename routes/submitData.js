@@ -204,7 +204,7 @@ router.post('/:software?', function(request, response, next) {
                                 continue;
                             }
 
-                            let parsed = /.+\\(MC: ([\d\\.]+)\\)/gm.exec(bukkitVersion);
+                            let parsed = /.+\(MC: ([\d\\.]+)\)/gm.exec(bukkitVersion);
                             if (parsed != null) {
                                 let version = parsed[1];
                                 defaultGlobalCharts.push({
