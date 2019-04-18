@@ -63,6 +63,12 @@
         <!-- Charts get added afterwards using jQuery -->
     </div>
 
+    <div class="center">
+        Charts powered by <a href="http://highcharts.com">Highcharts</a>
+        <br/>
+        <br/>
+    </div>
+
     <script type="application/javascript">
         $.getJSON('/api/v1/plugins/<%= plugin.id %>/charts', function (charts) {
             var chartIdsSorted = Object.keys(charts).sort(function(a,b){return charts[a].position-charts[b].position});
