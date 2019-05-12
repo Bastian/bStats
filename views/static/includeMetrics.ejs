@@ -55,7 +55,7 @@
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;dependency&gt;
   &lt;groupId&gt;org.bstats&lt;/groupId&gt;
   &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
-  &lt;version&gt;1.4&lt;/version&gt;
+  &lt;version&gt;1.5&lt;/version&gt;
   &lt;scope&gt;compile&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
                                     <b>3. Shade bStats into your plugin.</b><br>
@@ -126,7 +126,7 @@
     &lt;dependency&gt;
       &lt;groupId&gt;org.bstats&lt;/groupId&gt;
       &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
-      &lt;version&gt;1.4&lt;/version&gt;
+      &lt;version&gt;1.5&lt;/version&gt;
       &lt;scope&gt;compile&lt;/scope&gt;
     &lt;/dependency&gt;
   &lt;/dependencies&gt;
@@ -138,7 +138,6 @@
         &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
         &lt;version&gt;3.1.0&lt;/version&gt;
         &lt;configuration&gt;
-          &lt;minimizeJar&gt;true&lt;/minimizeJar&gt;
           &lt;relocations&gt;
             &lt;relocation&gt;
               &lt;pattern&gt;org.bstats&lt;/pattern&gt;
