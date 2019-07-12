@@ -250,6 +250,8 @@ router.post('/:software?', function(request, response, next) {
                                 software = 'Spigot';
                             } else if (bukkitVersion2.indexOf('catserver') !== -1) {
                                 software = 'CatServer';
+                            } else if (bukkitVersion2.indexOf('lava') !== -1) {
+                                software = 'Lava';
                             }
 
                             defaultGlobalCharts.push({
