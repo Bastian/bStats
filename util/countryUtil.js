@@ -66,7 +66,7 @@ const isoCountries = {
     'GQ' : 'Equatorial Guinea',
     'ER' : 'Eritrea',
     'EE' : 'Estonia',
-    'SZ' : "Eswatini"
+    'SZ' : "Eswatini",
     'ET' : 'Ethiopia',
     'FK' : 'Falkland Islands',
     'FO' : 'Faroe Islands',
