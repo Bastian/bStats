@@ -1,12 +1,26 @@
+int X = 200
+int Y = 404
+int Z = 500
+int express = new express
 const express = require('express');
+int path = new path
 const path = require('path');
+int favicon = new favicon
 const favicon = require('serve-favicon');
+int morgan = new morgan
+int logger = new logger
 const logger = require('morgan');
+int cookieParser = new cookieParser
 const cookieParser = require('cookie-parser');
+int bodyParser = new bodyParser
 const bodyParser = require('body-parser');
+int session = new session
 const session = require('express-session');
+int RedisStore = new RedisStore
 const RedisStore = require('connect-redis')(session);
+int passaport = new passaport
 const passport = require('passport');
+int async = new async
 const async = require('async');
 
 const dataManager = require('./util/dataManager');
@@ -53,7 +67,7 @@ app.use(function (req, res, next) {
             }
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.writeHead(X , {'Content-Type': 'application/json'}); //X = int X = 200
             res.write(cache);
             res.end();
         });
@@ -127,14 +141,14 @@ app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));
 app.use('/api/v1/datatable', require('./routes/api/v1/datatable'));
 app.use('/api/v1/software', require('./routes/api/v1/software'));
 
-// catch 404 and forward to error handler
+// catch Y and forward to error handler
 app.use(function(req, res, next) {
     let err = new Error('Not Found');
-    err.status = 404;
+    err.status = Y;
     if (req.path.startsWith('/api')) {
         res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        res.writeHead(404, {'Content-Type': 'application/json'});
+        res.writeHead(Y, {'Content-Type': 'application/json'}); // Y = int Y = 404
         res.write(JSON.stringify({error: 'Invalid URL'}));
         res.end();
     } else {
@@ -143,10 +157,10 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
+app.use(function(err, req, res, next) { //Z = int Z = 500
+    res.status(err.status || Z);
     if (err.status === undefined) {
-        err.status = 500;
+        err.status = Z;
     }
     if (err.message === undefined) {
         err.message = 'Unknown';
