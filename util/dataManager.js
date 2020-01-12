@@ -100,6 +100,24 @@ function getPluginById() {
 }
 
 /**
+ * Same parameters then getPluginById, but returns a promise instead.
+ */
+function getPluginByIdAsPromise() {
+    return new Promise((resolve, reject) => {
+        let id = parseInt(arguments[0]);
+        let fields = arguments.length === 2 ? arguments[1] :
+            ['name', 'software', 'charts', 'owner', 'global'];
+        getPluginById(id, fields, (err, plugin) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(plugin);
+            }
+        });
+    })
+}
+
+/**
  * Gets a plugin by its software url and name.
  * The method accepts three or four parameters in the following order:
  * - "software url", "name", "callback"
@@ -122,6 +140,25 @@ function getPluginBySoftwareUrlAndName() {
             callback(err, null);
         }
     });
+}
+
+/**
+ * Same parameters then getPluginBySoftwareUrlAndName, but returns a promise instead.
+ */
+function getPluginBySoftwareUrlAndNameAsPromise() {
+    return new Promise((resolve, reject) => {
+        let url = arguments[0].toLowerCase();
+        let name = arguments[1].toLowerCase();
+        let fields = arguments.length === 3 ? arguments[2] :
+            ['name', 'software', 'charts', 'owner', 'global'];
+        getPluginBySoftwareUrlAndName(url, name, fields, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    })
 }
 
 /**
@@ -636,7 +673,9 @@ module.exports.addPlugin = addPlugin;
 module.exports.getSoftwareByUrl = getSoftwareByUrl;
 module.exports.getSoftwareById = getSoftwareById;
 module.exports.getPluginById = getPluginById;
+module.exports.getPluginByIdAsPromise = getPluginByIdAsPromise;
 module.exports.getPluginBySoftwareUrlAndName = getPluginBySoftwareUrlAndName;
+module.exports.getPluginBySoftwareUrlAndNameAsPromise = getPluginBySoftwareUrlAndNameAsPromise;
 module.exports.getGlobalPluginBySoftwareUrl = getGlobalPluginBySoftwareUrl;
 module.exports.getChartByUid = getChartByUid;
 module.exports.getChartByPluginIdAndChartId = getChartByPluginIdAndChartId;

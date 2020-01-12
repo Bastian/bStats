@@ -350,31 +350,44 @@ router.post('/:software?', function(request, response, next) {
                 });
             }
 
-            let handledPlugins = [];
+            let pluginPromises = [];
 
-            // Iterate through plugins
             for (let j = 0; j < plugins.length; j++) {
                 let plugin = plugins[j];
 
-                let pluginName = plugin.pluginName;
-                if (typeof pluginName !== 'string') {
-                    continue; // Invalid plugin
-                }
-
-                if (handledPlugins.indexOf(pluginName) > -1) {
-                    console.log('Plugin ' + pluginName + ' sent it\'s data twice (Server-UUID: ' + serverUUID + ')');
-                    continue;
-                }
-                handledPlugins.push(pluginName);
-
-                dataManager.getPluginBySoftwareUrlAndName(software.url, pluginName, function (err, res) {
-                    if (err) {
-                        console.log(err);
-                    } else if (res !== null) {
-                        handlePlugin(res, plugin, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo);
+                let pluginId = plugin.id;
+                if (typeof pluginId !== 'number') {
+                    // The plugin has no plugin id, so it is probably identifying by name
+                    let pluginName = plugin.pluginName;
+                    if (typeof pluginName !== 'string') {
+                        continue; // Invalid plugin
                     }
-                });
+
+                    pluginPromises.push(dataManager.getPluginBySoftwareUrlAndNameAsPromise(software.url, pluginName));
+                } else {
+                    pluginPromises.push(dataManager.getPluginByIdAsPromise(pluginId));
+                }
             }
+
+            Promise.all(pluginPromises).then(realPlugins => {
+                let handledPlugins = [];
+                for (let i = 0; i < realPlugins.length; i++) {
+                    let realPlugin = realPlugins[i];
+                    let plugin = plugins[i];
+
+                    if (realPlugin === null) {
+                        continue;
+                    }
+
+                    if (handledPlugins.indexOf(realPlugin.id) > -1) {
+                        console.log('Plugin ' + realPlugin.name + ' sent its data twice (Server-UUID: ' + serverUUID + ')');
+                        continue;
+                    }
+
+                    handledPlugins.push(realPlugin.id);
+                    handlePlugin(realPlugin, plugin, requestRandom, serverUUID, defaultGlobalCharts, defaultPluginCharts, tms2000, geo);
+                }
+            });
 
             callback(null, 'OK');
         }

@@ -3,14 +3,12 @@ const router = express.Router();
 const dataManager = require('../util/dataManager');
 const waterfall = require('async-waterfall');
 
-/* GET plugin page. */
-router.get('/:software/:plugin', function(req, res, next) {
-
-    let pluginName = req.params.plugin;
+router.get('/:software/:pluginName', function (req, res, next) {
+    let pluginName = req.params.pluginName;
     let softwareUrl = req.params.software;
 
     if (pluginName === 'random') {
-        getRandomPlugin(function (err, pluginName, softwareUrl) {
+        getRandomPlugin(function (err, pluginId, pluginName, softwareUrl) {
             if (err) {
                 console.log(err);
                 res.writeHead(500, {'Content-Type': 'application/json'});
@@ -20,34 +18,59 @@ router.get('/:software/:plugin', function(req, res, next) {
                 res.end();
                 return;
             }
-            res.redirect("/plugin/" + softwareUrl + '/' + pluginName);
+            res.redirect("/plugin/" + softwareUrl + '/' + pluginName + '/' + pluginId);
         });
         return;
     }
 
+    dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['name', 'software', 'owner'], function (err, plugin) {
+        if (plugin === null) {
+            res.redirect("/plugin/" + softwareUrl + '/'+ pluginName + '/-1');
+            return;
+        }
+
+        res.redirect("/plugin/" + softwareUrl + '/' + pluginName + '/' + plugin.id);
+    });
+});
+
+/* GET plugin page. */
+router.get('/:software/:pluginName/:pluginId', function(req, res, next) {
+
+    let pluginName = req.params.pluginName;
+    let softwareUrl = req.params.software;
+    let pluginId = req.params.pluginId;
+
     waterfall([
         function (callback) {
-            dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['name', 'software', 'owner'], function (err, plugin) {
+            dataManager.getPluginById(pluginId, ['name', 'software', 'owner'], function (err, plugin) {
                 if (err) {
                     callback(err);
                     return;
                 }
-                if (plugin === null) { // TODO render proper page
+                if (plugin === null || plugin.name === null) {
                     res.render('static/unknownPlugin', {
                         pluginName: pluginName
                     });
+                    return;
+                }
+
+                if (plugin.name !== pluginName) {
+                    res.redirect("/plugin/" + softwareUrl + '/' + plugin.name + '/' + plugin.id);
                     return;
                 }
                 callback(null, plugin);
             });
         },
         function (plugin, callback) {
-            dataManager.getSoftwareById(plugin.software, ['name', 'url'], function (err, res) {
+            dataManager.getSoftwareById(plugin.software, ['name', 'url'], function (err, software) {
                 if (err) {
                     callback(err);
                     return;
                 }
-                callback(null, plugin, res);
+                if (software.url !== softwareUrl) {
+                    res.redirect("/plugin/" + software.url + '/' + plugin.name + '/' + plugin.id);
+                }
+                callback(null, plugin, software);
             });
         }
         ], function (err, plugin, software) {
@@ -122,7 +145,7 @@ function getRandomPlugin(callback) {
                                 callback(err);
                                 return;
                             }
-                            callback(null, plugin.name, software.url);
+                            callback(null, plugin.id, plugin.name, software.url);
                         });
                     });
                     return;
