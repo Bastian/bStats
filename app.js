@@ -121,6 +121,7 @@ app.use('/signatures', require('./routes/signatures'));
 app.use('/signature-creator', require('./routes/signatureCreator'));
 app.use('/help/rest-api', require('./routes/restApi'));
 app.use('/admin', require('./routes/admin'));
+app.use('/what-is-my-plugin-id', require('./routes/whatIsMyPluginId'));
 
 // Api v1
 app.use('/api/v1/plugins', require('./routes/api/v1/plugin'));

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" style="overflow-x: hidden">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="A list with the plugin ids of all your plugins.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - What is my plugin id?</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/dataTablesMaterialDesign.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+
+<% include templates/navigation.ejs %>
+<main>
+    <div class="container">
+        <br><br>
+        <% if (!loggedIn) { %>
+            <h5 class="<%= customColor1 %>-text col s12 center-align">Please login first!</h5>
+            <img src="/images/i-need-you-to-login.jpg" alt="I need you to login!" style="max-width: 90%; min-width: 50%; margin: 0 auto; display: block;">
+        <% } else if (myPlugins.length <= 0) { %>
+            <h3 class="<%= customColor1 %>-text col s12 center-align">You don't have any plugins!</h3>
+            <div class="row center">
+                <h5 class="header col s12 light authorbox">Here's a random cat image instead:</h5>
+            </div>
+            <img src="https://cataas.com/cat?<%= Math.random() %>" alt="Moew!" style="max-width: 90%; min-width: 50%; margin: 0 auto; display: block;">
+        <% } else { %>
+            <h5 class="<%= customColor1 %>-text col s12 center-align">Your plugin ids:</h5>
+
+            <div class="card material-table">
+                <div style="overflow-x:auto;">
+                    <div style="min-width: 650px">
+                        <table id="plugin-ids-list">
+                            <thead>
+                            <tr>
+                                <th>Plugin</th>
+                                <th>Software</th>
+                                <th>Plugin Id</th>
+                            </tr>
+                            </thead>
+                            <% for (var i = 0; i < myPlugins.length; i++) { %>
+                                <tr>
+                                    <td><%= myPlugins[i].name %></td>
+                                    <td><%= myPlugins[i].software.name %></td>
+                                    <td><b><%= myPlugins[i].id %></b></td>
+                                </tr>
+                            <% } %>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        <br><br>
+    </div>
+</main>
+<% include templates/footer.ejs %>
+
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
+
+<% include templates/globalScripts.ejs %>
+
+</body>
+</html>
