@@ -57,6 +57,12 @@
                             <font class="red-text please_confirm" style="display: none;">Passwords do not match!</font>
                         </div>
                     </div>
+                    <div class="row" style="margin-left: 0">
+                        <p>
+                            <input type="checkbox" id="accept-privacy-policy"/>
+                            <label for="accept-privacy-policy">Accept <a href="/privacy-policy">privacy policy</a></label>
+                        </p>
+                    </div>
                     <div style="text-align: center">
                         <div class="g-recaptcha" style="display: inline-block"
                              data-sitekey="<%= publicKey %>" data-callback="correctCaptcha"></div>
@@ -96,6 +102,9 @@
         checkIfValidAccount();
     });
 
+    $(document).on('input','#accept-privacy-policy',function () {
+        checkIfValidAccount();
+    });
     captchaSolved = false;
 
     function checkPasswords() {
@@ -123,6 +132,11 @@
             return;
         }
         if (!captchaSolved) {
+            $(".valid_account").hide();
+            $(".invalid_account").show();
+            return;
+        }
+        if (!document.getElementById('accept-privacy-policy').checked) {
             $(".valid_account").hide();
             $(".invalid_account").show();
             return;
