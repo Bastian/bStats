@@ -19,6 +19,8 @@ router.get('/include-metrics', function(req, res, next) {
         res.render('static/includeMetrics', {
             addedPlugin: req.query.addedPlugin === undefined ? false : req.query.addedPlugin,
             highlightedSoftware: req.query.software === undefined ? null : req.query.software,
+            pluginId: req.query.pluginId === undefined ? 'unknown' : req.query.pluginId,
+            pluginName: req.query.pluginName === undefined ? 'unknown' : req.query.pluginName,
             software: software
         });
     });

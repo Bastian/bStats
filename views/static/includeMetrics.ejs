@@ -26,8 +26,19 @@
         <div class="col s12">
             <div class="card">
                 <div class="card-content">
-                    <b>You successfully added your plugin!</b><br>
-                    If you haven't done it already you now have to add bStats to your plugin.
+                    <b>You've successfully added your plugin!</b><br>
+                    If you haven't done it already, you have to add bStats to your plugin.<br>
+                </div>
+            </div>
+        </div>
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <b>Useful Information</b><br>
+                    Your plugin <b><%= pluginName %></b> has the plugin id <b><%= pluginId %></b>.
+                    You will need it when adding bStats to your plugin.
+                    <br>
+                    You can view the ids of all your plugins by visiting the <a href="/what-is-my-plugin-id">What is my plugin id?</a> page.
                 </div>
             </div>
         </div>
@@ -137,6 +148,7 @@
         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
         &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
         &lt;version&gt;3.1.0&lt;/version&gt;
+        &lt;!-- Do not include the &lt;configuration&gt;...&lt;/configuration&gt; part if you are using Sponge! --&gt;
         &lt;configuration&gt;
           &lt;relocations&gt;
             &lt;relocation&gt;
@@ -199,7 +211,7 @@
                             </div>
                         </li>
                     </ul>
-                    After adding the Metrics class to your plugin, you now have to initialise the class.
+                    After adding the Metrics class to your plugin, you now have to create an instance of the class.
                     How this is done depends on the server software you are using.<br>
                     Just take a look at the examples for your server software:
                     <table>
@@ -221,10 +233,9 @@
                         <% } %>
                         </tbody>
                     </table>
-                    You may notice all examples also include a very basic example on how to use custom charts. You can
+                    You may notice, that all examples also include a very basic example on how to use custom charts. You can
                     find a detailed tutorial on how to use them <a href="/help/custom-charts">here</a>. If you don't need
-                    custom charts you can (but not have to) use the lite version of the Metrics class, too, which is called
-                    <i>MetricsLite</i>.
+                    custom charts you can (but not have to) use the lite version of the Metrics class, too.
                 </div>
             </div>
         </div>

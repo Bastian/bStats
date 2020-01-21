@@ -120,12 +120,12 @@ router.post('/', function(req, res, next) {
             }
             Promise.all(promises).then(values => {
                 databaseManager.getRedisCluster().hset(`plugins:${pluginId}`, 'charts', JSON.stringify(values), function (err, res) {
-                    callback(err, software);
+                    callback(err, software, pluginId, pluginName);
                 });
             });
         }
-    ], function (err, software) {
-        res.redirect('/getting-started/include-metrics?addedPlugin=true?software=' + software.url);
+    ], function (err, software, pluginId, pluginName) {
+        res.redirect('/getting-started/include-metrics?addedPlugin=true&software=' + software.url + '&pluginId=' + pluginId + '&pluginName=' + pluginName);
     });
 });
 
