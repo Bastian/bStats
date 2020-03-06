@@ -282,6 +282,8 @@ router.post('/:software?', function(request, response, next) {
                                 software = 'CatServer';
                             } else if (bukkitVersion2.indexOf('lava') !== -1) {
                                 software = 'Lava';
+                            } else if (bukkitVersion2.indexOf('mohist') !== -1) {
+                                software = 'Mohist';
                             }
 
                             defaultGlobalCharts.push({
