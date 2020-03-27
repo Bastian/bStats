@@ -5,19 +5,26 @@ const databaseManager = require('../util/databaseManager');
 const async = require('async');
 
 /* GET edit plugin page. */
-router.get('/:software/:plugin', function(req, res, next) {
+router.get('/:software/:pluginName/:pluginId', function(req, res, next) {
 
     if (req.user === undefined) {
         res.redirect('/login');
         return;
     }
 
-    let pluginName = req.params.plugin;
+    let pluginName = req.params.pluginName;
     let softwareUrl = req.params.software;
-    dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['owner', 'charts', 'name'], function (err, plugin) {
+    let pluginId = req.params.pluginId;
+
+    dataManager.getPluginById(pluginId, ['owner', 'charts', 'name'], function (err, plugin) {
 
         if (plugin === null) {
             return res.redirect('/404');
+        }
+
+        if (plugin.name !== pluginName) {
+            res.redirect("/editPlugin/" + softwareUrl + '/' + plugin.name + '/' + plugin.id);
+            return;
         }
 
         let promises = [];
@@ -60,16 +67,17 @@ router.get('/:software/:plugin', function(req, res, next) {
 });
 
 /* POST edit plugin page */
-router.post('/:software/:plugin', function (req, res, next) {
+router.post('/:software/:plugin/:pluginId', function (req, res, next) {
     let pluginName = req.params.plugin;
     let softwareUrl = req.params.software;
+    let pluginId = req.params.pluginId;
     let action = req.body.action;
 
     if (typeof action !== 'string') {
         return sendResponse(res, {error: 'Missing action'}, 400);
     }
 
-    dataManager.getPluginBySoftwareUrlAndName(softwareUrl, pluginName, ['owner', 'charts', 'name'], function (err, plugin) {
+    dataManager.getPluginById(pluginId, ['owner', 'charts', 'name'], function (err, plugin) {
         if (err) {
             console.log(err);
             return sendResponse(res, {error: 'Unknown error'}, 500);

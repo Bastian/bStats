@@ -9,7 +9,7 @@
     %>
     <li class="list-group-item collection-item grey lighten-4" id="listElement_<%= chartId %>">
         <div>
-            <i class="material-icons left glyphicon-move">drag_handle</i><a href="/plugin/<%= softwareUrl %>/<%= plugin.name %>/#<%= chartId %>"><b><%= charts[chartId].title %></b> (id: <%= chartId %>)</a>
+            <i class="material-icons left glyphicon-move">drag_handle</i><a href="/plugin/<%= softwareUrl %>/<%= plugin.name %>/<%= plugin.id %>/#<%= chartId %>"><b><%= charts[chartId].title %></b> (id: <%= chartId %>)</a>
             <a href="javascript:showErrorModal('Not supported', 'Editing existing charts is not supported at the moment!')" class="secondary-content">
                 <i class="material-icons" title="Edit chart">build</i>
             </a>
