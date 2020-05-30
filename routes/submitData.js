@@ -145,6 +145,18 @@ router.post('/:software?', function(request, response, next) {
                             } else if (osName.startsWith("Mac OS X")) {
                                 operatingSystemChart.data.values['Mac OS X'] = {};
                                 operatingSystemChart.data.values['Mac OS X']['Mac OS X ' + osVersion] = 1;
+                            } else if (osName.startsWith("iOS")) {
+                                operatingSystemChart.data.values['iOS'] = {};
+                                operatingSystemChart.data.values['iOS']['iOS ' + osVersion] = 1;
+                            } else if (osName.startsWith("watchOS")) {
+                                operatingSystemChart.data.values['watchOS'] = {};
+                                operatingSystemChart.data.values['watchOS']['watchOS ' + osVersion] = 1;
+                            } else if (osName.startsWith("tvOS")) {
+                                operatingSystemChart.data.values['tvOS'] = {};
+                                operatingSystemChart.data.values['tvOS']['tvOS ' + osVersion] = 1;
+                            } else if (osName.startsWith("Android")) {
+                                operatingSystemChart.data.values['Android'] = {};
+                                operatingSystemChart.data.values['Android']['Android ' + osVersion] = 1;
                             } else if (osName.indexOf('BSD') !== -1) {
                                 operatingSystemChart.data.values['BSD'] = {};
                                 operatingSystemChart.data.values['BSD'][osName + ' ' + osVersion] = 1;
