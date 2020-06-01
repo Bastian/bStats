@@ -163,7 +163,7 @@ router.get('/', function(req, res, next) {
                 jsonResponse.push({
                     name: '<a href="/plugin/' + plugins[i].software.url + '/' + plugins[i].name + '/' + plugins[i].id + '">' + plugins[i].name + '</a>',
                     softwareName: plugins[i].software.globalPlugin !== null ? '<a href="/global/' + plugins[i].software.url + '">' + plugins[i].software.name + '</a>' : plugins[i].software.name,
-                    ownerName: plugins[i].owner.name,
+                    ownerName: '<a href="/author/' + plugins[i].owner.name + '">' + plugins[i].owner.name + '</a>',
                     servers: plugins[i].serverAmount,
                     players: plugins[i].playerAmount
                 });

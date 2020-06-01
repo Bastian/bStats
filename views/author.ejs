@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!-- Twitter stuff -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@btobastian" />
+    <meta name="twitter:title" content="<%= username %> | bStats" />
+    <meta name="twitter:description" content="Statistics about <%= username %>!" />
+    <meta name="twitter:image" content="https://bstats.org/images/Twitter.jpg" />
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="bStats collects data for plugin authors. It's free and easy to use!">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>bStats - <% username %></title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/stylesheets/materialize.min.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <link href="/stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="/stylesheets/dataTablesMaterialDesign.css" type="text/css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+
+<% include templates/navigation.ejs %>
+<main>
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <br><br>
+            <h1 class="header center <%= customColor1 %>-text truncate"><%= username %></h1>
+            <div class="row center">
+                <h5 class="header col s12 light">Here are all the plugins created by <%= username %></h5>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <br><br>
+        <div class="row">
+            <div id="admin" class="col s12">
+                <div class="card material-table">
+                    <div style="overflow-x:auto;">
+                        <div style="min-width: 650px">
+                            <table id="pluginList">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Software</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  <% for (var i = 0; i < plugins.length; i++) { %>
+                                      <tr>
+                                          <td><a href="/plugin/<%= plugins[i].software.url %>/<%= plugins[i].name %>/<%= plugins[i].id %>"><%= plugins[i].name %></a></td>
+                                          <% if (plugins[i].software.globalPlugin !== null) { %>
+                                          <td><a href="/global/<%= plugins[i].software.url %>"><%= plugins[i].software.name %></a></td>
+                                          <% } else { %>
+                                          <td><%= plugins[i].software.name %></td>
+                                          <% } %>
+                                      </tr>
+                                  <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<% include templates/footer.ejs %>
+
+<!--  Scripts-->
+<script src="/javascripts/materialize/materialize.min.js"></script>
+<script src="/javascripts/materialize/init.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="/javascripts/dataTablesMaterialDesign.js"></script>
+
+<% include templates/globalScripts.ejs %>
+
+</body>
+</html>
