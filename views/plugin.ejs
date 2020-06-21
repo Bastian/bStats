@@ -92,6 +92,7 @@
                                 nextChartIsCompleteRow = false;
                                 break;
                             case 'single_linechart':
+                            case 'multi_linechart':
                             case 'simple_map':
                             case 'advanced_map':
                             case 'simple_bar':
@@ -124,6 +125,10 @@
                         break;
                     case 'single_linechart':
                         jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col s12"><div id="' + chartId + 'LineChart" class="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div><br><br></div>');
+                        previousRowWasFull = true;
+                        break;
+                    case 'multi_linechart':
+                        jQueryChart.html(jQueryChart.html() + '<div id="' + chartId + '" class="col s12"><div id="' + chartId + 'MultiLineChart" class="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div><br><br></div>');
                         previousRowWasFull = true;
                         break;
                     case 'simple_map':

@@ -579,6 +579,28 @@ function handlePlugin(plugin, data, requestRandom, serverUUID, defaultGlobalChar
                 dataManager.updateLineChartData(chart.uid, value, 1, tms2000);
             }
 
+            // Multi Linechart
+            if (chart.type === 'multi_linechart') {
+                if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {
+                    return;
+                }
+                for (let line in chartData.data.values) {
+                    if (chartData.data.values.hasOwnProperty(line) && chart.data.lineNames.indexOf(line) > -1) {
+                        let value = chartData.data.values[line];
+                        if (chart.data.filter !== undefined && chart.data.filter.enabled) {
+                            let maxValue = chart.data.filter.maxValue;
+                            let minValue = chart.data.filter.minValue;
+                            if (typeof maxValue === 'number' && value > maxValue) {
+                                value = maxValue;
+                            } else if (typeof minValue === 'number' && value <= minValue) {
+                                value = minValue;
+                            }
+                        }
+                        dataManager.updateLineChartData(chart.uid, value, line, tms2000);
+                    }
+                }
+            }
+
             // Bar charts
             if (chart.type === 'simple_bar' || chart.type === 'advanced_bar') {
                 if (typeof chartData.data !== 'object' || typeof chartData.data.values !== 'object') {

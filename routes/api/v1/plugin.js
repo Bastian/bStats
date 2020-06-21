@@ -224,6 +224,28 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
                     });
                 }
                 break;
+            case 'multi_linechart':
+                if (!isNaN(parseInt(maxElements))) {
+                    maxElements = parseInt(maxElements) > 2*24*30*365*5 ? 2*24*30*365*5 : parseInt(maxElements);
+                    dataManager.getLimitedMultiLineChartData(chart.uid, maxElements, function (err, data) {
+                        if (err) {
+                            console.log(err);
+                            writeResponse(500, {error: 'Unknown error'}, res, req);
+                        } else {
+                            writeResponse(200, data, res, req);
+                        }
+                    });
+                } else {
+                    dataManager.getFullMultiLineChartData(chart.uid, function (err, data) {
+                        if (err) {
+                            console.log(err);
+                            writeResponse(500, {error: 'Unknown error'}, res, req);
+                        } else {
+                            writeResponse(200, data, res, req);
+                        }
+                    });
+                }
+                break;
             case 'simple_pie':
             case 'advanced_pie':
                 dataManager.getPieData(chart.uid, function (err, data) {
