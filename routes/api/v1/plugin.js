@@ -204,7 +204,7 @@ router.get('/:pluginId/charts/:chartId/data', function(req, res, next) {
         switch (chart.type) {
             case 'single_linechart':
                 if (!isNaN(parseInt(maxElements))) {
-                    maxElements = parseInt(maxElements) > 2*24*30*365*5 ? 2*24*30*365*5 : parseInt(maxElements);
+                    maxElements = parseInt(maxElements) > 2*24*365*5 ? 2*24*365*5 : parseInt(maxElements);
                     dataManager.getLimitedLineChartData(chart.uid, 1, maxElements, function (err, data) {
                         if (err) {
                             console.log(err);
