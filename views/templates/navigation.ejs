@@ -90,6 +90,7 @@
 <!-- Account -->
 <ul id="dropdownAccount" class="dropdown-content">
     <% if (loggedIn) { %>
+    <li><a href="/author/<%= user.username %>" class="truncate <%= customColor1 %>-text">My page</a></li>
     <li><a href="/logout" class="truncate <%= customColor1 %>-text">Logout</a></li>
     <% } else { %>
     <li><a href="/register" class="truncate <%= customColor1 %>-text">Register</a></li>
