@@ -4,7 +4,11 @@ const uuidv4 = require('uuid/v4');
 const path = require('path');
 const fs = require('fs');
 
-exporter.initPool();
+exporter.initPool({
+    initialWorkers: 1,
+    maxWorkers: 1,
+    workLimit: 20,
+});
 
 function renderPluginImage(pluginId, options, callback) {
     // TODO use waterfall
