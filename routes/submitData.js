@@ -288,6 +288,8 @@ router.post('/:software?', function(request, response, next) {
                                 software = 'Tuinity';
                             } else if (bukkitVersion2.indexOf('purpur') !== -1) {
                                 software = 'Purpur';
+                            } else if (bukkitVersion2.indexOf('akarin') !== -1) {
+                                software = 'Akarin';
                             }
 
                             defaultGlobalCharts.push({
