@@ -291,7 +291,7 @@ function handleBarChart(chartId, chart) {
                 renderTo: 'container',
                 marginTop: 40,
                 marginBottom: 80,
-                height: data.categories.length * data.series.length * (30 + data.series.length * 15) + 120 // 20px per data item plus top and bottom margins
+                height: data.length * chart.data.barNames.length * (30 + chart.data.barNames.length * 15) + 120 // 20px per data item plus top and bottom margins
             },
             title: {
                 text: '<a href="#' + chartId + '" style="text-decoration: none; color: inherit;">' + chart.title + '</a>'
@@ -335,9 +335,12 @@ function handleBarChart(chartId, chart) {
                 }
             },
             xAxis: {
-                categories: data.categories
+                categories: data.map(d => d.name)
             },
-            series: data.series
+            series: chart.data.barNames.map((barName, index) => ({
+                name: barName,
+                data: data.map(d => d.data[index])
+            }))
         });
     });
 }
