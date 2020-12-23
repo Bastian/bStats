@@ -568,6 +568,7 @@ function saveChart(plugin, chartData, callback) {
             return callback(err);
         }
         let chartRedis = {
+            pluginId: plugin.id,
             id: chartData.id,
             type: chartData.type,
             position: chartData.position,

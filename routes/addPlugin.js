@@ -137,6 +137,7 @@ function addChart(pluginId, pluginName, chart, position, callback) {
             return callback(err);
         }
         let chartRedis = {
+            pluginId: pluginId,
             id: chart.id,
             type: chart.type,
             position: position,
