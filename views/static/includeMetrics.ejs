@@ -53,20 +53,12 @@
                             <div class="collapsible-body">
                                 <div style="margin-left: 10px; margin-top: 4px; margin-right: 10px;">
                                     <b class="red-text">Note: You are expected to have a basic understanding on how to use Maven!</b><br>
-                                    <b>1. Include the repository</b><br>
-                                    bStats uses <a href="https://ci.codemc.org/">CodeMC</a>. If you are upgrading from
-                                    version 1.2 you can no longer use <code>repo.bstats.org</code>.
-                                    <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;repository&gt;
-  &lt;id&gt;CodeMC&lt;/id&gt;
-  &lt;url&gt;https://repo.codemc.org/repository/maven-public&lt;/url&gt;
-&lt;/repository&gt;</code></pre>
-                                    <b>2. Include the dependency.</b><br>
-                                    There are 3 possible artifact ids: <i><b>bstats-bukkit</b></i>, <i><b>bstats-bungeecord</b></i> and <i><b>bstats-sponge</b></i> and their
-                                    lite counterparts: <i><b>bstats-bukkit-lite</b></i>, <i><b>bstats-bungeecord-lite</b></i> and <i><b>bstats-sponge-lite</b></i>
+                                    <b>1. Include the dependency.</b><br>
+                                    There are 4 possible artifact ids: <i><b>bstats-bukkit</b></i>, <i><b>bstats-bungeecord</b></i>, <i><b>bstats-sponge</b></i>, and <i><b>bstats-velocity</b></i>.
                                     <pre class="prettyprint withBox" style="border: none"><code class="language-xml">&lt;dependency&gt;
   &lt;groupId&gt;org.bstats&lt;/groupId&gt;
   &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
-  &lt;version&gt;1.8&lt;/version&gt;
+  &lt;version&gt;2.2.1&lt;/version&gt;
   &lt;scope&gt;compile&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
                                     <b>3. Shade bStats into your plugin.</b><br>
@@ -81,7 +73,6 @@
       &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
       &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
       &lt;version&gt;3.1.0&lt;/version&gt;
-      &lt;!-- Do not include the &lt;configuration&gt;...&lt;/configuration&gt; part if you are using Sponge! --&gt;
       &lt;configuration&gt;
         &lt;relocations&gt;
           &lt;relocation&gt;
@@ -119,10 +110,6 @@
       &lt;id&gt;spigot-repo&lt;/id&gt;
       &lt;url&gt;https://hub.spigotmc.org/nexus/content/groups/public/&lt;/url&gt;
     &lt;/repository&gt;
-    &lt;repository&gt;
-      &lt;id&gt;CodeMC&lt;/id&gt;
-      &lt;url&gt;https://repo.codemc.org/repository/maven-public&lt;/url&gt;
-    &lt;/repository&gt;
   &lt;/repositories&gt;
 
   &lt;dependencies&gt;
@@ -137,7 +124,7 @@
     &lt;dependency&gt;
       &lt;groupId&gt;org.bstats&lt;/groupId&gt;
       &lt;artifactId&gt;bstats-bukkit&lt;/artifactId&gt;
-      &lt;version&gt;1.8&lt;/version&gt;
+      &lt;version&gt;2.2.1&lt;/version&gt;
       &lt;scope&gt;compile&lt;/scope&gt;
     &lt;/dependency&gt;
   &lt;/dependencies&gt;
@@ -148,7 +135,6 @@
         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
         &lt;artifactId&gt;maven-shade-plugin&lt;/artifactId&gt;
         &lt;version&gt;3.1.0&lt;/version&gt;
-        &lt;!-- Do not include the &lt;configuration&gt;...&lt;/configuration&gt; part if you are using Sponge! --&gt;
         &lt;configuration&gt;
           &lt;relocations&gt;
             &lt;relocation&gt;
@@ -178,7 +164,7 @@
                             <div class="collapsible-body">
                                 <div style="margin-left: 10px; margin-top: 4px; margin-right: 10px;">
                                     If you don't want to use Maven that's no problem. You can just copy and paste the required class into your project.
-                                    All classes can be found in the <a href="https://github.com/Bastian/bStats-Metrics">GitHub repository</a>.<br>
+                                    All classes can be found in the <a href="https://github.com/Bastian/bStats-Metrics/tree/single-file">GitHub repository</a>.<br>
                                     Just copy the class fitting your server software.
                                     Make sure to change the package from <i>org.bstats</i> to your own package.<br>
                                     <div style="overflow-x:auto;">
@@ -194,7 +180,7 @@
 
                                                 <tbody>
                                                 <% for (var i = 0; i < software.length; i++) { %>
-                                                <% if (software[i].metricsClass !== null && software[i].name !== 'Sponge') { %>
+                                                <% if (software[i].metricsClass !== null) { %>
                                                 <tr>
                                                     <td><b><%= software[i].name %></b></td>
                                                     <td><a href="<%= software[i].metricsClass %>" target="_blank">Metrics.java</a></td>
@@ -206,7 +192,6 @@
                                             </table>
                                         </div>
                                     </div>
-                                    Manually copying the metric class is not supported for Sponge!
                                 </div>
                             </div>
                         </li>
