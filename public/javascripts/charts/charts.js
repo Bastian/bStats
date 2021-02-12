@@ -15,6 +15,9 @@ $(function () {
                 case 'single_linechart':
                     handleLineChart(chart, charts[chart]);
                     break;
+                case 'multi_linechart':
+                    handleMultiLineChart(chart, charts[chart]);
+                    break;
                 case 'simple_bar':
                 case 'advanced_bar':
                     handleBarChart(chart, charts[chart]);
@@ -280,6 +283,118 @@ function handleLineChart(chartId, chart) {
                 }
             }]
         });
+    });
+}
+
+function handleMultiLineChart(chartId, chart) {
+    var isMobile = $(window).width() < 600;
+    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (2*24*30*3), function (data) {
+        let chartOptions = {
+
+            chart:{
+                zoomType: 'x'
+            },
+
+            rangeSelector: {
+                buttons: [{
+                    type: 'day',
+                    count: 1,
+                    text: '1d'
+                }, {
+                    type: 'day',
+                    count: 3,
+                    text: '3d'
+                }, {
+                    type: 'week',
+                    count: 1,
+                    text: '1w'
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1m'
+                }, {
+                    type: 'month',
+                    count: 6,
+                    text: '6m'
+                }, {
+                    type: 'year',
+                    count: 1,
+                    text: '1y'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                selected: 3,
+                inputEnabled: false
+            },
+
+            exporting: {
+                menuItemDefinitions: {
+                    loadFullData: {
+                        onclick: function () {
+                            $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (2*24*30*12*2), function (data) {
+                                for (let place in data) {
+                                    if (data.hasOwnProperty(place)) {
+                                        $('#' + chartId + 'MultiLineChart').highcharts().series[place].update({
+                                            data: data[place].data
+                                        }, true);
+                                    }
+                                }
+                            });
+                        },
+                        text: 'Load full data'
+                    }
+                },
+                buttons: {
+                    contextButton: {
+                        menuItems: ['loadFullData']
+                    }
+                }
+            },
+
+            xAxis: {
+                ordinal: false
+            },
+
+            yAxis: {
+                min: 0,
+                labels: {
+                    formatter: function () {
+                        if (this.value % 1 != 0) {
+                            return "";
+                        } else {
+                            return this.value;
+                        }
+                    }
+                }
+            },
+
+            title : {
+                text : '<a href="#' + chartId + '" style="text-decoration: none; color: inherit;">' + chart.title + '</a>'
+            },
+
+            plotOptions:{
+                series: {
+                    turboThreshold: 0 // disable the 1000 limit
+                }
+            },
+
+            series : []
+        };
+        for (let place in data) {
+            if (data.hasOwnProperty(place)) {
+                let line = data[place].name;
+                chartOptions.series.push({
+                    name: line,
+                    data: data[place].data,
+                    type: 'spline',
+                    tooltip: {
+                        valueDecimals: 0
+                    }
+                });
+            }
+        }
+        $('#' + chartId + 'MultiLineChart').highcharts('StockChart', chartOptions);
     });
 }
 

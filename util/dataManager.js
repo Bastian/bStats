@@ -453,6 +453,74 @@ function getFullLineChartData(chartUid, line, callback) {
 }
 
 /**
+ * Gets the data of a multi line chart. The data is limited to a specific amount.
+ */
+function getLimitedMultiLineChartData(chartUid, amount, callback) {
+    getChartByUid(chartUid, ['data'], function (err, chart) {
+        if (err) {
+            callback(err, null);
+            return false;
+        }
+        if (chart.data.hasOwnProperty("lineNames")) {
+            let returnData = [];
+            let received = 0;
+            for (let i = 0; i < chart.data.lineNames.length; i++) {
+                let line = chart.data.lineNames[i];
+                let place = i;
+                getLimitedLineChartData(chartUid, line, amount, function (err, data) {
+                    if (err != null) {
+                        received = chart.data.lineNames.length;
+                        callback(err, null);
+                        return false;
+                    }
+                    returnData[place] = {"name" : line, "data" : data};
+                    received++;
+                    if (received === chart.data.lineNames.length) {
+                        callback(null, returnData);
+                    }
+                });
+            }
+            return true;
+        }
+        callback(chartUid + " did not have line names?", null);
+    });
+}
+
+/**
+ * Gets all stored data of a multi line chart.
+ */
+function getFullMultiLineChartData(chartUid, callback) {
+    getChartByUid(chartUid, "data", function (err, chart) {
+        if (err) {
+            callback(err, null);
+            return false;
+        }
+        if (chart.data.hasOwnProperty("lineNames")) {
+            let returnData = [];
+            let received = 0;
+            for (let i = 0; i < chart.data.lineNames.length; i++) {
+                let line = chart.data.lineNames[i];
+                let place = i;
+                getFullLineChartData(chartUid, line, function (err, data) {
+                    if (err != null) {
+                        received = chart.data.lineNames.length;
+                        callback(err, null);
+                        return false;
+                    }
+                    returnData[place] = {"name" : line, "data" : data};
+                    received++;
+                    if (received === chart.data.lineNames.length) {
+                        callback(null, returnData);
+                    }
+                });
+            }
+            return true;
+        }
+        callback(chartUid + " did not have line names?", null);
+    });
+}
+
+/**
  * Gets the stored data of a simple or advanced pie chart.
  */
 function getPieData(chartUid, callback) {
@@ -689,6 +757,8 @@ module.exports.getPluginsOfUser = getPluginsOfUser;
 // Methods to access existing chart data
 module.exports.getLimitedLineChartData = getLimitedLineChartData;
 module.exports.getFullLineChartData = getFullLineChartData;
+module.exports.getLimitedMultiLineChartData = getLimitedMultiLineChartData;
+module.exports.getFullMultiLineChartData = getFullMultiLineChartData;
 module.exports.getPieData = getPieData;
 module.exports.getDrilldownPieData = getDrilldownPieData;
 module.exports.getMapData = getMapData;

@@ -1,0 +1,79 @@
+<div class="depending_box multi_linechart">
+    <div id="multi_linechart_form" class="col s12">
+        <!-- Chart title -->
+        <br>
+        <div class="input-field">
+            <input placeholder="The title of the chart" id="chart_title_multi_linechart" type="text" class="validate"
+                   pattern="^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$" length="32" name="chartTitle">
+            <label for="chart_title_multi_linechart">Chart title</label>
+        </div>
+        <!-- Chart id -->
+        <div class="input-field">
+            <input placeholder="Give the chart an unique id (e.g. 'myChart1')" id="chart_id_multi_linechart" class="validate"
+                   pattern="^[-_a-zA-Z0-9]+([-_a-zA-Z0-9]+)*$" length="32" type="text" name="chartId">
+            <label for="chart_id_multi_linechart">Chart id</label>
+        </div>
+        <!-- Line Names -->
+        <br>
+        <label class="lineNamesLabel">Line names</label>
+        <div id="multi_linechart_linenames" class="chips"></div>
+
+        <!-- Filter on/off -->
+        <div class="divider"></div>
+        <br>
+        <div class="switch">
+            <b>Filter data</b>
+            <label>
+                <input class="checkboxFilter" type="checkbox" name="filterEnabled">
+                <span class="lever"></span>
+            </label>
+        </div>
+        <br>
+        <div class="filterOptions">
+            <!-- Regex on/off -->
+            <div class="divider"></div>
+            <br>
+            <div class="input-field">
+                <input placeholder="Leave empty for no filtering" type="text" class="validate"
+                       pattern="^[0-9]*$" length="16" name="maxValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                <label for="maxValue">Max value</label>
+            </div>
+            <br>
+            <div class="input-field">
+                <input placeholder="Leave empty for no filtering" type="text" class="validate"
+                       pattern="^[0-9]*$" length="16" name="minValue" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                <label for="minValue">Min value</label>
+            </div>
+        </div>
+        <!-- Submit button -->
+        <div class='row'>
+            <button type='submit' name='btn_submit' class='col s12 l6 offset-l3 btn btn-large waves-effect <%= customColor1 %>' onclick="createmultiLineChart()">
+                Submit Chart
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="application/javascript">
+    $(document).on('input','#chart_title_multi_linechart',function () {
+        document.getElementById('chart_id_multi_linechart').value = $('#chart_title_multi_linechart').val().toLowerCase().replace(/ /g, "_");
+    });
+
+    function createmultiLineChart() {
+        let currentForm = $('#multi_linechart_form');
+        let lineNamesData = $('#multi_linechart_linenames').material_chip('data');
+        let lineNamesArray = [];
+        for (let i = 0; i < lineNamesData.length; i++) {
+            lineNamesArray.push(lineNamesData[i].tag);
+        }
+        addChart({
+            chartTitle: $("#chart_title_multi_linechart").val(),
+            chartId: $("#chart_id_multi_linechart").val(),
+            lineNames: lineNamesArray,
+            filterEnabled: currentForm.find('input[name="filterEnabled"]').is(":checked"),
+            mixValue: currentForm.find('input[name="minValue"]').val(),
+            maxValue: currentForm.find('input[name="maxValue"]').val(),
+            chart_type: 'multi_linechart'
+        });
+    }
+</script>

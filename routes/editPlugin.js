@@ -189,7 +189,7 @@ function deletePlugin(req, res, plugin, softwareUrl) {
     for (let i = 0; i < plugin.charts.length; i++) {
         let chartUid = plugin.charts[i];
 
-        dataManager.getChartByUid(chartUid, ['id', 'type'], function (err, chart) {
+        dataManager.getChartByUid(chartUid, ['id', 'type', 'data'], function (err, chart) {
             if (err) {
                 return console.log(err);
             }
@@ -218,6 +218,16 @@ function deletePlugin(req, res, plugin, softwareUrl) {
                         return console.log(err);
                     }
                 });
+            }
+
+            if (chart.type === 'multi_linechart') {
+                for (let i = 0; i < chart.data.lineNames.length; i++) {
+                    databaseManager.getRedisCluster().del(`data:${chart.uid}.${chart.data.lineNames[i]}`, function (err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                    });
+                }
             }
 
         });
@@ -255,7 +265,7 @@ function deleteChart(req, res, plugin) {
         return sendResponse(res, {error: 'Missing or invalid chart id'}, 400);
     }
 
-    dataManager.getChartByPluginIdAndChartId(plugin.id, chartId, ['default', 'position', 'type'], function (err, chart) {
+    dataManager.getChartByPluginIdAndChartId(plugin.id, chartId, ['default', 'position', 'type', 'data'], function (err, chart) {
         if (err) {
            console.log(err);
            return sendResponse(res, {error: 'Unknown error!'}, 500);
@@ -307,6 +317,16 @@ function deleteChart(req, res, plugin) {
                             return console.log(err);
                         }
                     });
+                }
+
+                if (chart.type === 'multi_linechart') {
+                    for (let i = 0; i < chart.data.lineNames.length; i++) {
+                        databaseManager.getRedisCluster().del(`data:${chart.uid}.${chart.data.lineNames[i]}`, function (err) {
+                            if (err) {
+                                return console.log(err);
+                            }
+                        });
+                    }
                 }
                 return sendResponse(res, {}, 200);
             });
@@ -469,9 +489,38 @@ function completeChartData(chartData, req, res) {
             break;
         }
         case 'multi_linechart':
-            // TODO not implemented atm
-            sendResponse(res, {error: 'Invalid chart type'}, 400);
-            return false;
+            let lineNames = req.body["lineNames[]"]; // don't ask
+            if (!Array.isArray(lineNames) || lineNames.length === 0) {
+                sendResponse(res, {error: 'Missing line names'}, 400);
+                return false;
+            }
+            for (let i = 0; i < lineNames.length; i++) {
+                let lineName = lineNames[i];
+                if (typeof lineName !== 'string') {
+                    sendResponse(res, {error: 'Invalid line names'}, 400);
+                    return false;
+                }
+                lineName = lineName.substring(0, 50);
+                if (!/^[-_a-zA-Z0-9]+(\s[-_a-zA-Z0-9]+)*$/.test(lineName)) {
+                    sendResponse(res, {error: 'Invalid or missing line names'}, 400);
+                    return false;
+                }
+                lineNames[i] = lineName;
+            }
+            chartData.data.lineNames = lineNames;
+            let maxValue = req.body.maxValue === undefined ? 2147483647 : parseInt(req.body.maxValue);
+            if (isNaN(maxValue)) {
+                maxValue = 2147483647;
+            }
+            let minValue = req.body.minValue === undefined ? -2147483647 : parseInt(req.body.minValue);
+            if (isNaN(minValue)) {
+                minValue = -2147483647;
+            }
+            chartData.data.filter = {
+                enabled: filterEnabled,
+                minValue: minValue,
+                maxValue: maxValue
+            };
             break;
         case 'simple_bar': {
             let valueName = req.body.valueName;
