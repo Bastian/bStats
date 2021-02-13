@@ -18,7 +18,6 @@ router.get('/', function(req, res, next) {
     res.render('addPlugin', {
         publicKey: config.recaptcha.publicKey,
         failed: req.query.failed === undefined ? false : req.query.failed,
-        alreadyAdded: req.query.alreadyAdded === undefined ? false : req.query.alreadyAdded,
         wrongCaptcha: req.query.wrongCaptcha === undefined ? false : req.query.wrongCaptcha,
         invalidName: req.query.invalidName === undefined ? false : req.query.invalidName
     });
@@ -97,9 +96,6 @@ router.post('/', function(req, res, next) {
             dataManager.getPluginBySoftwareUrlAndName(software.url, pluginName.toLowerCase(), ['name'], function (err, pl) {
                 if (err) {
                     return console.log(err);
-                }
-                if (pl !== null) {
-                    return res.redirect('/add-plugin?alreadyAdded=true');
                 }
                 dataManager.addPlugin(plugin, software, function (err, res) {
                     callback(err, plugin, software, res);
