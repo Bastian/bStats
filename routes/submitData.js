@@ -284,6 +284,8 @@ router.post('/:software?', function(request, response, next) {
                                 software = 'Lava';
                             } else if (bukkitVersion2.indexOf('mohist') !== -1) {
                                 software = 'Mohist';
+                            } else if (bukkitVersion2.indexOf('magma') !== -1) {
+                                software = 'Magma';
                             } else if (bukkitVersion2.indexOf('tuinity') !== -1) {
                                 software = 'Tuinity';
                             } else if (bukkitVersion2.indexOf('purpur') !== -1) {
