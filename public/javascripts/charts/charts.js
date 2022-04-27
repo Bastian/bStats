@@ -179,7 +179,7 @@ function handleDrilldownPieChart(chartId, chart) {
 
 function handleLineChart(chartId, chart) {
     var isMobile = $(window).width() < 600;
-    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (2*24*30*3), function (data) {
+    $.getJSON('/api/v1/plugins/' + getPluginId() + '/charts/' + chartId + '/data/?maxElements=' + (2*24*31*1), function (data) {
         if (chartId === 'players') {
             updatePlayersBadge(data);
         } else if (chartId === 'servers') {
