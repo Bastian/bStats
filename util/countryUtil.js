@@ -206,7 +206,7 @@ const isoCountries = {
     'SE' : 'Sweden',
     'CH' : 'Switzerland',
     'SY' : 'Syria',
-    'TW' : 'Taiwan',
+    'TW' : 'Taiwan, Province of China',
     'TJ' : 'Tajikistan',
     'TZ' : 'Tanzania',
     'TH' : 'Thailand',
