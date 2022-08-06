@@ -1,0 +1,11 @@
+{
+  "redis": {
+    "port": 6379,
+    "host": "redis"
+  },
+  "recaptcha": {
+    "publicKey": "abc123",
+    "secretKey": "123abc"
+  },
+  "sessionSecret": "super secret session secret"
+}

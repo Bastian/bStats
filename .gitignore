@@ -1,0 +1,7 @@
+# Firebase Secrets
+firebase-config.json
+service-account-file.json
+
+# Volume Data
+volumes/redis/data/*
+!volumes/redis/data/.gitkeep
