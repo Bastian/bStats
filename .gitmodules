@@ -1,0 +1,12 @@
+[submodule "bstats-backend"]
+	path = bstats-backend
+	url = git@github.com:Bastian/bstats-backend.git
+[submodule "bstats-web"]
+	path = bstats-web
+	url = git@github.com:Bastian/bstats-web.git
+[submodule "bstats-legacy"]
+	path = bstats-legacy
+	url = git@github.com:Bastian/bstats-legacy.git
+[submodule "bstats-metrics"]
+	path = bstats-metrics
+	url = git@github.com:Bastian/bstats-metrics.git
