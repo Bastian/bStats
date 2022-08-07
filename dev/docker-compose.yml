@@ -18,7 +18,7 @@ services:
       - bstats-backend
       - bstats-legacy
     volumes:
-      - "./bstats-web:/usr/src/app"
+      - "../bstats-web:/usr/src/app"
       - "./service-account-file.json:/usr/src/app/service-account-file.json"
       - "./firebase-config.json:/usr/src/app/firebase-config.json"
 
@@ -30,7 +30,7 @@ services:
     depends_on:
       - redis
     volumes:
-      - "./bstats-backend:/usr/src/app"
+      - "../bstats-backend:/usr/src/app"
       - "./service-account-file.json:/usr/src/app/service-account-file.json"
 
   bstats-legacy:
@@ -43,7 +43,7 @@ services:
       - redis
       - bstats-backend
     volumes:
-      - "./bstats-legacy:/usr/src/app"
+      - "../bstats-legacy:/usr/src/app"
       - "./volumes/bstats-legacy/config.json:/usr/src/app/config.json"
 
   redis:

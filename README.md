@@ -15,7 +15,7 @@ This repository contains all bStats repositories as submodules. These are
 > to a complete rewrite. The "live" version of bStats is currently running with
 > the old frontend and a combination of old and new backend. Which routes are
 > served by which backend can be found in the nginx configuration at
-> [`/volumes/nginx/nginx.conf`](/volumes/nginx/nginx.conf).
+> [`/prod/volumes/nginx/nginx.conf`](/prod/volumes/nginx/nginx.conf).
 
 This repository also provides the development environment for bStats.
 
@@ -39,12 +39,12 @@ git submodule init && git submodule update
 
 There are some prerequisites for development:
 
-- Docker and Docker Compose (v1)
+- Docker
 - Linux. WSL2 is recommended for Windows. MacOS should work but is untested
 - GNU Make (should be available on most Unix systems)
 
 Additionally, you need a Firebase account place the `firebase-config.json` file
-and the `service-account-file.json` file in the root of this repository.
+and the `service-account-file.json` file inside the `dev` directory.
 
 - [Learn about the Google service account file]
 - [Learn about the Firebase config file]
@@ -53,6 +53,30 @@ Then you can start all services by running `make`. The services will run in
 Docker containers, thus no additional dependencies like Node.js and npm are
 required (even though it is recommended to have them installed for your IDE
 tooling).
+
+## Start Production
+
+The `prod` directory contains the production environment for bStats. Similar to
+the dev environment, you have to place the `firebase-config.json` file and the
+`service-account-file.json` file inside the `prod` directory.
+Additionally, you have to update the `prod/volumes/bstats-legacy/config.json`
+file with your Recaptcha secrets and replace the `sessionSecret` with a random
+(long) string of your choosing.
+
+You can then start the services by running `make start-prod`.
+
+### Disaster Recovery
+
+Assuming the worst happens and the current bStats server explodes. To get back
+up running, start the `prod` environment on a new server once and stop it after
+it has successfully started. Then place the backup Redis dumps (`dump.rdb`) in
+the `prod/volumes/redis/node-<x>m` directory. Make sure that the dump file is
+the correct one for the current node. You can look at the
+`prod/volumes/redis/node-<x>m/nodes.conf` file to find out for which key-range
+the node is responsible.
+You can then start the prod again and everything should work again (if it is a
+new server with a new IP, you ofc also have to update the DNS settings in
+Cloudflare).
 
 ## License
 

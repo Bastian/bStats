@@ -1,0 +1,21 @@
+{
+  "redis": [
+    {
+      "port": 6379,
+      "host": "redis-node-1m"
+    },
+    {
+      "port": 6379,
+      "host": "redis-node-2m"
+    },
+    {
+      "port": 6379,
+      "host": "redis-node-3m"
+    }
+  ],
+  "recaptcha": {
+    "publicKey": "top secret",
+    "secretKey": "top secret"
+  },
+  "sessionSecret": "top secret"
+}

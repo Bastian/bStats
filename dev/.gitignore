@@ -2,6 +2,6 @@
 firebase-config.json
 service-account-file.json
 
-# Volume Data
+# Volume Data (dev)
 volumes/redis/data/*
 !volumes/redis/data/.gitkeep

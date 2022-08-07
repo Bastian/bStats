@@ -1,0 +1,186 @@
+---
+version: "3.2"
+
+x-bstats-backend: &x-bstats-backend
+  build: ../bstats-backend
+  volumes:
+    - "./service-account-file.json:/app/service-account-file.json"
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "50m"
+  healthcheck:
+    test: ["CMD-SHELL", "curl http://localhost:3001/software"]
+    retries: 60
+  depends_on: &depends_on-redis
+    redis-node-1m:
+      condition: service_healthy
+    redis-node-2m:
+      condition: service_healthy
+    redis-node-3m:
+      condition: service_healthy
+  environment: &x-bstats-backend-env
+    PORT: "3001"
+    REDIS_USE_CLUSTER: "true"
+    REDIS_HOST: "redis-node-1m"
+    REDIS_PORT: "6379"
+    TOTAL_SHARDS: "12"
+    WORD_BLOCKLIST: '["ely.su"]'
+
+
+services:
+
+  # Cluster of 3 Redis master nodes
+  redis-node-1m: &redis-node
+    image: "bitnami/redis-cluster:7.0"
+    user: ${USERID:-0}
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "6379", "--raw", "incr", "ping" ]
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-1m:/bitnami/redis/data"
+    environment: &redis-node-env
+      REDIS_CLUSTER_REPLICAS: "0"
+      REDIS_NODES: "redis-node-1m redis-node-2m redis-node-3m"
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_PASSWORD: ""
+  redis-node-2m:
+    <<: *redis-node
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-2m:/bitnami/redis/data"
+  redis-node-3m:
+    <<: *redis-node
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-3m:/bitnami/redis/data"
+    depends_on:
+      - redis-node-1m
+      - redis-node-2m
+    environment:
+      <<: *redis-node-env
+      REDIS_CLUSTER_CREATOR: "yes"
+
+  # Multiple instances of the backend server
+  bstats-backend-1:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "0"
+  bstats-backend-2:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "1"
+  bstats-backend-3:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "2"
+  bstats-backend-4:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "3"
+  bstats-backend-5:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "4"
+  bstats-backend-6:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "5"
+  bstats-backend-7:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "6"
+  bstats-backend-8:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "7"
+  bstats-backend-9:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "8"
+  bstats-backend-10:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "9"
+  bstats-backend-11:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "10"
+  bstats-backend-12:
+    <<: *x-bstats-backend
+    environment:
+      <<: *x-bstats-backend-env
+      SHARD_NUMBER: "11"
+
+  # An nginx server for load balancing the backend services
+  nginx-backend:
+    image: nginx:latest
+    volumes:
+      - ./volumes/nginx-backend/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - bstats-backend-1
+      - bstats-backend-2
+      - bstats-backend-3
+      - bstats-backend-4
+      - bstats-backend-5
+      - bstats-backend-6
+      - bstats-backend-7
+      - bstats-backend-8
+      - bstats-backend-9
+      - bstats-backend-10
+      - bstats-backend-11
+      - bstats-backend-12
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "250m"
+
+  # The new bstats frontend
+  bstats-web:
+    build: ../bstats-web
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000"]
+      retries: 60
+    environment:
+      PORT: "3000"
+    volumes:
+      - "./service-account-file.json:/app/service-account-file.json"
+      - "./firebase-config.json:/app/firebase-config.json"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+
+  # The legacy front- and backend
+  bstats-legacy:
+    build: ../bstats-legacy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000"]
+      retries: 60
+    depends_on:
+      <<: *depends_on-redis
+    volumes:
+      - "./volumes/bstats-legacy/config.json:/app/config.json"  
+
+  # The main nginx server
+  nginx:
+    image: nginx:1.23
+    volumes:
+      - ./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - bstats-web
+      - bstats-legacy
+      - nginx-backend

@@ -1,6 +1,11 @@
-.PHONY: all start
+.PHONY: all start-dev
 
-all: start
+USERID := $(shell id -u)
 
-start:
-	docker-compose up
+all: start-dev
+
+start-dev:
+	cd dev && docker compose up --build --force-recreate --remove-orphans
+
+start-prod:
+	cd prod && docker compose up --build --force-recreate --remove-orphans
