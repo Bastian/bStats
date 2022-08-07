@@ -14,6 +14,8 @@ services:
       test: ["CMD-SHELL", "curl http://localhost:3000"]
       retries: 60
     command: ["sh", "-c", "npm install && npm run dev"]
+    ports:
+      - "24678:24678"
     depends_on:
       - bstats-backend
       - bstats-legacy
