@@ -1,41 +1,19 @@
 ---
-version: "3.2"
+version: "3.8"
 
-x-bstats-backend: &x-bstats-backend
-  build: ../bstats-backend
-  volumes:
-    - "./service-account-file.json:/app/service-account-file.json"
+x-logging: &x-logging
   logging:
     driver: "json-file"
     options:
-      max-size: "50m"
-  healthcheck:
-    test: ["CMD-SHELL", "curl http://localhost:3001/software"]
-    retries: 60
-  depends_on: &depends_on-redis
-    redis-node-1m:
-      condition: service_healthy
-    redis-node-2m:
-      condition: service_healthy
-    redis-node-3m:
-      condition: service_healthy
-  environment: &x-bstats-backend-env
-    PORT: "3001"
-    REDIS_USE_CLUSTER: "true"
-    REDIS_HOST: "redis-node-1m"
-    REDIS_PORT: "6379"
-    TOTAL_SHARDS: "12"
-    WORD_BLOCKLIST: '["ely.su"]'
-
+      max-size: "100m"
 
 services:
-
   # Cluster of 3 Redis master nodes
   redis-node-1m: &redis-node
     image: "bitnami/redis-cluster:7.0"
     user: ${USERID:-0}
     healthcheck:
-      test: [ "CMD", "redis-cli", "-p", "6379", "--raw", "incr", "ping" ]
+      test: ["CMD", "redis-cli", "-p", "6379", "--raw", "incr", "ping"]
     volumes:
       - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
       - "./volumes/redis/node-1m:/bitnami/redis/data"
@@ -44,6 +22,7 @@ services:
       REDIS_NODES: "redis-node-1m redis-node-2m redis-node-3m"
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_PASSWORD: ""
+    <<: *x-logging
   redis-node-2m:
     <<: *redis-node
     volumes:
@@ -62,65 +41,83 @@ services:
       REDIS_CLUSTER_CREATOR: "yes"
 
   # Multiple instances of the backend server
-  bstats-backend-1:
-    <<: *x-bstats-backend
-    environment:
-      <<: *x-bstats-backend-env
-      SHARD_NUMBER: "0"
+  bstats-backend-1: &bstats-backend
+    build: ../bstats-backend
+    volumes:
+      - "./service-account-file.json:/app/service-account-file.json"
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3001/software"]
+      retries: 60
+    depends_on: &depends_on-redis
+      redis-node-1m:
+        condition: service_healthy
+      redis-node-2m:
+        condition: service_healthy
+      redis-node-3m:
+        condition: service_healthy
+    environment: &bstats-backend-env
+      SHARD_NUMBER: "2"
+      PORT: "3001"
+      REDIS_USE_CLUSTER: "true"
+      REDIS_HOST: "redis-node-1m"
+      REDIS_PORT: "6379"
+      TOTAL_SHARDS: "12"
+      WORD_BLOCKLIST: '["ely.su"]'
+    <<: *x-logging
   bstats-backend-2:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "1"
   bstats-backend-3:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "2"
   bstats-backend-4:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "3"
   bstats-backend-5:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "4"
   bstats-backend-6:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "5"
   bstats-backend-7:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "6"
   bstats-backend-8:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "7"
   bstats-backend-9:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "8"
   bstats-backend-10:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "9"
   bstats-backend-11:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "10"
   bstats-backend-12:
-    <<: *x-bstats-backend
+    <<: *bstats-backend
     environment:
-      <<: *x-bstats-backend-env
+      <<: *bstats-backend-env
       SHARD_NUMBER: "11"
 
   # An nginx server for load balancing the backend services
@@ -141,10 +138,7 @@ services:
       - bstats-backend-10
       - bstats-backend-11
       - bstats-backend-12
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "250m"
+    <<: *x-logging
 
   # The new bstats frontend
   bstats-web:
@@ -157,10 +151,7 @@ services:
     volumes:
       - "./service-account-file.json:/app/service-account-file.json"
       - "./firebase-config.json:/app/firebase-config.json"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
+    <<: *x-logging
 
   # The legacy front- and backend
   bstats-legacy:
@@ -171,7 +162,8 @@ services:
     depends_on:
       <<: *depends_on-redis
     volumes:
-      - "./volumes/bstats-legacy/config.json:/app/config.json"  
+      - "./volumes/bstats-legacy/config.json:/app/config.json"
+    <<: *x-logging
 
   # The main nginx server
   nginx:
@@ -184,3 +176,4 @@ services:
       - bstats-web
       - bstats-legacy
       - nginx-backend
+    <<: *x-logging

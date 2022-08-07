@@ -1,5 +1,5 @@
 ---
-version: "3.2"
+version: "3.8"
 
 x-node: &x-node
   image: "node:16"
@@ -7,7 +7,6 @@ x-node: &x-node
   working_dir: /usr/src/app
 
 services:
-
   bstats-web:
     <<: *x-node
     healthcheck:
@@ -53,8 +52,8 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     user: ${USERID:-0}
     volumes:
-      - './volumes/redis/data:/data'
-      - './volumes/redis/redis.conf:/usr/local/etc/redis/redis.conf'
+      - "./volumes/redis/data:/data"
+      - "./volumes/redis/redis.conf:/usr/local/etc/redis/redis.conf"
 
   nginx:
     image: nginx:1.23
