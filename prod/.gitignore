@@ -2,6 +2,9 @@
 firebase-config.json
 service-account-file.json
 
+# AWS Secrets
+AWS.env
+
 # Volume Data
 volumes/redis/node-1m/*
 !volumes/redis/node-1m/.gitkeep

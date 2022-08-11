@@ -177,3 +177,22 @@ services:
       - bstats-legacy
       - nginx-backend
     <<: *x-logging
+
+  # Backup the Redis data to AWS S3
+  redis-backup:
+    image: d3fk/s3cmd:stable
+    profiles:
+      - tools
+    entrypoint: ""
+    working_dir: /
+    command:
+      [
+        "echo",
+        "-e",
+        "\\033[0;31mERROR\\033[0m Use \"docker compose run redis-backup ./backup.sh s3://BUCKET[/PREFIX]\" instead!",
+      ]
+    env_file:
+      - AWS.env
+    volumes:
+      - ./backup.sh:/backup.sh
+      - ./volumes/redis:/backup-src

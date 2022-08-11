@@ -65,6 +65,15 @@ file with your Recaptcha secrets and replace the `sessionSecret` with a random
 
 You can then start the services by running `make start-prod`.
 
+### Backups
+
+Redis data is backed up to AWS S3. AWS credentials have to be provided in a
+`AWS.env` file in the `prod` directory. Afterwards, cronjobs can be set up with
+the `add-backup-cronjobs.sh` script in the `prod` directory.
+
+A lifecycle configuration for S3 is given in the
+`prod/s3-lifecycle-config.json` file.
+
 ### Disaster Recovery
 
 Assuming the worst happens and the current bStats server explodes. To get back
