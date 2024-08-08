@@ -49,6 +49,9 @@ and the `service-account-file.json` file inside the `dev` directory.
 - [Learn about the Google service account file]
 - [Learn about the Firebase config file]
 
+Next, rename the `/prod/postgres.env.example` file to `/prod/postgres.env` and
+replace the `POSTGRES_PASSWORD` with a random (long) string of your choosing.
+
 Then you can start all services by running `make`. The services will run in
 Docker containers, thus no additional dependencies like Node.js and npm are
 required (even though it is recommended to have them installed for your IDE

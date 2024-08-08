@@ -2,6 +2,9 @@
 firebase-config.json
 service-account-file.json
 
+# Postgres env for username and password
+postgres.env
+
 # AWS Secrets
 AWS.env
 

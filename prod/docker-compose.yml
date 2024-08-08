@@ -66,8 +66,12 @@ services:
       REDIS_USE_CLUSTER: "true"
       REDIS_HOST: "redis-node-1m"
       REDIS_PORT: "6379"
+      PGHOST: "postgres"
+      PGPORT: "5432"
       TOTAL_SHARDS: "12"
       WORD_BLOCKLIST: '["ely.su"]'
+    env_file:
+      - postgres.env
     <<: *x-logging
   bstats-backend-2:
     <<: *bstats-backend
@@ -188,6 +192,14 @@ services:
       - bstats-legacy
       - nginx-backend
     <<: *x-logging
+
+  # A SQL database for historical data
+  postgres:
+    image: postgres:15
+    env_file:
+      - postgres.env
+    volumes:
+      - ./volumes/postgres/data:/var/lib/postgresql/data
 
   # Backup the Redis data to AWS S3
   redis-backup:
