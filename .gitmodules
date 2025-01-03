@@ -10,3 +10,6 @@
 [submodule "bstats-metrics"]
 	path = bstats-metrics
 	url = git@github.com:Bastian/bstats-metrics.git
+[submodule "bstats-data-processor"]
+	path = bstats-data-processor
+	url = git@github.com:Bastian/bstats-data-processor.git

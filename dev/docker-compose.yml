@@ -27,12 +27,31 @@ services:
     <<: *x-node
     command: ["sh", "-c", "npm install && npm run start:dev"]
     environment:
-      REDIS_HOST: redis
-    depends_on:
-      - redis
+      REDIS_USE_CLUSTER: "true"
+      REDIS_HOST: "redis-node-1m"
+      REDIS_PORT: "6379"
+    depends_on: &depends_on-redis
+      redis-node-1m:
+        condition: service_healthy
+      redis-node-2m:
+        condition: service_healthy
+      redis-node-3m:
+        condition: service_healthy
     volumes:
       - "../bstats-backend:/usr/src/app"
       - "./service-account-file.json:/usr/src/app/service-account-file.json"
+
+  bstats-data-processor:
+    command: ["cargo", "run"]
+    depends_on:
+      <<: *depends_on-redis
+    working_dir: /usr/src/app
+    image: "rust:1.79"
+    environment:
+      REDIS_CLUSTER__URLS: "redis://redis-node-1m:6379"
+      BEHIND_CLOUDFLARE_PROXY: "true"
+    volumes:
+      - "../bstats-data-processor:/usr/src/app"
 
   bstats-legacy:
     <<: *x-node
@@ -41,19 +60,41 @@ services:
       retries: 60
     command: ["sh", "-c", "npm install && npm run start"]
     depends_on:
-      - redis
-      - bstats-backend
+      <<: *depends_on-redis
     volumes:
       - "../bstats-legacy:/usr/src/app"
       - "./volumes/bstats-legacy/config.json:/usr/src/app/config.json"
 
-  redis:
-    image: "redis:7-alpine"
-    command: redis-server /usr/local/etc/redis/redis.conf
+  # Cluster of 3 Redis master nodes
+  redis-node-1m: &redis-node
+    image: "bitnami/redis-cluster:7.0"
     user: ${USERID:-0}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "--raw", "incr", "ping"]
     volumes:
-      - "./volumes/redis/data:/data"
-      - "./volumes/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-1m:/bitnami/redis/data"
+    environment: &redis-node-env
+      REDIS_CLUSTER_REPLICAS: "0"
+      REDIS_NODES: "redis-node-1m redis-node-2m redis-node-3m"
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_PASSWORD: ""
+  redis-node-2m:
+    <<: *redis-node
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-2m:/bitnami/redis/data"
+  redis-node-3m:
+    <<: *redis-node
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-3m:/bitnami/redis/data"
+    depends_on:
+      - redis-node-1m
+      - redis-node-2m
+    environment:
+      <<: *redis-node-env
+      REDIS_CLUSTER_CREATOR: "yes"
 
   nginx:
     image: nginx:1.23

@@ -6,7 +6,8 @@ The parent repository of the [bStats] project.
 
 This repository contains all bStats repositories as submodules. These are
 
-- `bstats-backend` - The backend of bStats.
+- `bstats-data-processor` - The backend handling the data sent by plugins
+- `bstats-backend` - The backend of bStats, handling the API requests
 - `bstats-web` - The (new) frontend of bStats.
 - `bstats-legacy` - The original backend and frontend of bStats.
 - `bstats-metrics` - The Java-based metrics classes of bStats.
