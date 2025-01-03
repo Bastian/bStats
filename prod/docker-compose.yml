@@ -200,7 +200,7 @@ services:
       [
         "echo",
         "-e",
-        "\\033[0;31mERROR\\033[0m Use \"docker compose run redis-backup ./backup.sh s3://BUCKET[/PREFIX]\" instead!",
+        "\\033[0;31mERROR\\033[0m Use \"docker compose run --rm redis-backup ./backup.sh s3://BUCKET[/PREFIX]\" instead!",
       ]
     env_file:
       - AWS.env

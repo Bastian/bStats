@@ -22,14 +22,14 @@ fi
 
 OLD_CRONTAB="$CRONTAB"
 CRONTAB="${CRONTAB}5 * * * * cd $PWD && docker compose run redis-backup ./backup.sh ${BUCKET}/hourly/
-10 0 * * * cd $PWD && docker compose run redis-backup ./backup.sh ${BUCKET}/daily/
-15 0 * * 1 cd $PWD && docker compose run redis-backup ./backup.sh ${BUCKET}/weekly/
-20 0 1 * * cd $PWD && docker compose run redis-backup ./backup.sh ${BUCKET}/monthly/
+10 0 * * * cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/daily/
+15 0 * * 1 cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/weekly/
+20 0 1 * * cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/monthly/
 "
 
 diff --color -u <(echo "$OLD_CRONTAB") <(echo "$CRONTAB")
 
-if echo "$OLD_CRONTAB" | grep 'docker compose run redis-backup' &> /dev/null; then
+if echo "$OLD_CRONTAB" | grep 'redis-backup' &> /dev/null; then
   echo -e "\033[0;33mWARNING\033[0m Found existing backup job in crontab. Please double-check the results before saving"
 fi
 
