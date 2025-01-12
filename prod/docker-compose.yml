@@ -195,7 +195,7 @@ services:
 
   # A SQL database for historical data
   postgres:
-    image: postgres:15
+    image: postgres:17
     env_file:
       - postgres.env
     volumes:

@@ -24,6 +24,8 @@ services:
       - "./firebase-config.json:/usr/src/app/firebase-config.json"
 
   bstats-backend:
+    <<: *x-node
+    command: ["sh", "-c", "npm install && npm run start:dev"]
     user: ${USERID:-0}
     environment:
       REDIS_HOST: redis
@@ -73,13 +75,13 @@ services:
       - "80:80"
 
   postgres:
-    image: postgres:15
+    image: postgres:17
     environment:
       POSTGRES_USER: bstats
       POSTGRES_PASSWORD: bstats
       POSTGRES_DB: bstats
     volumes:
-      - ./volumes/postgres/data:/var/lib/postgresql/data
+      - "./volumes/postgres/data:/var/lib/postgresql/data"
 
   # WebUI to view postgres database
   adminer:
