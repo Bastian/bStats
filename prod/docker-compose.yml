@@ -160,6 +160,7 @@ services:
   # A SQL database for historical data
   postgres:
     image: postgres:17
+    command: -c 'max_connections=200'
     env_file:
       - postgres.env
     volumes:
