@@ -68,7 +68,7 @@ services:
       REDIS_PORT: "6379"
       PGHOST: "postgres"
       PGPORT: "5432"
-      TOTAL_SHARDS: "12"
+      TOTAL_SHARDS: "6"
       WORD_BLOCKLIST: '["ely.su"]'
     env_file:
       - postgres.env
@@ -98,36 +98,6 @@ services:
     environment:
       <<: *bstats-backend-env
       SHARD_NUMBER: "5"
-  bstats-backend-7:
-    <<: *bstats-backend
-    environment:
-      <<: *bstats-backend-env
-      SHARD_NUMBER: "6"
-  bstats-backend-8:
-    <<: *bstats-backend
-    environment:
-      <<: *bstats-backend-env
-      SHARD_NUMBER: "7"
-  bstats-backend-9:
-    <<: *bstats-backend
-    environment:
-      <<: *bstats-backend-env
-      SHARD_NUMBER: "8"
-  bstats-backend-10:
-    <<: *bstats-backend
-    environment:
-      <<: *bstats-backend-env
-      SHARD_NUMBER: "9"
-  bstats-backend-11:
-    <<: *bstats-backend
-    environment:
-      <<: *bstats-backend-env
-      SHARD_NUMBER: "10"
-  bstats-backend-12:
-    <<: *bstats-backend
-    environment:
-      <<: *bstats-backend-env
-      SHARD_NUMBER: "11"
 
   # An nginx server for load balancing the backend services
   nginx-backend:
@@ -144,12 +114,6 @@ services:
       - bstats-backend-4
       - bstats-backend-5
       - bstats-backend-6
-      - bstats-backend-7
-      - bstats-backend-8
-      - bstats-backend-9
-      - bstats-backend-10
-      - bstats-backend-11
-      - bstats-backend-12
     <<: *x-logging
 
   # The new bstats frontend
