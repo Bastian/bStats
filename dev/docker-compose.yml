@@ -2,7 +2,7 @@
 version: "3.8"
 
 x-node: &x-node
-  image: "node:16"
+  image: "node:20"
   user: ${USERID:-0}
   working_dir: /usr/src/app
 
@@ -26,8 +26,14 @@ services:
   bstats-backend:
     <<: *x-node
     command: ["sh", "-c", "npm install && npm run start:dev"]
+    user: ${USERID:-0}
     environment:
       REDIS_HOST: redis
+      PGHOST: postgres
+      PGPORT: "5432"
+      POSTGRES_USER: bstats
+      POSTGRES_PASSWORD: bstats
+      POSTGRES_DB: bstats
     depends_on:
       - redis
     volumes:
@@ -51,6 +57,8 @@ services:
     image: "redis:7-alpine"
     command: redis-server /usr/local/etc/redis/redis.conf
     user: ${USERID:-0}
+    ports:
+      - "6379:6379"
     volumes:
       - "./volumes/redis/data:/data"
       - "./volumes/redis/redis.conf:/usr/local/etc/redis/redis.conf"
@@ -65,3 +73,19 @@ services:
       - bstats-legacy
     ports:
       - "80:80"
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: bstats
+      POSTGRES_PASSWORD: bstats
+      POSTGRES_DB: bstats
+    volumes:
+      - "./volumes/postgres/data:/var/lib/postgresql/data"
+
+  # WebUI to view postgres database
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
