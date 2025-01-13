@@ -61,7 +61,7 @@ services:
       redis-node-3m:
         condition: service_healthy
     environment: &bstats-backend-env
-      SHARD_NUMBER: "2"
+      SHARD_NUMBER: "0"
       PORT: "3001"
       REDIS_USE_CLUSTER: "true"
       REDIS_HOST: "redis-node-1m"
