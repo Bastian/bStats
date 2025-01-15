@@ -25,7 +25,7 @@ CRONTAB="${CRONTAB}5 * * * * cd $PWD && docker compose run redis-backup ./backup
 10 0 * * * cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/daily/
 15 0 * * 1 cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/weekly/
 20 0 1 * * cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/monthly/
-25 0 * * * cd $PWD && rm -r ./volumes/postgres/database-dump/* && docker compose exec postgres bash -c "pg_dump -U bstats -Z5 -j 10 -Fd bstats -f /database-dump" && docker compose run --rm postgres-backup ./backup.sh ${BUCKET}/postgres/
+25 0 * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/* && docker compose exec postgres bash -c "pg_dump -U bstats -Z5 -j 10 -Fd bstats -f /database-dump" && docker compose run --rm postgres-backup ./backup.sh ${BUCKET}/postgres/
 "
 
 diff --color -u <(echo "$OLD_CRONTAB") <(echo "$CRONTAB")
