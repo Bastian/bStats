@@ -39,4 +39,18 @@
                         <NoncurrentDays>2</NoncurrentDays>
                 </NoncurrentVersionExpiration>
         </Rule>
+         <Rule>
+                <ID>Postgres</ID>
+                <Filter>
+                        <Prefix>postgres</Prefix>
+                </Filter>
+                <Status>Enabled</Status>
+                <Transition>
+                        <Days>7</Days>
+                        <StorageClass>DEEP_ARCHIVE</StorageClass>
+                </Transition>
+                <NoncurrentVersionExpiration>
+                        <NoncurrentDays>180</NoncurrentDays>
+                </NoncurrentVersionExpiration>
+        </Rule>
 </LifecycleConfiguration>
