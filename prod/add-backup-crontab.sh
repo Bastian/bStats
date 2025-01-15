@@ -40,10 +40,9 @@ read -r ANSWER
 
 if [[ "$ANSWER" =~ ^([yY][eE][sS]|[yY])$ ]]; then
   echo "Crontab saved."
+  echo "$CRONTAB" > crontab_bstats_backup.tmp
+  crontab crontab_bstats_backup.tmp
+  rm crontab_bstats_backup.tmp
 else
   echo "Crontab not saved."
 fi
-
-echo "$CRONTAB" > crontab_bstats_backup.tmp
-crontab crontab_bstats_backup.tmp
-rm crontab_bstats_backup.tmp
