@@ -7,21 +7,21 @@ x-node: &x-node
   working_dir: /usr/src/app
 
 services:
-  bstats-web:
-    <<: *x-node
-    healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:3000"]
-      retries: 60
-    command: ["sh", "-c", "npm install && npm run dev"]
-    ports:
-      - "24678:24678"
-    depends_on:
-      - bstats-backend
-      - bstats-legacy
-    volumes:
-      - "../bstats-web:/usr/src/app"
-      - "./service-account-file.json:/usr/src/app/service-account-file.json"
-      - "./firebase-config.json:/usr/src/app/firebase-config.json"
+  # bstats-web:
+  #   <<: *x-node
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl http://localhost:3000"]
+  #     retries: 60
+  #   command: ["sh", "-c", "npm install && npm run dev"]
+  #   ports:
+  #     - "24678:24678"
+  #   depends_on:
+  #     - bstats-backend
+  #     - bstats-legacy
+  #   volumes:
+  #     - "../bstats-web:/usr/src/app"
+  #     - "./service-account-file.json:/usr/src/app/service-account-file.json"
+  #     - "./firebase-config.json:/usr/src/app/firebase-config.json"
 
   bstats-backend:
     <<: *x-node
@@ -67,7 +67,7 @@ services:
     volumes:
       - ./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - bstats-web
+      # - bstats-web
       - bstats-backend
       - bstats-legacy
     ports:

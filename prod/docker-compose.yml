@@ -115,17 +115,17 @@ services:
     <<: *x-logging
 
   # The new bstats frontend
-  bstats-web:
-    build: ../bstats-web
-    healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:3000"]
-      retries: 60
-    environment:
-      PORT: "3000"
-    volumes:
-      - "./service-account-file.json:/app/service-account-file.json"
-      - "./firebase-config.json:/app/firebase-config.json"
-    <<: *x-logging
+  # bstats-web:
+  #   build: ../bstats-web
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl http://localhost:3000"]
+  #     retries: 60
+  #   environment:
+  #     PORT: "3000"
+  #   volumes:
+  #     - "./service-account-file.json:/app/service-account-file.json"
+  #     - "./firebase-config.json:/app/firebase-config.json"
+  #   <<: *x-logging
 
   # The legacy front- and backend
   bstats-legacy:
@@ -150,7 +150,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - bstats-web
+      # - bstats-web
       - bstats-legacy
       - nginx-backend
     <<: *x-logging
