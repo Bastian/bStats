@@ -1,0 +1,44 @@
+http://bstats.localhost bstats.localhost {
+    encode gzip
+
+    handle_path /submitData/* {
+        rewrite * /legacy/submitData{path}
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    handle_path /api/v2/data/* {
+        rewrite * /data{path}
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    handle_path /api/v2/* {
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    handle_path /api-list* {
+        rewrite * /api-list{path}
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    handle_path /signatures/* {
+        rewrite * /signatures{path}
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    handle_path /api/v1/plugins {
+        rewrite * /services{path}
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    handle_path /api/v1/plugins/* {
+        rewrite * /legacy/service{path}
+        reverse_proxy http://bstats-backend:3001
+    }
+
+    # Catch-all proxy for all other requests
+    reverse_proxy http://bstats-legacy:3000
+}
+
+# new.bstats.localhost {
+#     reverse_proxy http://bstats-web:3000
+# }
