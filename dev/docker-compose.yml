@@ -38,7 +38,6 @@ services:
       - redis
     volumes:
       - "../bstats-backend:/usr/src/app"
-      - "./service-account-file.json:/usr/src/app/service-account-file.json"
 
   bstats-legacy:
     <<: *x-node

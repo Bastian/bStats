@@ -48,8 +48,6 @@ services:
       nofile:
         soft: 32768
         hard: 32768
-    volumes:
-      - "./service-account-file.json:/app/service-account-file.json"
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost:3001/software"]
       retries: 60
