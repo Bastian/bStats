@@ -3,7 +3,7 @@ http://bstats.org bstats.org http://bstats.localhost bstats.localhost {
 
     handle_path /submitData/* {
         rewrite * /legacy/submitData{path}
-        reverse_proxy http://bstats-backend:3001
+        reverse_proxy http://nginx-backend:3001
     }
 
     handle_path /api/v2/data/* {
