@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if crontab -l &> /dev/null; then 
+if crontab -l &> /dev/null; then
   echo "Existing crontab found. Appending to existing one."
-  CRONTAB=`crontab -l`
+  CRONTAB=$(crontab -l)
   CRONTAB="${CRONTAB}
 "
 else
@@ -10,32 +10,38 @@ else
   CRONTAB=""
 fi
 
-echo "What bucket do you want to backup to? (Format: \"s3://BUCKET[/PREFIX]\", Default: \"s3://bstats-backup\")"
+echo "What SCP destination do you want to backup to? (Format: \"user@host:/path/\")"
+read -r SCP_DEST
 
-read -r BUCKET
-
-if [ -z "${BUCKET}" ]; then
-  echo "No bucket specified. Using default bucket \"s3://bstats-backup\"."
-  BUCKET="s3://bstats-backup"
+# Validate SCP_DEST format
+if [[ ! "$SCP_DEST" =~ ^[^@]+@[^:]+:/.*$ ]]; then
+    echo "ERROR: SCP_DEST must be in the format user@host:/path/"
+    exit 0
 fi
 
+echo "Enter the SCP port you want to use (default: 22):"
+read -r SCP_PORT
+
+# Use default port 22 if no port is specified
+SCP_PORT="${SCP_PORT:-22}"
 
 OLD_CRONTAB="$CRONTAB"
-CRONTAB="${CRONTAB}5 * * * * cd $PWD && docker compose run redis-backup ./backup.sh ${BUCKET}/hourly/
-10 0 * * * cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/daily/
-15 0 * * 1 cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/weekly/
-20 0 1 * * cd $PWD && docker compose run --rm redis-backup ./backup.sh ${BUCKET}/monthly/
-25 0 * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/* && docker compose exec postgres bash -c \"pg_dump -U bstats -Z5 -j 10 -Fd bstats -f /database-dump\" && docker compose run --rm postgres-backup ./backup.sh ${BUCKET}/postgres/
+
+CRONTAB="${CRONTAB}5 * * * * cd $PWD && ./backup.sh ${SCP_DEST}hourly ${PWD}/volumes/redis ${SCP_PORT}
+10 0 * * * cd $PWD && ./backup.sh ${SCP_DEST}daily ${PWD}/volumes/redis ${SCP_PORT}
+15 0 * * 1 cd $PWD && ./backup.sh ${SCP_DEST}weekly ${PWD}/volumes/redis ${SCP_PORT}
+20 0 1 * * cd $PWD && ./backup.sh ${SCP_DEST}monthly ${PWD}/volumes/redis ${SCP_PORT}
+25 0 * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/* && docker compose exec postgres bash -c \"pg_dump -U bstats -Z5 -j 10 -Fd bstats -f /database-dump\" && ./backup.sh ${SCP_DEST}postgres ${PWD}/volumes/postgres/database-dump ${SCP_PORT}
+0 * * * * cd $PWD && ./cleanup-backups.sh ${SCP_DEST} ${SCP_PORT}
 "
 
 diff --color -u <(echo "$OLD_CRONTAB") <(echo "$CRONTAB")
 
-if echo "$OLD_CRONTAB" | grep 'redis-backup' &> /dev/null; then
+if echo "$OLD_CRONTAB" | grep './backup.sh' &> /dev/null; then
   echo -e "\033[0;33mWARNING\033[0m Found existing backup job in crontab. Please double-check the results before saving"
 fi
 
 echo "Do you want to save this crontab? (y/N)"
-
 read -r ANSWER
 
 if [[ "$ANSWER" =~ ^([yY][eE][sS]|[yY])$ ]]; then

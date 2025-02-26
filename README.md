@@ -71,12 +71,9 @@ You can then start the services by running `make start-prod`.
 
 ### Backups
 
-Redis and Postgres data is backed up to AWS S3. AWS credentials have to be
-provided in a `AWS.env` file in the `prod` directory. Afterwards, cronjobs can
-be set up with the `add-backup-cronjobs.sh` script in the `prod` directory.
-
-A lifecycle configuration for S3 is given in the
-`prod/s3-lifecycle-config.json` file.
+Redis and Postgres data is backed up to a remote server via SCP.
+Cronjobs can be set up with the `add-backup-cronjobs.sh` script in the `prod`
+directory.
 
 ### Disaster Recovery
 
