@@ -62,6 +62,14 @@ services:
       - "./volumes/redis/data:/data"
       - "./volumes/redis/redis.conf:/usr/local/etc/redis/redis.conf"
 
+  redis-commander:
+    container_name: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+
   caddy:
     image: caddy:2.9
     cap_add:
