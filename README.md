@@ -7,19 +7,27 @@ The parent repository of the [bStats] project.
 This repository contains all bStats repositories as submodules. These are
 
 - `bstats-backend` - The backend of bStats.
-- `bstats-web` - The (new) frontend of bStats.
+- `bstats-web` - The (new) frontend of bStats (currently disabled).
 - `bstats-legacy` - The original backend and frontend of bStats.
 - `bstats-metrics` - The Java-based metrics classes of bStats.
 
 > Currently bStats is in a transition phase from the original backend + frontend
 > to a complete rewrite. The "live" version of bStats is currently running with
 > the old frontend and a combination of old and new backend. Which routes are
-> served by which backend can be found in the nginx configuration at
-> [`/prod/volumes/nginx/nginx.conf`](/prod/volumes/nginx/nginx.conf).
+> served by which backend can be found in the Caddy configuration at
+> [`/prod/volumes/caddy/Caddyfile`](/prod/volumes/caddy/Caddyfile).
 
 This repository also provides the development environment for bStats.
 
-## Clone repository
+## Run bStats locally
+
+### 0. Prerequisites
+
+- Docker
+- Linux. WSL2 is recommended for Windows. MacOS should work but is untested
+- GNU Make (should be available on most Unix systems)
+
+### 1. Clone repository
 
 When cloning the repository, it is recommended to use the `--recursive`
 flag to clone the repository with all submodules.
@@ -35,37 +43,39 @@ repository by running
 git submodule init && git submodule update
 ```
 
-## Start Development
+### 2. Update submodules
 
-There are some prerequisites for development:
+Switch to the `master` branch of all submodules using the following command:
 
-- Docker
-- Linux. WSL2 is recommended for Windows. MacOS should work but is untested
-- GNU Make (should be available on most Unix systems)
+```bash
+git submodule foreach 'git checkout master'
+```
 
-Additionally, you need a Firebase account place the `firebase-config.json` file
-and the `service-account-file.json` file inside the `dev` directory (only for
-the new frontend).
+### 3. Start the development environment
 
-- [Learn about the Google service account file]
-- [Learn about the Firebase config file]
+Then you can start all services by running the default target of the `Makefile`:
 
-Next, rename the `/prod/postgres.env.example` file to `/prod/postgres.env` and
-replace the `POSTGRES_PASSWORD` with a random (long) string of your choosing.
+```bash
+make
+```
 
-Then you can start all services by running `make`. The services will run in
-Docker containers, thus no additional dependencies like Node.js and npm are
-required (even though it is recommended to have them installed for your IDE
-tooling).
+After everything is up and running, bStats should be available at
+<https://bstats.localhost/> with a self-signed certificate.
+
+The services will run in Docker containers, thus no additional dependencies like
+Node.js and npm are required (even though it is recommended to have them
+installed for your IDE tooling).
+
+The containers run in dev-mode, which means that the code is mounted into the
+containers and features like hot-reloading are working. You can just start
+editing the code without having to do any additional steps.
 
 ## Start Production
 
-The `prod` directory contains the production environment for bStats. Similar to
-the dev environment, you have to place the `firebase-config.json` file and the
-`service-account-file.json` file inside the `prod` directory.
-Additionally, you have to update the `prod/volumes/bstats-legacy/config.json`
-file with your Recaptcha secrets and replace the `sessionSecret` with a random
-(long) string of your choosing.
+The `prod` directory contains the production environment for bStats.
+You have to update the `prod/volumes/bstats-legacy/config.json` file with your
+Recaptcha secrets and replace the `sessionSecret` with a random (long) string of
+your choosing.
 
 You can then start the services by running `make start-prod`.
 
@@ -93,5 +103,3 @@ Cloudflare).
 This project is licensed under the [MIT License](/LICENSE).
 
 [bstats]: https://bStats.org
-[learn about the google service account file]: https://cloud.google.com/docs/authentication/getting-started
-[learn about the firebase config file]: https://firebase.google.com/docs/web/setup?authuser=0#config-object
