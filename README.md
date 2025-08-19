@@ -88,15 +88,17 @@ directory.
 ### Disaster Recovery
 
 Assuming the worst happens and the current bStats server explodes. To get back
-up running, start the `prod` environment on a new server once and stop it after
-it has successfully started. Then place the backup Redis dumps (`dump.rdb`) in
-the `prod/volumes/redis/node-<x>m` directory. Make sure that the dump file is
-the correct one for the current node. You can look at the
-`prod/volumes/redis/node-<x>m/nodes.conf` file to find out for which key-range
-the node is responsible.
-You can then start the prod again and everything should work again (if it is a
-new server with a new IP, you ofc also have to update the DNS settings in
-Cloudflare).
+up running, perform the following steps:
+
+1. Set up a new server with Docker and the http(s) port open
+2. Clone this repository and all submodules (on the `master` branch)
+3. Start the `prod` environment
+4. Stop the `prod` environment
+5. Restore the Redis backup (just replace the `prod/volumes/redis` dir)
+6. Update the `prod/volumes/bstats-legacy/config.json`
+7. Start the `prod` environment
+8. Update the DNS settings to point to the new server IP
+9. Ingest historic chart data from the postgres backup (not time critical)
 
 ## License
 
