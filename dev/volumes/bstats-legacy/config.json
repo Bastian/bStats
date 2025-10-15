@@ -1,8 +1,18 @@
 {
-  "redis": {
-    "port": 6379,
-    "host": "redis"
-  },
+  "redis": [
+    {
+      "port": 6379,
+      "host": "redis-node-1m"
+    },
+    {
+      "port": 6379,
+      "host": "redis-node-2m"
+    },
+    {
+      "port": 6379,
+      "host": "redis-node-3m"
+    }
+  ],
   "recaptcha": {
     "publicKey": "abc123",
     "secretKey": "123abc"

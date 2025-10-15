@@ -3,7 +3,11 @@ firebase-config.json
 service-account-file.json
 
 # Volume Data (dev)
-volumes/redis/data/*
-!volumes/redis/data/.gitkeep
+volumes/redis/node-1m/*
+!volumes/redis/node-1m/.gitkeep
+volumes/redis/node-2m/*
+!volumes/redis/node-2m/.gitkeep
+volumes/redis/node-3m/*
+!volumes/redis/node-3m/.gitkeep
 
 volumes/postgres/data/*

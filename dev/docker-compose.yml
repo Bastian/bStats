@@ -28,16 +28,36 @@ services:
     command: ["sh", "-c", "npm install && npm run start:dev"]
     user: ${USERID:-0}
     environment:
-      REDIS_HOST: redis
+      REDIS_USE_CLUSTER: "true"
+      REDIS_HOST: "redis-node-1m"
+      REDIS_PORT: "6379"
       PGHOST: postgres
       PGPORT: "5432"
       POSTGRES_USER: bstats
       POSTGRES_PASSWORD: bstats
       POSTGRES_DB: bstats
-    depends_on:
-      - redis
+    depends_on: &depends_on-redis
+      redis-node-1m:
+        condition: service_healthy
+      redis-node-2m:
+        condition: service_healthy
+      redis-node-3m:
+        condition: service_healthy
     volumes:
       - "../bstats-backend:/usr/src/app"
+
+  bstats-data-processor:
+    build: "../bstats-data-processor"
+    restart: unless-stopped
+    environment:
+      GEOIP_DATABASE_PATH: "todo"
+      BEHIND_PROXY: "true"
+      BEHIND_CLOUDFLARE_PROXY: "true"
+      REDIS_CLUSTER__URLS: "redis://redis-node-1m:6379,redis://redis-node-2m:6379,redis://redis-node-3m:6379"
+      WORD_BLOCKLIST: '["ely.su"]'
+      WORKERS: "2"
+    depends_on:
+      <<: *depends_on-redis
 
   bstats-legacy:
     <<: *x-node
@@ -46,29 +66,50 @@ services:
       retries: 60
     command: ["sh", "-c", "npm install && npm run start"]
     depends_on:
-      - redis
       - bstats-backend
     volumes:
       - "../bstats-legacy:/usr/src/app"
       - "./volumes/bstats-legacy/config.json:/usr/src/app/config.json"
 
-  redis:
-    image: "redis:7-alpine"
-    command: redis-server /usr/local/etc/redis/redis.conf
+  redis-node-1m: &redis-node
+    image: "bitnami/redis-cluster:7.0"
     user: ${USERID:-0}
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "--raw", "incr", "ping"]
     volumes:
-      - "./volumes/redis/data:/data"
-      - "./volumes/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-1m:/bitnami/redis/data"
+    environment: &redis-node-env
+      REDIS_CLUSTER_REPLICAS: "0"
+      REDIS_NODES: "redis-node-1m redis-node-2m redis-node-3m"
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_PASSWORD: ""
+  redis-node-2m:
+    <<: *redis-node
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-2m:/bitnami/redis/data"
+  redis-node-3m:
+    <<: *redis-node
+    volumes:
+      - "./volumes/redis/redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf"
+      - "./volumes/redis/node-3m:/bitnami/redis/data"
+    depends_on:
+      - redis-node-1m
+      - redis-node-2m
+    environment:
+      <<: *redis-node-env
+      REDIS_CLUSTER_CREATOR: "yes"
 
   redis-commander:
     container_name: redis-commander
     image: ghcr.io/joeferner/redis-commander:latest
     environment:
-      - REDIS_HOSTS=local:redis:6379
+      - REDIS_HOSTS=local:redis-node-1m:6379
     ports:
       - "8081:8081"
+    depends_on:
+      <<: *depends_on-redis
 
   caddy:
     image: caddy:2.9

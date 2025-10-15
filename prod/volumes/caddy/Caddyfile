@@ -2,13 +2,13 @@ http://bstats.org bstats.org http://bstats.localhost bstats.localhost {
     encode gzip
 
     handle_path /submitData/* {
-        rewrite * /legacy/submitData{path}
-        reverse_proxy http://nginx-backend:3001
+        rewrite * /legacy{path}
+        reverse_proxy http://bstats-data-processor:8080
     }
 
     handle_path /api/v2/data/* {
-        rewrite * /data{path}
-        reverse_proxy http://nginx-backend:3001
+        rewrite * {path}
+        reverse_proxy http://bstats-data-processor:8080
     }
 
     handle_path /api/v2/* {

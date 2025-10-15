@@ -97,6 +97,28 @@ services:
       <<: *bstats-backend-env
       SHARD_NUMBER: "5"
 
+  bstats-data-processor:
+    build: "../bstats-data-processor"
+    restart: unless-stopped
+    environment:
+      GEOIP_DATABASE_PATH: "todo"
+      BEHIND_PROXY: "true"
+      BEHIND_CLOUDFLARE_PROXY: "true"
+      REDIS_CLUSTER__URLS: "redis://redis-node-1m:6379,redis://redis-node-2m:6379,redis://redis-node-3m:6379"
+      WORD_BLOCKLIST: '["ely.su"]'
+      WORKERS: "4"
+    depends_on:
+      <<: *depends_on-redis
+    <<: *x-logging
+
+  redis-commander:
+    container_name: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis-node-1m:6379,local:redis-node-2m:6379,local:redis-node-3m:6379
+    ports:
+      - "8081:8081"
+
   # An nginx server for load balancing the backend services
   nginx-backend:
     image: nginx:latest
