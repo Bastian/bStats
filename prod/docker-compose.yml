@@ -67,7 +67,6 @@ services:
       PGHOST: "postgres"
       PGPORT: "5432"
       TOTAL_SHARDS: "3"
-      WORD_BLOCKLIST: '["ely.su"]'
     env_file:
       - postgres.env
     <<: *x-logging
