@@ -6,6 +6,11 @@ http://bstats.org bstats.org http://bstats.localhost bstats.localhost {
         reverse_proxy http://bstats-data-processor:8080
     }
 
+    handle /submitData {
+        rewrite * /legacy/bukkit
+        reverse_proxy http://bstats-data-processor:8080
+    }
+
     handle_path /api/v2/data/* {
         rewrite * {path}
         reverse_proxy http://bstats-data-processor:8080
