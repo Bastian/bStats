@@ -44,11 +44,20 @@ REMOTE_BASE_PATH=$(echo "$SCP_DEST" | cut -d ':' -f 2)
 
 # Define backup types and their retention periods in days
 declare -A BACKUP_RETENTION=(
-    ["hourly"]=2      # Keep backups from the last 2 days
-    ["daily"]=7       # Keep backups from the last 7 days
-    ["weekly"]=28     # Keep backups from the last 28 days (4 weeks)
-    ["monthly"]=365   # Keep backups from the last 365 days (12 months)
-    ["postgres"]=30   # Keep postgres backups from the last 30 days
+    # Redis
+    ["hourly"]=2
+    ["daily"]=7
+    ["weekly"]=28
+    ["monthly"]=365
+
+    # Postgres (all tables except historic_line_chart_data)
+    ["postgres_rest_hourly"]=2
+    ["postgres_rest_daily"]=7
+    ["postgres_rest_weekly"]=28
+    ["postgres_rest_monthly"]=365
+
+    # Postgres (only historic_line_chart_data)
+    ["postgres_hlcd_daily"]=7
 )
 
 # Function to clean up backups for a specific type

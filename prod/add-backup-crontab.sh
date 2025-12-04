@@ -31,7 +31,14 @@ CRONTAB="${CRONTAB}5 * * * * cd $PWD && ./backup.sh ${SCP_DEST}hourly ${PWD}/vol
 10 0 * * * cd $PWD && ./backup.sh ${SCP_DEST}daily ${PWD}/volumes/redis ${SCP_PORT}
 15 0 * * 1 cd $PWD && ./backup.sh ${SCP_DEST}weekly ${PWD}/volumes/redis ${SCP_PORT}
 20 0 1 * * cd $PWD && ./backup.sh ${SCP_DEST}monthly ${PWD}/volumes/redis ${SCP_PORT}
-25 0 * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/* && docker compose exec postgres bash -c \"pg_dump -U bstats -Z5 -j 10 -Fd bstats -f /database-dump\" && ./backup.sh ${SCP_DEST}postgres ${PWD}/volumes/postgres/database-dump ${SCP_PORT}
+
+5 * * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/rest/* && docker compose exec postgres bash -c \"mkdir -p /database-dump/rest && pg_dump -U bstats -Z5 -j 10 -Fd -T public.historic_line_chart_data -f /database-dump/rest bstats\" && ./backup.sh ${SCP_DEST}postgres_rest_hourly ${PWD}/volumes/postgres/database-dump/rest ${SCP_PORT}
+10 0 * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/rest/* && docker compose exec postgres bash -c \"mkdir -p /database-dump/rest && pg_dump -U bstats -Z5 -j 10 -Fd -T public.historic_line_chart_data -f /database-dump/rest bstats\" && ./backup.sh ${SCP_DEST}postgres_rest_daily ${PWD}/volumes/postgres/database-dump/rest ${SCP_PORT}
+15 0 * * 1 cd $PWD && rm -rf ./volumes/postgres/database-dump/rest/* && docker compose exec postgres bash -c \"mkdir -p /database-dump/rest && pg_dump -U bstats -Z5 -j 10 -Fd -T public.historic_line_chart_data -f /database-dump/rest bstats\" && ./backup.sh ${SCP_DEST}postgres_rest_weekly ${PWD}/volumes/postgres/database-dump/rest ${SCP_PORT}
+20 0 1 * * cd $PWD && rm -rf ./volumes/postgres/database-dump/rest/* && docker compose exec postgres bash -c \"mkdir -p /database-dump/rest && pg_dump -U bstats -Z5 -j 10 -Fd -T public.historic_line_chart_data -f /database-dump/rest bstats\" && ./backup.sh ${SCP_DEST}postgres_rest_monthly ${PWD}/volumes/postgres/database-dump/rest ${SCP_PORT}
+
+25 0 * * * cd $PWD && rm -rf ./volumes/postgres/database-dump/hlcd/* && docker compose exec postgres bash -c \"mkdir -p /database-dump/hlcd && pg_dump -U bstats -Z5 -j 10 -Fd -t public.historic_line_chart_data -f /database-dump/hlcd bstats\" && ./backup.sh ${SCP_DEST}postgres_hlcd_daily ${PWD}/volumes/postgres/database-dump/hlcd ${SCP_PORT}
+
 0 * * * * cd $PWD && ./cleanup-backups.sh ${SCP_DEST} ${SCP_PORT}
 "
 

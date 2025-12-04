@@ -4,6 +4,9 @@ service-account-file.json
 
 # Postgres env for username and password
 postgres.env
+bstats-web.env
+bstats-backend.env
+geoipupdate.env
 
 # AWS Secrets
 AWS.env
@@ -15,3 +18,6 @@ volumes/redis/node-2m/*
 !volumes/redis/node-2m/.gitkeep
 volumes/redis/node-3m/*
 !volumes/redis/node-3m/.gitkeep
+
+volumes/postgres/*
+volumes/geoip/*

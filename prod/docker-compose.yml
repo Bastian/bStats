@@ -68,7 +68,7 @@ services:
       PGPORT: "5432"
       TOTAL_SHARDS: "3"
     env_file:
-      - postgres.env
+      - bstats-backend.env
     <<: *x-logging
   bstats-backend-2:
     <<: *bstats-backend
@@ -81,16 +81,30 @@ services:
       <<: *bstats-backend-env
       SHARD_NUMBER: "2"
 
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate
+    restart: unless-stopped
+    env_file:
+      - geoipupdate.env
+    environment:
+      GEOIPUPDATE_EDITION_IDS: "GeoLite2-Country"
+      GEOIPUPDATE_FREQUENCY: "24"
+    volumes:
+      - "./volumes/geoip:/usr/share/GeoIP"
+    <<: *x-logging
+
   bstats-data-processor:
     build: "../bstats-data-processor"
     restart: unless-stopped
     environment:
-      GEOIP_DATABASE_PATH: "todo"
+      GEOIP_DATABASE_PATH: "/usr/share/GeoIP/GeoLite2-Country.mmdb"
       BEHIND_PROXY: "true"
       BEHIND_CLOUDFLARE_PROXY: "true"
       REDIS_CLUSTER__URLS: "redis://redis-node-1m:6379,redis://redis-node-2m:6379,redis://redis-node-3m:6379"
       WORD_BLOCKLIST: '["ely.su"]'
       WORKERS: "4"
+    volumes:
+      - "./volumes/geoip:/usr/share/GeoIP:ro"
     depends_on:
       <<: *depends_on-redis
     <<: *x-logging
@@ -115,34 +129,23 @@ services:
       - bstats-backend-1
       - bstats-backend-2
       - bstats-backend-3
-      - bstats-backend-4
-      - bstats-backend-5
-      - bstats-backend-6
     <<: *x-logging
 
-  # The new bstats frontend
-  # bstats-web:
-  #   build: ../bstats-web
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl http://localhost:3000"]
-  #     retries: 60
-  #   environment:
-  #     PORT: "3000"
-  #   volumes:
-  #     - "./service-account-file.json:/app/service-account-file.json"
-  #     - "./firebase-config.json:/app/firebase-config.json"
-  #   <<: *x-logging
-
-  # The legacy front- and backend
-  bstats-legacy:
-    build: ../bstats-legacy
+  bstats-web:
+    build: ../bstats-web
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost:3000"]
       retries: 60
     depends_on:
       <<: *depends_on-redis
-    volumes:
-      - "./volumes/bstats-legacy/config.json:/app/config.json"
+      postgres:
+        condition: service_started
+    environment:
+      BACKEND_URL: "http://bstats-backend-1:3001" # TODO Go through caddy to balance the load
+      PUBLIC_TOS_REQUIRED_VERSION: "1764810000000"
+    env_file:
+      - bstats-web.env
     <<: *x-logging
 
   caddy:
@@ -159,8 +162,7 @@ services:
     volumes:
       - ./volumes/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:
-      # - bstats-web
-      - bstats-legacy
+      - bstats-web
       - nginx-backend
     <<: *x-logging
 

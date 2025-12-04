@@ -36,9 +36,9 @@ http://bstats.localhost bstats.localhost {
     }
 
     # Catch-all proxy for all other requests
-    reverse_proxy http://bstats-legacy:3000
+    reverse_proxy http://bstats-web:5173
 }
 
-# new.bstats.localhost {
-#     reverse_proxy http://bstats-web:3000
-# }
+maildev.bstats.localhost {
+    reverse_proxy http://maildev:1080
+}

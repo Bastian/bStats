@@ -7,16 +7,10 @@ The parent repository of the [bStats] project.
 This repository contains all bStats repositories as submodules. These are
 
 - `bstats-backend` - The backend of bStats.
-- `bstats-web` - The (new) frontend of bStats (currently disabled).
+- `bstats-web` - The frontend of bStats.
 - `bstats-data-processor` - The service that processes incoming data from plugins.
 - `bstats-legacy` - The original backend and frontend of bStats.
 - `bstats-metrics` - The Java-based metrics classes of bStats.
-
-> Currently bStats is in a transition phase from the original backend + frontend
-> to a complete rewrite. The "live" version of bStats is currently running with
-> the old frontend and a combination of old and new backend. Which routes are
-> served by which backend can be found in the Caddy configuration at
-> [`/prod/volumes/caddy/Caddyfile`](/prod/volumes/caddy/Caddyfile).
 
 This repository also provides the development environment for bStats.
 
@@ -54,9 +48,15 @@ git submodule foreach 'git checkout master'
 
 ### 3. Start the development environment
 
-Then you can start all services by running the default target of the `Makefile`:
+Then you can start all services by running the default target of the `Makefile`.
+You need to provide credentials for [hCaptcha](https://www.hcaptcha.com/) and
+[MaxMind GeoIP](https://www.maxmind.com/en/account):
 
 ```bash
+PUBLIC_HCAPTCHA_SITE_KEY=your_site_key \
+HCAPTCHA_SECRET_KEY=your_secret_key \
+GEOIPUPDATE_ACCOUNT_ID=your_account_id \
+GEOIPUPDATE_LICENSE_KEY=your_license_key \
 make
 ```
 
@@ -74,9 +74,12 @@ editing the code without having to do any additional steps.
 ## Start Production
 
 The `prod` directory contains the production environment for bStats.
-You have to update the `prod/volumes/bstats-legacy/config.json` file with your
-Recaptcha secrets and replace the `sessionSecret` with a random (long) string of
-your choosing.
+You need to create the following env files from their examples:
+
+- `prod/postgres.env`
+- `prod/bstats-web.env`
+- `prod/bstats-backend.env`
+- `prod/geoipupdate.env`
 
 You can then start the services by running `make start-prod`.
 
@@ -96,7 +99,7 @@ up running, perform the following steps:
 3. Start the `prod` environment
 4. Stop the `prod` environment
 5. Restore the Redis backup (just replace the `prod/volumes/redis` dir)
-6. Update the `prod/volumes/bstats-legacy/config.json`
+6. Create the env files from their examples (see above)
 7. Start the `prod` environment
 8. Update the DNS settings to point to the new server IP
 9. Ingest historic chart data from the postgres backup (not time critical)

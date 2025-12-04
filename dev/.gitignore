@@ -10,4 +10,5 @@ volumes/redis/node-2m/*
 volumes/redis/node-3m/*
 !volumes/redis/node-3m/.gitkeep
 
-volumes/postgres/data/*
+volumes/postgres/*
+volumes/geoip/*

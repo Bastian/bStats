@@ -36,9 +36,5 @@ http://bstats.org bstats.org http://bstats.localhost bstats.localhost {
     }
 
     # Catch-all proxy for all other requests
-    reverse_proxy http://bstats-legacy:3000
+    reverse_proxy http://bstats-web:3000
 }
-
-# test-bstats.org new.bstats.localhost {
-#     reverse_proxy http://bstats-web:3000
-# }

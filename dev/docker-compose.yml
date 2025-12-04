@@ -7,21 +7,34 @@ x-node: &x-node
   working_dir: /usr/src/app
 
 services:
-  # bstats-web:
-  #   <<: *x-node
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl http://localhost:3000"]
-  #     retries: 60
-  #   command: ["sh", "-c", "npm install && npm run dev"]
-  #   ports:
-  #     - "24678:24678"
-  #   depends_on:
-  #     - bstats-backend
-  #     - bstats-legacy
-  #   volumes:
-  #     - "../bstats-web:/usr/src/app"
-  #     - "./service-account-file.json:/usr/src/app/service-account-file.json"
-  #     - "./firebase-config.json:/usr/src/app/firebase-config.json"
+  bstats-web:
+    <<: *x-node
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:5173"]
+      retries: 60
+    command: ["sh", "-c", "npm install && npm run dev"]
+    ports:
+      - "24678:24678"
+    environment:
+      BETTER_AUTH_SECRET: "top-secret"
+      PUBLIC_HCAPTCHA_SITE_KEY: "${PUBLIC_HCAPTCHA_SITE_KEY}"
+      HCAPTCHA_SECRET_KEY: "${HCAPTCHA_SECRET_KEY}"
+      PUBLIC_BASE_URL: "https://bstats.localhost"
+      BETTER_AUTH_DATABASE_URL: "postgresql://bstats:bstats@postgres:5432/bstats"
+      SMTP_HOST: "maildev"
+      SMTP_PORT: "1025"
+      SMTP_USER: "no-reply@bstats.org"
+      SMTP_PASSWORD: "top-secret"
+      SMTP_SECURE: "false"
+      SENDER_MAIL: "no-reply@bstats.org"
+      REDIS_CLUSTER: "redis-node-1m:6379,redis-node-2m:6379,redis-node-3m:6379"
+      BACKEND_URL: "http://bstats-backend:3001"
+      PUBLIC_TOS_REQUIRED_VERSION: "1763251200000"
+    depends_on:
+      - bstats-backend
+      - postgres
+    volumes:
+      - "../bstats-web:/usr/src/app"
 
   bstats-backend:
     <<: *x-node
@@ -46,30 +59,31 @@ services:
     volumes:
       - "../bstats-backend:/usr/src/app"
 
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate
+    restart: unless-stopped
+    environment:
+      GEOIPUPDATE_ACCOUNT_ID: "${GEOIPUPDATE_ACCOUNT_ID}"
+      GEOIPUPDATE_LICENSE_KEY: "${GEOIPUPDATE_LICENSE_KEY}"
+      GEOIPUPDATE_EDITION_IDS: "GeoLite2-Country"
+      GEOIPUPDATE_FREQUENCY: "24"
+    volumes:
+      - "./volumes/geoip:/usr/share/GeoIP"
+
   bstats-data-processor:
     build: "../bstats-data-processor"
     restart: unless-stopped
     environment:
-      GEOIP_DATABASE_PATH: "todo"
+      GEOIP_DATABASE_PATH: "/usr/share/GeoIP/GeoLite2-Country.mmdb"
       BEHIND_PROXY: "true"
       BEHIND_CLOUDFLARE_PROXY: "true"
       REDIS_CLUSTER__URLS: "redis://redis-node-1m:6379,redis://redis-node-2m:6379,redis://redis-node-3m:6379"
       WORD_BLOCKLIST: '["ely.su"]'
       WORKERS: "2"
+    volumes:
+      - "./volumes/geoip:/usr/share/GeoIP:ro"
     depends_on:
       <<: *depends_on-redis
-
-  bstats-legacy:
-    <<: *x-node
-    healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:3000"]
-      retries: 60
-    command: ["sh", "-c", "npm install && npm run start"]
-    depends_on:
-      - bstats-backend
-    volumes:
-      - "../bstats-legacy:/usr/src/app"
-      - "./volumes/bstats-legacy/config.json:/usr/src/app/config.json"
 
   redis-node-1m: &redis-node
     image: "bitnami/redis-cluster:7.0"
@@ -122,8 +136,7 @@ services:
     volumes:
       - ./volumes/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:
-      # - bstats-web
-      - bstats-legacy
+      - bstats-web
       - bstats-backend
 
   postgres:
@@ -132,6 +145,8 @@ services:
       POSTGRES_USER: bstats
       POSTGRES_PASSWORD: bstats
       POSTGRES_DB: bstats
+    # ports:
+    #   - "5432:5432"
     volumes:
       - "./volumes/postgres/data:/var/lib/postgresql/data"
 
@@ -141,3 +156,13 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1025:1025"
+    environment:
+      MAILDEV_SMTP_PORT: 1025
+      MAILDEV_WEB_PORT: 1080
+      MAILDEV_OUTGOING_USER: "no-reply@bstats.org"
+      MAILDEV_OUTGOING_PASS: "top-secret"
