@@ -22,25 +22,25 @@ project’s architecture, and offers instructions for specific development tasks
 
 bStats consists of the following main components:
 
-- **The legacy bStats backend and frontend** ("bstats-legacy"). This is the
-  original version of bStats. It's an Express Node.JS application (no
-  TypeScript) with a frontend built using the EJS templating engine. This is the
-  oldest (and most outdated) part of bStats. It is mostly used for the website
-  and related backend features (account management, creating/editing plugins,
-  etc.). It is no longer used for data collection or data serving.
-- **A somewhat newer backend** written in TypeScript ("bstats-backend") using
-  NestJS. Although newer than the legacy backend, it's still old by modern
-  JavaScript standards. This part handles data collection and serving.
-- **A new frontend** ("bstats-frontend"). You can completely ignore this one. It
-  is not used anywhere and is in an unfinished state.
-- **A Redis database.** This is the main database for bStats, storing both the
-  data sent by services and the data required to operate bStats (account data,
-  plugin settings, etc.).
-- **A Postgres database.** Used only for storing historical data. Data is
-  periodically moved from Redis to Postgres. It does **not** store plugin
-  settings or account data.
-- **bStats Metrics classes.** These are what plugin authors include in their
-  services to send data back to bStats.
+- **The bStats web application** ("bstats-web"). This is the main website built
+  with SvelteKit (Svelte 5), TypeScript, and TailwindCSS. It handles the
+  frontend and related backend features (account management, creating/editing
+  plugins, etc.). It does not handle data collection or data serving.
+- **The data processor** ("bstats-data-processor"). A Rust service built with
+  that handles all incoming data submissions from plugins. It validates and
+  parses incoming metrics, performs rate limiting, uses GeoIP for geographic
+  data, and stores the processed data directly in Redis.
+- **The backend** ("bstats-backend"). A TypeScript/NestJS application that
+  serves chart data via REST APIs and archives historical data from Redis to
+  PostgreSQL. It does **not** handle data collection.
+- **A Redis cluster.** This is the main database for bStats, storing both the
+  data sent by services and the data required to operate bStats, except account
+  information (login creations, etc.) and historical chart data.
+- **A Postgres database.** Stores historical chart data (moved from Redis
+  daily) and user accounts.
+- **bStats Metrics classes** ("bstats-metrics"). These are what plugin authors
+  include in their services to send data to bStats.
+- **Caddy reverse proxy.** Routes requests to the appropriate service.
 
 ## Setup a local environment to test your changes
 
@@ -86,10 +86,10 @@ have global stats (which most do), also add this plugin in the
 `populator.service.ts` file.
 
 Depending on the platform, you might want to add new "request parsers." The
-existing parsers are located [here][request-parsers]. These parse the data sent
-by services into a more suitable format for bStats (for example, extracting the
-server software name and Minecraft version from something like
-`git-Paper-196 (MC: 1.20.1)` returned by `Bukkit.getVersion()`).
+existing parsers are located in the [bstats-data-processor][request-parsers].
+These parse the data sent by services into a more suitable format for bStats
+(for example, extracting the server software name and Minecraft version from
+something like `git-Paper-196 (MC: 1.20.1)` returned by `Bukkit.getVersion()`).
 
 #### Create a new Metrics class
 
@@ -119,9 +119,6 @@ in mind:
 
 The website contains references to various platforms, such as the Getting
 Started guide. These pages should be updated to include your new platform.
-
-> While you are at it, maybe you'd like to improve the documentation in general
-> in a separate PR? ;-)
 
 #### Prepare the Pull Request
 
@@ -157,5 +154,5 @@ When creating PRs for a new platform, I expect:
   **2000**."
 
 [tms2000-bug]: https://github.com/Bastian/bstats-data-processor/blob/7737e4db3833d0f14dc06c5f8276e48a869841ce/src/date_util.rs#L4-L12
-[request-parsers]: https://github.com/Bastian/bstats-backend/tree/master/src/data-submission/parser
+[request-parsers]: https://github.com/Bastian/bstats-data-processor/tree/master/src/parser
 [populator.service.ts]: https://github.com/Bastian/bstats-backend/blob/master/src/database/populator.service.ts
