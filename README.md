@@ -9,7 +9,6 @@ This repository contains all bStats repositories as submodules. These are
 - `bstats-backend` - The backend of bStats.
 - `bstats-web` - The frontend of bStats.
 - `bstats-data-processor` - The service that processes incoming data from plugins.
-- `bstats-legacy` - The original backend and frontend of bStats.
 - `bstats-metrics` - The Java-based metrics classes of bStats.
 
 This repository also provides the development environment for bStats.
