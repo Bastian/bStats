@@ -10,6 +10,7 @@ This repository contains all bStats repositories as submodules. These are
 - `bstats-web` - The frontend of bStats.
 - `bstats-data-processor` - The service that processes incoming data from plugins.
 - `bstats-metrics` - The Java-based metrics classes of bStats.
+- `bstats-pmmp` - The PHP-based metrics classes of bStats for PocketMine-MP.
 
 This repository also provides the development environment for bStats.
 

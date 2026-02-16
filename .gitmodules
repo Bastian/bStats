@@ -10,3 +10,6 @@
 [submodule "bstats-data-processor"]
 	path = bstats-data-processor
 	url = git@github.com:Bastian/bstats-data-processor.git
+[submodule "bstats-pmmp"]
+	path = bstats-pmmp
+	url = git@github.com:Bastian/bstats-pmmp.git
