@@ -5,6 +5,9 @@ x-node: &x-node
   image: "node:20"
   user: ${USERID:-0}
   working_dir: /usr/src/app
+  # Prevent services from clearing the log output
+  tty: false
+  stdin_open: true
 
 services:
   bstats-web:
