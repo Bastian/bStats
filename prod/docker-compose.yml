@@ -46,8 +46,8 @@ services:
     restart: unless-stopped
     ulimits: &ulimits
       nofile:
-        soft: 32768
-        hard: 32768
+        soft: 1048576
+        hard: 1048576
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost:3001/software"]
       retries: 60
@@ -96,6 +96,8 @@ services:
   bstats-data-processor:
     build: "../bstats-data-processor"
     restart: unless-stopped
+    ulimits:
+      <<: *ulimits
     environment:
       GEOIP_DATABASE_PATH: "/usr/share/GeoIP/GeoLite2-Country.mmdb"
       BEHIND_PROXY: "true"
