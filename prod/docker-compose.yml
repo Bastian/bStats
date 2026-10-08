@@ -109,14 +109,6 @@ services:
       <<: *depends_on-redis
     <<: *x-logging
 
-  redis-commander:
-    container_name: redis-commander
-    image: ghcr.io/joeferner/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:redis-node-1m:6379,local:redis-node-2m:6379,local:redis-node-3m:6379
-    ports:
-      - "8081:8081"
-
   # An nginx server for load balancing the backend services
   nginx-backend:
     image: nginx:latest
