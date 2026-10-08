@@ -1,19 +1,29 @@
+(data-processor) {
+    reverse_proxy http://bstats-data-processor:8080 {
+        # Below the data processor's keep-alive (120s), so Caddy closes idle connections first
+        transport http {
+            keepalive 90s
+            keepalive_idle_conns_per_host 256
+        }
+    }
+}
+
 http://bstats.org bstats.org http://bstats.localhost bstats.localhost {
     encode gzip
 
     handle_path /submitData/* {
         rewrite * /legacy{path}
-        reverse_proxy http://bstats-data-processor:8080
+        import data-processor
     }
 
     handle /submitData {
         rewrite * /legacy/bukkit
-        reverse_proxy http://bstats-data-processor:8080
+        import data-processor
     }
 
     handle_path /api/v2/data/* {
         rewrite * {path}
-        reverse_proxy http://bstats-data-processor:8080
+        import data-processor
     }
 
     handle_path /api/v2/* {
