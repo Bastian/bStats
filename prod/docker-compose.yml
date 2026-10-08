@@ -6,6 +6,7 @@ x-logging: &x-logging
     driver: "json-file"
     options:
       max-size: "100m"
+      max-file: "5"
 
 services:
   # Cluster of 3 Redis master nodes
@@ -44,6 +45,7 @@ services:
   bstats-backend-1: &bstats-backend
     build: ../bstats-backend
     restart: unless-stopped
+    # Pinned, since Docker 29 lowers the default soft limit to 1024
     ulimits: &ulimits
       nofile:
         soft: 1048576
