@@ -1,9 +1,24 @@
+{
+    # Thins out error floods that would block Caddy and rotate away the logs
+    log default {
+        # Per second by default, Caddy 2.9 can't parse an explicit interval
+        sampling {
+            first 10
+            thereafter 1000
+        }
+    }
+}
+
 (data-processor) {
     reverse_proxy http://bstats-data-processor:8080 {
+        # Retries failed connects instead of answering 502, safe for POST
+        lb_try_duration 5s
         # Below the data processor's keep-alive (120s), so Caddy closes idle connections first
         transport http {
             keepalive 90s
             keepalive_idle_conns_per_host 256
+            # Caps the connection flood in stalls, normally ~100 are open
+            max_conns_per_host 4096
         }
     }
 }
