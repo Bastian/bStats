@@ -12,6 +12,7 @@ services:
   # Cluster of 3 Redis master nodes
   redis-node-1m: &redis-node
     image: "bitnami/redis-cluster:7.0"
+    restart: unless-stopped
     user: ${USERID:-0}
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "6379", "--raw", "incr", "ping"]
@@ -165,6 +166,7 @@ services:
   # A SQL database for historical data
   postgres:
     image: postgres:17
+    restart: unless-stopped
     command: -c 'max_connections=200'
     env_file:
       - postgres.env
