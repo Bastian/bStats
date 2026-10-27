@@ -13,6 +13,8 @@
     reverse_proxy http://bstats-data-processor:8080 {
         # Retries failed connects instead of answering 502, safe for POST
         lb_try_duration 5s
+        # Lets retries resend the body, which is usually under 1 KB
+        request_buffers 64k
         # Below the data processor's keep-alive (120s), so Caddy closes idle connections first
         transport http {
             keepalive 90s
